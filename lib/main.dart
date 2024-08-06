@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:progetto_mobile_programming/views/page_all_device.dart';
 import 'package:progetto_mobile_programming/views/page_automation.dart';
 import 'package:progetto_mobile_programming/views/page_home.dart';
 import 'package:progetto_mobile_programming/views/page_security.dart';
 
 void main() {
-  runApp(const MainApp());
+  runApp(const ProviderScope(child: MainApp()));
 }
 
 class MainApp extends StatelessWidget {
@@ -59,7 +60,6 @@ class _NavigationState extends State<Navigation> {
         const AutomationPage(),
         const AllDevicePage(),
       ][currentPageIndex],
-      // TODO: controllare non colorazione dell'icona su navbar.
       bottomNavigationBar: NavigationBar(
         onDestinationSelected: (int index) {
           setState(() {
