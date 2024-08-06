@@ -1,4 +1,4 @@
-import 'package:progetto_mobile_programming/models/string_model.dart';
+import 'package:progetto_mobile_programming/models/device.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -21,6 +21,7 @@ class DatabaseHelper {
     );
   }
 
+/*
   Future<void> insertName(StringModel string) async {
     final db = await database;
     await db.insert(
@@ -28,5 +29,5 @@ class DatabaseHelper {
       string.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
-  }
+  }*/
 }

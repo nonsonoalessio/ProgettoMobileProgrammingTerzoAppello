@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:progetto_mobile_programming/views/homepage.dart';
+import 'package:progetto_mobile_programming/views/page_all_device.dart';
+import 'package:progetto_mobile_programming/views/page_automation.dart';
+import 'package:progetto_mobile_programming/views/page_home.dart';
+import 'package:progetto_mobile_programming/views/page_security.dart';
 
 void main() {
-  runApp(MainApp());
+  runApp(const MainApp());
 }
 
 class MainApp extends StatelessWidget {
-  MainApp({super.key});
+  const MainApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
         body: Navigation(),
       ),
@@ -33,9 +37,17 @@ class _NavigationState extends State<Navigation> {
       label: 'Home',
     ),
     const NavigationDestination(
-      icon: Icon(Icons.person),
-      label: 'Profile',
-    )
+      icon: Icon(Icons.lock),
+      label: 'Sicurezza',
+    ),
+    const NavigationDestination(
+      icon: Icon(Icons.alarm),
+      label: 'Automazioni',
+    ),
+    const NavigationDestination(
+      icon: Icon(Icons.list),
+      label: 'Dispositivi',
+    ),
   ];
 
   @override
@@ -43,12 +55,11 @@ class _NavigationState extends State<Navigation> {
     return Scaffold(
       body: <Widget>[
         const Homepage(),
-        const Scaffold(
-          body: Center(
-            child: Text('Hello World!'),
-          ),
-        ),
+        const SecurityPage(),
+        const AutomationPage(),
+        const AllDevicePage(),
       ][currentPageIndex],
+      // TODO: controllare non colorazione dell'icona su navbar.
       bottomNavigationBar: NavigationBar(
         onDestinationSelected: (int index) {
           setState(() {
@@ -56,6 +67,7 @@ class _NavigationState extends State<Navigation> {
           });
         },
         destinations: _destinations,
+        selectedIndex: currentPageIndex,
       ),
     );
   }
