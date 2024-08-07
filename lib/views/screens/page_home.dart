@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:progetto_mobile_programming/models/device.dart';
 import 'package:progetto_mobile_programming/providers/devices_provider.dart';
 import 'package:progetto_mobile_programming/views/screens/add_new_items_screens/add_new_device.dart';
@@ -23,6 +24,19 @@ class Homepage extends ConsumerWidget {
     }
 
     return Scaffold(
+      appBar: AppBar(
+        actions: [
+          IconButton(onPressed: () {}, icon: Icon(Icons.notifications))
+        ],
+        title: Text(
+          'Domus Plus',
+          style: GoogleFonts.greyQo(
+            fontSize: 36.0,
+            fontWeight: FontWeight.bold,
+            color: Colors.orange[600],
+          ),
+        ),
+      ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           Navigator.push(
@@ -100,7 +114,7 @@ class ListGenerator extends StatelessWidget {
               crossAxisCount: 2,
               mainAxisSpacing: 8.0,
               crossAxisSpacing: 8.0,
-              shrinkWrap: false,
+              shrinkWrap: true,
               physics: NeverScrollableScrollPhysics(),
               children: List.generate(devices.length, (index) {
                 return Expanded(
