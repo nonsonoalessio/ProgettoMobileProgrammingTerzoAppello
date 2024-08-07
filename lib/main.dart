@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:progetto_mobile_programming/views/page_all_device.dart';
-import 'package:progetto_mobile_programming/views/page_automation.dart';
-import 'package:progetto_mobile_programming/views/page_home.dart';
-import 'package:progetto_mobile_programming/views/page_security.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:progetto_mobile_programming/views/screens/page_all_device.dart';
+import 'package:progetto_mobile_programming/views/screens/page_automation.dart';
+import 'package:progetto_mobile_programming/views/screens/page_home.dart';
+import 'package:progetto_mobile_programming/views/screens/page_security.dart';
 
 void main() {
   runApp(const ProviderScope(child: MainApp()));
@@ -14,9 +15,19 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Scaffold(
+      theme: ThemeData(
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        textTheme: const TextTheme(
+          displayMedium: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 24.0,
+          ),
+        ),
+      ),
+      home: const Scaffold(
         body: Navigation(),
       ),
     );

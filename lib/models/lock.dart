@@ -2,11 +2,11 @@ import 'package:progetto_mobile_programming/models/device.dart';
 
 class Lock extends Device {
   bool isActive;
-  Lock({required super.sensorName, required super.room, this.isActive = false});
+  Lock({required super.deviceName, required super.room, this.isActive = false});
 
   factory Lock.fromMap(Map<String, dynamic> map) {
     return Lock(
-      sensorName: map['sensorName'] as String,
+      deviceName: map['deviceName'] as String,
       room: map['room'] as String,
       isActive: map['isActive'] as bool,
     );
@@ -14,6 +14,6 @@ class Lock extends Device {
 
   @override
   Map<String, Object?> toMap() {
-    return {'sensorName': sensorName, 'room': room, 'isActive': isActive};
+    return {'deviceName': deviceName, 'room': room, 'isActive': isActive};
   }
 }

@@ -5,7 +5,7 @@ class Light extends Device {
   int lightTemperature;
 
   Light({
-    required super.sensorName,
+    required super.deviceName,
     required super.room,
     this.isActive = false,
     this.lightTemperature = 2700,
@@ -13,7 +13,7 @@ class Light extends Device {
 
   factory Light.fromMap(Map<String, dynamic> map) {
     return Light(
-      sensorName: map['sensorName'] as String,
+      deviceName: map['deviceName'] as String,
       room: map['room'] as String,
       isActive: map['isActive'] as bool,
       lightTemperature: map['lightTemperature'] as int,
@@ -23,7 +23,7 @@ class Light extends Device {
   @override
   Map<String, Object?> toMap() {
     return {
-      'sensorName': sensorName,
+      'deviceName': deviceName,
       'room': room,
       'isActive': isActive,
       'lightTemperature': lightTemperature,
