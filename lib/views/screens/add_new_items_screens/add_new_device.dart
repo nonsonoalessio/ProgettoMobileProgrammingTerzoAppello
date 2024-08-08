@@ -24,6 +24,7 @@ class _AddNewDevicePageState extends ConsumerState<AddNewDevicePage> {
   bool _isDeviceOn = true;
   String? _selectedRoom;
   DeviceStatus _deviceStatus = DeviceStatus.on;
+  double? _temperaturePicked;
 
   void _handleDeviceTypeChanged(DeviceType newType) {
     setState(() {
@@ -47,6 +48,18 @@ class _AddNewDevicePageState extends ConsumerState<AddNewDevicePage> {
     setState(() {
       _deviceStatus = status;
     });
+  }
+
+  void _handleTemperaturePicker(double value) {
+    setState(() {
+      _temperaturePicked = value;
+    });
+  }
+
+  bool _checkfields() {
+    return _deviceNameController.text.isNotEmpty && _selectedRoom != null
+        ? true
+        : false;
   }
 
   @override
@@ -99,42 +112,57 @@ class _AddNewDevicePageState extends ConsumerState<AddNewDevicePage> {
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: IconButton(
               onPressed: () {
-                // TODO: checkfields
-                DeviceType deviceType = _selectedDeviceType;
-                Device device;
-                if (deviceType == DeviceType.light) {
-                  device = Light(
-                    deviceName: _deviceNameController.text,
-                    room: _selectedRoom as String,
-                    isActive: _deviceStatus == DeviceStatus.on ? true : false,
-                    // lightTemperature:
-                  );
-                } else if (deviceType == DeviceType.alarm) {
-                  device = Alarm(
+                if (_checkfields()) {
+                  DeviceType deviceType = _selectedDeviceType;
+                  Device device;
+                  if (deviceType == DeviceType.light) {
+                    device = Light(
                       deviceName: _deviceNameController.text,
                       room: _selectedRoom as String,
-                      isActive:
-                          _deviceStatus == DeviceStatus.on ? true : false);
-                } else if (deviceType == DeviceType.lock) {
-                  device = Lock(
+                      isActive: _deviceStatus == DeviceStatus.on ? true : false,
+                      // lightTemperature:
+                    );
+                  } else if (deviceType == DeviceType.alarm) {
+                    device = Alarm(
+                        deviceName: _deviceNameController.text,
+                        room: _selectedRoom as String,
+                        isActive:
+                            _deviceStatus == DeviceStatus.on ? true : false);
+                  } else if (deviceType == DeviceType.lock) {
+                    device = Lock(
+                        deviceName: _deviceNameController.text,
+                        room: _selectedRoom as String,
+                        isActive:
+                            _deviceStatus == DeviceStatus.on ? true : false);
+                  } else {
+                    // deviceType == DeviceType.thermostat
+                    device = Thermostat(
                       deviceName: _deviceNameController.text,
                       room: _selectedRoom as String,
-                      isActive:
-                          _deviceStatus == DeviceStatus.on ? true : false);
+                      detectedTemp: 0.0,
+                      desiredTemp: 0.0,
+                    );
+                  }
+                  ref
+                      .read(deviceNotifierProvider.notifier)
+                      .db
+                      .insertDevice(device);
+                  Navigator.pop(context);
                 } else {
-                  // deviceType == DeviceType.thermostat
-                  device = Thermostat(
-                    deviceName: _deviceNameController.text,
-                    room: _selectedRoom as String,
-                    detectedTemp: 0.0,
-                    desiredTemp: 0.0,
-                  );
+                  String message;
+                  if (_deviceNameController.text.isEmpty &&
+                      _selectedRoom != null) {
+                    message = "Impossibile salvare un dispositivo senza nome!";
+                  } else if (_deviceNameController.text.isNotEmpty &&
+                      _selectedRoom == null) {
+                    message =
+                        'Impossibile salvare un dispositivo non assegnato a nessuna stanza!';
+                  } else {
+                    message = 'Assegna un nome e una stanza al dispositivo!';
+                  }
+                  ScaffoldMessenger.of(context)
+                      .showSnackBar(SnackBar(content: Text(message)));
                 }
-                ref
-                    .read(deviceNotifierProvider.notifier)
-                    .db
-                    .insertDevice(device);
-                Navigator.pop(context);
               },
               icon: Icon(Icons.save),
             ),
@@ -227,35 +255,40 @@ class _AddNewDevicePageState extends ConsumerState<AddNewDevicePage> {
 
   Widget _detailBuilder() {
     if (_selectedDeviceType == DeviceType.alarm) {
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      return Column(
         children: [
-          Text("L'allarme è inserito?"),
-          SwitchBuilderWithCallback(
-            valueChanged: _handleDeviceOnOff,
-            currentValue: _isDeviceOn,
+          DeviceStatusSelector(
+            onValueChanged: _handleDeviceStatus,
+            currentStatus: _deviceStatus,
+            deviceType: DeviceType.alarm,
           ),
         ],
       );
     } else if (_selectedDeviceType == DeviceType.thermostat) {
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      return Column(
         children: [
           FilledButton(
             child: Text("Temperatura desiderata"),
-            onPressed: () {},
-          )
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) => TemperaturePicker(
+                  onValueChanged: _handleTemperaturePicker,
+                ),
+              );
+            },
+          ),
+          Text("Temperatura scelta: $_temperaturePicked °C."),
         ],
       );
     } else if (_selectedDeviceType == DeviceType.lock) {
-      return Row(
+      return Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text("La serratura è chiusa?"),
-          SwitchBuilderWithCallback(
-            valueChanged: _handleDeviceOnOff,
-            currentValue: _isDeviceOn,
-          ),
+          DeviceStatusSelector(
+              onValueChanged: _handleDeviceStatus,
+              currentStatus: _deviceStatus,
+              deviceType: DeviceType.lock),
         ],
       );
     } else if (_selectedDeviceType == DeviceType.light) {
@@ -384,15 +417,6 @@ class _DeviceChooserState extends State<DeviceChooser> {
   }
 }
 
-class AlarmDetailsBuilder extends StatelessWidget {
-  const AlarmDetailsBuilder({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Text('Ciao ciao ciao ciao mareeee');
-  }
-}
-
 class SwitchBuilderWithCallback extends StatefulWidget {
   final ValueChanged<bool> valueChanged;
   final bool currentValue;
@@ -430,6 +454,7 @@ class _SwitchBuilderWithCallbackState extends State<SwitchBuilderWithCallback> {
 
 class ModalBottomSheetContent extends ConsumerStatefulWidget {
   final ValueChanged<String> valueChanged;
+
   const ModalBottomSheetContent({super.key, required this.valueChanged});
 
   @override
@@ -483,6 +508,65 @@ class _ModalBottomSheetContentState
           ),
         ),
       ],
+    );
+  }
+}
+
+class TemperaturePicker extends StatefulWidget {
+  final ValueChanged<double> onValueChanged;
+  const TemperaturePicker({super.key, required this.onValueChanged});
+
+  @override
+  State<TemperaturePicker> createState() => _TemperaturePickerState();
+}
+
+class _TemperaturePickerState extends State<TemperaturePicker> {
+  final TextEditingController _temperaturePicked = TextEditingController();
+  @override
+  Widget build(BuildContext context) {
+    double temp = 18;
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Dialog(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text("Temperatura desiderata:"),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                controller: _temperaturePicked,
+                decoration: InputDecoration(
+                  hintText: "$temp °C",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.all(8.0),
+              child: TextButton(
+                onPressed: () {
+                  setState(() {
+                    // TODO: controllo per immettere solo valori double
+                    temp = _temperaturePicked.text.isEmpty
+                        ? 18.0
+                        : _temperaturePicked as double;
+                  });
+                  widget.onValueChanged(temp);
+                  Navigator.pop(context);
+                },
+                child: Text('Salva'),
+              ),
+            )
+          ],
+        ),
+      ),
     );
   }
 }

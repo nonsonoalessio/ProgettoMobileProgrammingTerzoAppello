@@ -67,6 +67,32 @@ class ColorTemperatureSliderState extends State<ColorTemperatureSlider> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                children: [
+                  Icon(
+                    Icons.lightbulb,
+                    color: Color(0xFFFF3800),
+                  ),
+                  Text("Più calda"),
+                ],
+              ),
+              Column(
+                children: [
+                  Icon(
+                    Icons.lightbulb,
+                    color: Color(0xFFADD8E6),
+                  ),
+                  Text("Più fredda"),
+                ],
+              ),
+            ],
+          ),
+        ),
         Slider(
           value: _currentTemperature,
           min: 2000,
@@ -79,7 +105,7 @@ class ColorTemperatureSliderState extends State<ColorTemperatureSlider> {
           },
           activeColor: _getColorForTemperature(_currentTemperature),
         ),
-        Container(
+        /*Container(
           width: 300,
           height: 20,
           decoration: BoxDecoration(
@@ -94,7 +120,7 @@ class ColorTemperatureSliderState extends State<ColorTemperatureSlider> {
             ),
             borderRadius: BorderRadius.circular(10),
           ),
-        ),
+        ),*/
       ],
     );
   }
