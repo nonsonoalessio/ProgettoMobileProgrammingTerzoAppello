@@ -38,7 +38,8 @@ class ListOfChips extends StatelessWidget {
 }
 
 class ColorTemperatureSlider extends StatefulWidget {
-  const ColorTemperatureSlider({super.key});
+  final ValueChanged<double> onValueChanged;
+  const ColorTemperatureSlider({super.key, required this.onValueChanged});
 
   @override
   ColorTemperatureSliderState createState() => ColorTemperatureSliderState();
@@ -102,6 +103,7 @@ class ColorTemperatureSliderState extends State<ColorTemperatureSlider> {
             setState(() {
               _currentTemperature = value;
             });
+            widget.onValueChanged(value);
           },
           activeColor: _getColorForTemperature(_currentTemperature),
         ),

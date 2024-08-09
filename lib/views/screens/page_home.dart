@@ -1,10 +1,18 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:material_symbols_icons/symbols.dart';
+import 'package:progetto_mobile_programming/models/alarm.dart';
 import 'package:progetto_mobile_programming/models/device.dart';
+import 'package:progetto_mobile_programming/models/light.dart';
+import 'package:progetto_mobile_programming/models/lock.dart';
+import 'package:progetto_mobile_programming/models/thermostat.dart';
 import 'package:progetto_mobile_programming/providers/devices_provider.dart';
+import 'package:progetto_mobile_programming/services/database_helper.dart';
 import 'package:progetto_mobile_programming/views/screens/add_new_items_screens/add_new_device.dart';
 
 class Homepage extends ConsumerWidget {
@@ -28,12 +36,10 @@ class Homepage extends ConsumerWidget {
         actions: [
           IconButton(onPressed: () {}, icon: Icon(Icons.notifications))
         ],
-        title: Text(
-          'Domus Plus',
-          style: GoogleFonts.greyQo(
-            fontSize: 36.0,
-            fontWeight: FontWeight.bold,
-            color: Colors.orange[600],
+        title: SizedBox(
+          child: Image.asset(
+            scale: 30.0,
+            'assets/identity/typography.png',
           ),
         ),
       ),
@@ -67,7 +73,7 @@ class Homepage extends ConsumerWidget {
                 trailing: [
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Icon(Icons.person),
+                    child: AvatarForDebugMenu(),
                   ),
                 ],
                 hintText: 'Cerca un sensore...',
@@ -94,6 +100,7 @@ class ListGenerator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    late Icon deviceIcon;
     return Padding(
       padding: const EdgeInsets.only(top: 8.0, left: 8.0),
       child: Column(
@@ -117,18 +124,32 @@ class ListGenerator extends StatelessWidget {
               shrinkWrap: true,
               physics: NeverScrollableScrollPhysics(),
               children: List.generate(devices.length, (index) {
-                return Expanded(
-                  child: Container(
-                    margin: EdgeInsets.symmetric(
-                      vertical: 8.0,
-                    ),
-                    color: Colors.blue[100],
-                    child: Center(
-                      child: Text(
-                        'Item $index',
-                        style: TextStyle(color: Colors.white, fontSize: 20),
+                Icon deviceIcon;
+                if (devices[index] is Lock) {
+                  deviceIcon = Icon(Icons.lock);
+                } else if (devices[index] is Alarm) {
+                  deviceIcon = Icon(Icons.doorbell);
+                } else if (devices[index] is Thermostat) {
+                  deviceIcon = Icon(Icons.thermostat);
+                } else if (devices[index] is Light) {
+                  deviceIcon = Icon(Icons.lightbulb);
+                } else {
+                  deviceIcon = Icon(Icons.camera);
+                }
+                return SizedBox(
+                  height: 100,
+                  width: 100,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        devices[index].deviceName,
                       ),
-                    ),
+                      IconButton(
+                        onPressed: () {},
+                        icon: deviceIcon,
+                      ),
+                    ],
                   ),
                 );
               }),
@@ -137,6 +158,56 @@ class ListGenerator extends StatelessWidget {
           Divider(),
         ],
       ),
+    );
+  }
+}
+
+class AvatarForDebugMenu extends StatefulWidget {
+  const AvatarForDebugMenu({super.key});
+
+  @override
+  State<AvatarForDebugMenu> createState() => _AvatarForDebugMenuState();
+}
+
+class _AvatarForDebugMenuState extends State<AvatarForDebugMenu> {
+  int _clicks = 0;
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      child: CircleAvatar(
+        backgroundImage: AssetImage('assets/images/carmine.jpg'),
+      ),
+      onLongPress: () {
+        setState(() {
+          ++_clicks;
+        });
+        if (_clicks == 2) {
+          showDialog(
+              context: context,
+              builder: (context) => Dialog(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Menù debug",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 24.0),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              DatabaseHelper.instance.destroyDb();
+                            },
+                            child: Text("Elimina db"),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ));
+          _clicks = 0;
+        }
+      },
     );
   }
 }

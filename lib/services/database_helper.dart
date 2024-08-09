@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:progetto_mobile_programming/models/alarm.dart';
 import 'package:progetto_mobile_programming/models/device.dart';
 import 'package:progetto_mobile_programming/models/light.dart';
@@ -54,7 +56,7 @@ class DatabaseHelper {
 
         await db.execute("""
           INSERT INTO alarms (deviceName, room, isActive) 
-          VALUES ('Device1', 'LivingRoom', 1)
+          VALUES ('Allarme Ingresso', 'Salotto', 1)
           """);
       },
       version: 1,
@@ -82,5 +84,12 @@ class DatabaseHelper {
       device.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
+  }
+
+  Future<void> destroyDb() async {
+    var databasesPath = await getDatabasesPath();
+    String dbPath = join(databasesPath, 'mio_database.db');
+    await deleteDatabase(dbPath);
+    exit(0);
   }
 }

@@ -25,6 +25,7 @@ class _AddNewDevicePageState extends ConsumerState<AddNewDevicePage> {
   String? _selectedRoom;
   DeviceStatus _deviceStatus = DeviceStatus.on;
   double? _temperaturePicked;
+  double? _colorTemperature;
 
   void _handleDeviceTypeChanged(DeviceType newType) {
     setState(() {
@@ -53,6 +54,12 @@ class _AddNewDevicePageState extends ConsumerState<AddNewDevicePage> {
   void _handleTemperaturePicker(double value) {
     setState(() {
       _temperaturePicked = value;
+    });
+  }
+
+  void _handleColorTemperature(double value) {
+    setState(() {
+      _colorTemperature = value;
     });
   }
 
@@ -304,7 +311,9 @@ class _AddNewDevicePageState extends ConsumerState<AddNewDevicePage> {
           ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: ColorTemperatureSlider(),
+            child: ColorTemperatureSlider(
+              onValueChanged: _handleColorTemperature,
+            ),
           ),
         ],
       );
