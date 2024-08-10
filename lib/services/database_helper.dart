@@ -137,6 +137,22 @@ class DatabaseHelper {
     );
   }
 
+  Future<void> removeDevice(Device device) async {
+    String tableName;
+    if (device is Alarm) {
+      tableName = 'alarms';
+    } else if (device is Lock) {
+      tableName = 'locks';
+    } else if (device is Light) {
+      tableName = 'lights';
+    } else if (device is Thermostat) {
+      tableName = 'thermostats';
+    } else {
+      // ramo else fittizio per evitare errori di compilazione; nessun dispositivo verrà mai aggiunto e non serve creare la tabella
+      tableName = 'devices';
+    }
+  }
+
   Future<void> destroyDb() async {
     var databasesPath = await getDatabasesPath();
     String dbPath = join(databasesPath, 'mio_database.db');

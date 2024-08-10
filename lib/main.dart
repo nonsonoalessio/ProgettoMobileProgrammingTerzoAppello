@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:progetto_mobile_programming/views/screens/page_all_device.dart';
 import 'package:progetto_mobile_programming/views/screens/page_automation.dart';
 import 'package:progetto_mobile_programming/views/screens/page_home.dart';

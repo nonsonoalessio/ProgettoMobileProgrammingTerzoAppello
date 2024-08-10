@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:progetto_mobile_programming/models/device.dart';
 
 class ListOfChips extends StatelessWidget {
   final Future<List<String>> future;
@@ -124,6 +125,50 @@ class ColorTemperatureSliderState extends State<ColorTemperatureSlider> {
           ),
         ),*/
       ],
+    );
+  }
+}
+
+class DeviceCard extends StatefulWidget {
+  final Device device;
+  const DeviceCard({super.key, required this.device});
+
+  @override
+  State<DeviceCard> createState() => _DeviceCardState();
+}
+
+class _DeviceCardState extends State<DeviceCard> {
+  @override
+  Widget build(BuildContext context) {
+    Device _device = widget.device;
+    return Container();
+  }
+}
+
+class GraphPage extends StatefulWidget {
+  const GraphPage({super.key});
+
+  @override
+  State<GraphPage> createState() => _GraphPageState();
+}
+
+class _GraphPageState extends State<GraphPage> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios_new),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ),
+      body: SafeArea(
+        child: Center(
+          child: Text("Implementa il grafico al posto di questo center"),
+        ),
+      ),
     );
   }
 }

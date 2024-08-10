@@ -1,11 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:material_symbols_icons/symbols.dart';
 import 'package:progetto_mobile_programming/models/alarm.dart';
 import 'package:progetto_mobile_programming/models/device.dart';
 import 'package:progetto_mobile_programming/models/light.dart';
@@ -13,6 +9,7 @@ import 'package:progetto_mobile_programming/models/lock.dart';
 import 'package:progetto_mobile_programming/models/thermostat.dart';
 import 'package:progetto_mobile_programming/providers/devices_provider.dart';
 import 'package:progetto_mobile_programming/services/database_helper.dart';
+import 'package:progetto_mobile_programming/views/minis.dart';
 import 'package:progetto_mobile_programming/views/screens/add_new_items_screens/add_new_device.dart';
 
 class Homepage extends ConsumerWidget {
@@ -201,6 +198,15 @@ class _AvatarForDebugMenuState extends State<AvatarForDebugMenu> {
                             },
                             child: Text("Elimina db"),
                           ),
+                          Divider(),
+                          TextButton(
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => GraphPage()));
+                              },
+                              child: Text("Componente dummy dei grafici"))
                         ],
                       ),
                     ),
