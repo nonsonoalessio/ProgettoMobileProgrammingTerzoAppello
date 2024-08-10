@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:progetto_mobile_programming/models/device.dart';
+import 'package:progetto_mobile_programming/providers/devices_provider.dart';
 
 class ListOfChips extends StatelessWidget {
   final Future<List<String>> future;
@@ -129,22 +131,6 @@ class ColorTemperatureSliderState extends State<ColorTemperatureSlider> {
   }
 }
 
-class DeviceCard extends StatefulWidget {
-  final Device device;
-  const DeviceCard({super.key, required this.device});
-
-  @override
-  State<DeviceCard> createState() => _DeviceCardState();
-}
-
-class _DeviceCardState extends State<DeviceCard> {
-  @override
-  Widget build(BuildContext context) {
-    Device _device = widget.device;
-    return Container();
-  }
-}
-
 class GraphPage extends StatefulWidget {
   const GraphPage({super.key});
 
@@ -170,5 +156,32 @@ class _GraphPageState extends State<GraphPage> {
         ),
       ),
     );
+  }
+}
+
+class ListOfDevice extends ConsumerWidget {
+  final Function predicate;
+  const ListOfDevice({super.key, required this.predicate});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(deviceNotifierProvider);
+    return const Placeholder();
+  }
+}
+
+class DeviceCard extends StatefulWidget {
+  final Device device;
+  const DeviceCard({super.key, required this.device});
+
+  @override
+  State<DeviceCard> createState() => _DeviceCardState();
+}
+
+class _DeviceCardState extends State<DeviceCard> {
+  @override
+  Widget build(BuildContext context) {
+    Device _device = widget.device;
+    return Container();
   }
 }
