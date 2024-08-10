@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:progetto_mobile_programming/models/device.dart';
 import 'package:progetto_mobile_programming/providers/devices_provider.dart';
@@ -139,6 +140,23 @@ class GraphPage extends StatefulWidget {
 }
 
 class _GraphPageState extends State<GraphPage> {
+  // Dati casuali riguardo il consumo durante 24 ore di un device (intervallo di 2 ore)
+  final List<FlSpot> spots = [
+    FlSpot(0, 1.2),
+    FlSpot(2, 2.4),
+    FlSpot(4, 1.8),
+    FlSpot(6, 3.0),
+    FlSpot(8, 2.6),
+    FlSpot(10, 3.5),
+    FlSpot(12, 2.0),
+    FlSpot(14, 2.8),
+    FlSpot(16, 3.6),
+    FlSpot(18, 4.0),
+    FlSpot(20, 3.3),
+    FlSpot(22, 2.7),
+    FlSpot(24, 2.5),
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -149,10 +167,104 @@ class _GraphPageState extends State<GraphPage> {
             Navigator.pop(context);
           },
         ),
+        title: Text("Overview consumo giornaliero elettricità in kWh"),
       ),
       body: SafeArea(
-        child: Center(
-          child: Text("Implementa il grafico al posto di questo center"),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: LineChart(
+            LineChartData(
+              gridData: FlGridData(
+                show: true,
+                drawVerticalLine: true,
+                horizontalInterval: 1,
+                verticalInterval: 2,
+                getDrawingHorizontalLine: (value) {
+                  return FlLine(
+                    // Ritorna un oggetto FlLine che rappresenta una linea orizzontale
+                    color: Colors.grey,
+                    strokeWidth: 0.5,
+                  );
+                },
+                getDrawingVerticalLine: (value) {
+                  return FlLine(
+                    // Ritorna un oggetto FlLine che rappresenta una linea verticale
+                    color: Colors.grey,
+                    strokeWidth: 0.5,
+                  );
+                },
+              ),
+              titlesData: FlTitlesData(
+                // Etichetta degli assi del grafico
+                leftTitles: AxisTitles(
+                  // Ordinate
+                  sideTitles: SideTitles(
+                    showTitles: true,
+                    interval: 1,
+                    getTitlesWidget: (value, meta) {
+                      // Costruisce la stringa formattata da un value + kWh
+                      return Text(
+                        '${value.toStringAsFixed(1)} kWh',
+                        style: TextStyle(
+                          fontSize:
+                              10, // Serve per gestire la grandezza delle label
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                bottomTitles: AxisTitles(
+                  // Ascisse
+                  sideTitles: SideTitles(
+                    showTitles: true,
+                    interval: 2,
+                    getTitlesWidget: (value, meta) {
+                      return Text(
+                        '${value.toInt()}:00',
+                        style: TextStyle(
+                          fontSize:
+                              10, // Serve per gestire la grandezza delle label
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                topTitles: AxisTitles(
+                  sideTitles: SideTitles(
+                      showTitles:
+                          false), // Non mostrare top labels                )
+                ),
+                rightTitles: AxisTitles(
+                  sideTitles: SideTitles(
+                      showTitles: false), // Non mostrare labels a destra
+                ),
+              ),
+              borderData: FlBorderData(
+                show: true,
+                border: Border.all(color: Colors.black, width: 1),
+              ),
+              minX: 0,
+              maxX: 24,
+              minY: 0,
+              maxY: 5,
+              lineBarsData: [
+                LineChartBarData(
+                  spots: spots,
+                  isCurved: true,
+                  color: Colors.red,
+                  barWidth: 4,
+                  isStrokeCapRound: true,
+                  dotData: FlDotData(
+                    show: true,
+                  ),
+                  belowBarData: BarAreaData(
+                    show: true,
+                    color: Colors.orange.withOpacity(0.3),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
