@@ -20,10 +20,16 @@ class DatabaseHelper {
       join(await getDatabasesPath(), 'mio_database.db'),
       onCreate: (db, version) async {
         await db.execute("""
+          CREATE TABLE IF NOT EXISTS rooms (
+              nameRoom text PRIMARY KEY
+          )
+          """);
+        await db.execute("""
           CREATE TABLE IF NOT EXISTS alarms (
               deviceName TEXT NOT NULL,
               room TEXT NOT NULL,
               isActive BOOLEAN NOT NULL,
+              FOREIGN KEY(room) REFERENCES rooms(nameRoom),
               PRIMARY KEY (deviceName, room)
           )
           """);
@@ -32,6 +38,7 @@ class DatabaseHelper {
               deviceName TEXT NOT NULL,
               room TEXT NOT NULL,
               isActive BOOLEAN NOT NULL,
+              FOREIGN KEY(room) REFERENCES rooms(nameRoom),
               PRIMARY KEY (deviceName, room)
           )
           """);
@@ -41,6 +48,7 @@ class DatabaseHelper {
               room TEXT NOT NULL,
               isActive BOOLEAN NOT NULL,
               lightTemperature INTEGER NOT NULL,
+              FOREIGN KEY(room) REFERENCES rooms(nameRoom),
               PRIMARY KEY (deviceName, room)
           )
           """);
@@ -50,13 +58,56 @@ class DatabaseHelper {
               room TEXT NOT NULL,
               currentTemp REAL NOT NULL,
               desiredTemp REAL NOT NULL,
+              FOREIGN KEY(room) REFERENCES rooms(nameRoom),
               PRIMARY KEY (deviceName, room)
           )
           """);
-
+        await db.execute("""
+          CREATE TABLE IF NOT EXISTS automation (
+            idAutomation INTEGER NOT NULL,
+            name TEXT NOT NULL,
+            startTime TIME NOT NULL, 
+            endTime TIME NOT NULL,
+            isActive BOOLEAN DEFAULT FALSE
+          )
+          """);
+        await db.execute("""
+          INSERT INTO rooms (nameRoom) 
+          VALUES
+          ('Cucina'),
+          ('Salotto'),
+          ('Cameretta')
+          """);
         await db.execute("""
           INSERT INTO alarms (deviceName, room, isActive) 
-          VALUES ('Allarme Ingresso', 'Salotto', 1)
+          VALUES
+          ('Allarme Ingresso', 'Salotto', 1),
+          ('Allarme Barriera', 'Cameretta', 0)
+          """);
+        await db.execute("""
+          INSERT INTO locks (deviceName, room, isActive) 
+          VALUES 
+          ('Lock1', 'Salotto', 1),
+          ('Lock2', 'Cucina', 0)
+          """);
+        await db.execute("""
+          INSERT INTO lights (deviceName, room, isActive, lightTemperature)
+          VALUES
+          ('luce di simone', 'Cameretta', 1, 26),
+          ('luce di mario', 'Caemretta', 0, 4000)
+          """);
+        await db.execute("""
+          INSERT INTO thermostats (deviceName, room, currentTemp, desiredTemp)
+          VALUES
+          ('Thermo1', 'Salotto', 20.0, 22.0),
+          ('Thermo2', 'Cucina', 18.0, 20.0)
+          """);
+        //TODO MANCA RIFERIMENTO AL DISPOSITIVO IN QUESTIONE, MODIFICARE TABELLA
+        await db.execute("""
+          INSERT INTO automation (idAutomation, name, startTime, endTime, isActive)
+           VALUES
+            (1, 'Morning Routine', '06:00:00', '08:00:00', 1),
+            (2, 'Evening Routine', '18:00:00', '22:00:00', 0)
           """);
       },
       version: 1,
