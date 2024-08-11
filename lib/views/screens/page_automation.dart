@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
+import 'package:progetto_mobile_programming/views/screens/add_new_items_screens/add_new_automation.dart';
 
 class AutomationPage extends StatelessWidget {
   const AutomationPage({super.key});
@@ -8,7 +9,6 @@ class AutomationPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
       body: SafeArea(
         child: Column(
           children: [
@@ -20,7 +20,10 @@ class AutomationPage extends StatelessWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {},
+        onPressed: () {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => AddNewAutomationPage()));
+        },
         label: Text('Aggiungi Automazione'),
         icon: Icon(Icons.add),
       ),

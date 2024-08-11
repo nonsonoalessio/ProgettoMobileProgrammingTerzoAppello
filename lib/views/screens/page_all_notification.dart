@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:progetto_mobile_programming/models/device_notification.dart';
+import 'package:progetto_mobile_programming/models/functionalities/device_notification.dart';
 
 class NotificationPage extends StatefulWidget {
   const NotificationPage({super.key});

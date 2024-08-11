@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:progetto_mobile_programming/models/device.dart';
+import 'package:progetto_mobile_programming/models/objects/device.dart';
 import 'package:progetto_mobile_programming/providers/devices_provider.dart';
 
 class ListOfChips extends StatelessWidget {

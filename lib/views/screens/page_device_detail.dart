@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../models/device.dart';
-import '../../models/alarm.dart';
-import '../../models/light.dart';
-import '../../models/lock.dart';
-import '../../models/thermostat.dart';
+import '../../models/objects/device.dart';
+import '../../models/objects/alarm.dart';
+import '../../models/objects/light.dart';
+import '../../models/objects/lock.dart';
+import '../../models/objects/thermostat.dart';
 
 // Classe base per le pagine dei singoli devices
 // Questa classe include elementi UI comuni a tutti

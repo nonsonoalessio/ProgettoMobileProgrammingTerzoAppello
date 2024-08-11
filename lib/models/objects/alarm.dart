@@ -1,4 +1,4 @@
-import 'package:progetto_mobile_programming/models/device.dart';
+import 'package:progetto_mobile_programming/models/objects/device.dart';
 
 class Alarm extends Device {
   bool isActive;
