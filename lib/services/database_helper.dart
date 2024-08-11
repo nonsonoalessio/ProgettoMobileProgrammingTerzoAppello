@@ -25,50 +25,56 @@ class DatabaseHelper {
           )
           """);
         await db.execute("""
-          CREATE TABLE IF NOT EXISTS alarms (
+          CREATE TABLE IF NOT EXISTS device (
+              idDevice INTEGER NOT NULL,
+              nameRoom TEXT NOT NULL,
               deviceName TEXT NOT NULL,
-              room TEXT NOT NULL,
-              isActive BOOLEAN NOT NULL,
-              FOREIGN KEY(room) REFERENCES rooms(nameRoom),
-              PRIMARY KEY (deviceName, room)
+              type TEXT NOT NULL,
+              isActive Boolean NOT NULL,
+              FOREIGN KEY (nameRoom) REFERENCES rooms(nameRoom),
+              PRIMARY KEY(idDevice, nameRoom)
+          )
+          """);
+        await db.execute("""
+          CREATE TABLE IF NOT EXISTS alarms (
+              idAlarm INTEGER PRIMARY KEY,
+              FOREIGN KEY (idAlarm) REFERENCES device(idDevice)
           )
           """);
         await db.execute("""
           CREATE TABLE IF NOT EXISTS locks (
-              deviceName TEXT NOT NULL,
-              room TEXT NOT NULL,
-              isActive BOOLEAN NOT NULL,
-              FOREIGN KEY(room) REFERENCES rooms(nameRoom),
-              PRIMARY KEY (deviceName, room)
+              idLocks INTEGER PRIMARY KEY,
+              FOREIGN KEY (idLocks) REFERENCES device(idDevice)
           )
           """);
         await db.execute("""
           CREATE TABLE IF NOT EXISTS lights (
-              deviceName TEXT NOT NULL,
-              room TEXT NOT NULL,
-              isActive BOOLEAN NOT NULL,
+              idLights INTEGER PRIMARY KEY,
               lightTemperature INTEGER NOT NULL,
-              FOREIGN KEY(room) REFERENCES rooms(nameRoom),
-              PRIMARY KEY (deviceName, room)
+              FOREIGN KEY (idLights) REFERENCES device(idDevice)
           )
           """);
         await db.execute("""
           CREATE TABLE IF NOT EXISTS thermostats (
-              deviceName TEXT NOT NULL,
-              room TEXT NOT NULL,
+              idThermostats INTEGER PRIMARY KEY,
               currentTemp REAL NOT NULL,
               desiredTemp REAL NOT NULL,
-              FOREIGN KEY(room) REFERENCES rooms(nameRoom),
-              PRIMARY KEY (deviceName, room)
+              FOREIGN KEY (idThermostats) REFERENCES device(idDevice)
           )
           """);
         await db.execute("""
           CREATE TABLE IF NOT EXISTS automation (
-            idAutomation INTEGER NOT NULL,
+            name TEXT PRIMARY KEY,
+            startTime TIME NOT NULL
+          )
+          """);
+        await db.execute("""
+          CREATE TABLE IF NOT EXISTS gestioneAutomazione (
+            idDevice INTEGER NOT NULL,
             name TEXT NOT NULL,
-            startTime TIME NOT NULL, 
-            endTime TIME NOT NULL,
-            isActive BOOLEAN DEFAULT FALSE
+            FOREIGN KEY (idDevice) REFERENCES device(idDevice),
+            FOREIGN KEY (name) REFERENCES automation(name),
+            PRIMARY KEY(idDevice, name)
           )
           """);
         await db.execute("""
@@ -79,35 +85,52 @@ class DatabaseHelper {
           ('Cameretta')
           """);
         await db.execute("""
-          INSERT INTO alarms (deviceName, room, isActive) 
+          INSERT INTO device (idDevice, nameRoom, deviceName, type, isActive) 
           VALUES
-          ('Allarme Ingresso', 'Salotto', 1),
-          ('Allarme Barriera', 'Cameretta', 0)
+          (1, 'Salotto', 'Allarme ingresso', 'allarme', True),
+          (3, 'Cameretta', 'Allarme barriera', 'allarme', False),
+          (2, 'Salotto', 'Lock1', 'locks', True),
+          (4, 'Cucina', 'Lock2','locks', False),
+          (5, 'Cameretta', 'luce di Simnone', 'lights', True),
+          (7, 'Cameretta', 'luce di Mario', 'lights', False),
+          (6, 'Salotto', 'Thermo1', 'thermostats', True),
+          (8, 'Cucina', 'Thermo2', 'thermostats', False)
           """);
         await db.execute("""
-          INSERT INTO locks (deviceName, room, isActive) 
+          INSERT INTO alarms (idAlarm) 
+          VALUES
+          (1),
+          (3)
+          """);
+        await db.execute("""
+          INSERT INTO locks (idLocks) 
           VALUES 
-          ('Lock1', 'Salotto', 1),
-          ('Lock2', 'Cucina', 0)
+          (2),
+          (4)
           """);
         await db.execute("""
-          INSERT INTO lights (deviceName, room, isActive, lightTemperature)
+          INSERT INTO lights (idLights, lightTemperature)
           VALUES
-          ('luce di simone', 'Cameretta', 1, 26),
-          ('luce di mario', 'Caemretta', 0, 4000)
+          (5, 27.0),
+          (7, 30.5)
           """);
         await db.execute("""
-          INSERT INTO thermostats (deviceName, room, currentTemp, desiredTemp)
+          INSERT INTO thermostats (idThermostats, currentTempo, desiredTemp)
           VALUES
-          ('Thermo1', 'Salotto', 20.0, 22.0),
-          ('Thermo2', 'Cucina', 18.0, 20.0)
+          (6, 20.0, 22.0),
+          (8, 18.0, 20.0)
           """);
-        //TODO MANCA RIFERIMENTO AL DISPOSITIVO IN QUESTIONE, MODIFICARE TABELLA
         await db.execute("""
-          INSERT INTO automation (idAutomation, name, startTime, endTime, isActive)
+          INSERT INTO automation (name, startTime)
            VALUES
-            (1, 'Morning Routine', '06:00:00', '08:00:00', 1),
-            (2, 'Evening Routine', '18:00:00', '22:00:00', 0)
+            ('Automazione mattutina', '06:00:00'),
+            ('Automazione serale', '18:00:00')
+          """);
+        await db.execute("""
+          INSERT INTO gestioneAutomazione (idDevice, name)
+           VALUES
+            (6, 'Automazione mattutina'),
+            (8, 'Automazione serale')
           """);
       },
       version: 1,
