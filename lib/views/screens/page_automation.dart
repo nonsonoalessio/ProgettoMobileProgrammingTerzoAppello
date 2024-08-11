@@ -9,14 +9,39 @@ class AutomationPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      
       body: SafeArea(
-        child: Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Text('Le tue automazioni'),
-            ),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header
+              Text(
+                'Nome Automazione',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 4),
+              Text(
+                'Descrizione di cosa fa l\'automazione',
+                style: TextStyle(
+                  fontSize: 14,
+                ),
+              ),
+              SizedBox(height: 8),
+              Text(
+                'Quando: condizione scatenante',
+                style: TextStyle(
+                  fontSize: 14,
+                ),
+              ),
+              Divider(),
+              // Spazio vuoto per aggiungere altri elementi
+            ],
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(

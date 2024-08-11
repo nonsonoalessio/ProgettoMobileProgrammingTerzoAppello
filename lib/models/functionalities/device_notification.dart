@@ -7,12 +7,16 @@ class DeviceNotification {
   Device device;
   NotificationType type;
   int deliveryTime;
+  bool isRead;
+  String description;
 
   DeviceNotification({
     required this.title,
     required this.device,
     required this.type,
     required this.deliveryTime,
+    this.isRead = false,
+    this.description = "",
   });
 
   /*
