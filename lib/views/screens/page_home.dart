@@ -11,6 +11,8 @@ import 'package:progetto_mobile_programming/providers/devices_provider.dart';
 import 'package:progetto_mobile_programming/services/database_helper.dart';
 import 'package:progetto_mobile_programming/views/minis.dart';
 import 'package:progetto_mobile_programming/views/screens/add_new_items_screens/add_new_device.dart';
+import 'package:progetto_mobile_programming/views/screens/page_all_notification.dart';
+import 'package:progetto_mobile_programming/views/screens/page_device_detail.dart';
 
 class Homepage extends ConsumerWidget {
   const Homepage({super.key});
@@ -31,7 +33,14 @@ class Homepage extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         actions: [
-          IconButton(onPressed: () {}, icon: Icon(Icons.notifications))
+          IconButton(
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => NotificationPage()));
+              },
+              icon: Icon(Icons.notifications))
         ],
         title: SizedBox(
           child: Image.asset(
@@ -133,20 +142,29 @@ class ListGenerator extends StatelessWidget {
                 } else {
                   deviceIcon = Icon(Icons.camera);
                 }
-                return SizedBox(
-                  height: 100,
-                  width: 100,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        devices[index].deviceName,
-                      ),
-                      IconButton(
-                        onPressed: () {},
-                        icon: deviceIcon,
-                      ),
-                    ],
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                DeviceDetailPage(device: devices[index])));
+                  },
+                  child: SizedBox(
+                    height: 100,
+                    width: 100,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          devices[index].deviceName,
+                        ),
+                        IconButton(
+                          onPressed: () {},
+                          icon: deviceIcon,
+                        ),
+                      ],
+                    ),
                   ),
                 );
               }),
