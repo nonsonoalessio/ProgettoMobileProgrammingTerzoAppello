@@ -19,6 +19,7 @@ class DatabaseHelper {
   List<Device> devices = [];
   //  List<Automation> automations = [];
   //  List<Notification> notifications = [];
+  int lastIndexForId = 0;
 
   Future<Database> _initDatabase() async {
     return openDatabase(
@@ -185,6 +186,12 @@ TODO: Future<void> fetchNotifications() async {
   notifications = List.generate(mapsOfNotifications.length, (i){
     return Notification(...);
   })
+}
+*/
+
+/*
+TODO: Future<void> fetchIndex() async {
+  // lastIndexForId = ??
 }
 */
 
