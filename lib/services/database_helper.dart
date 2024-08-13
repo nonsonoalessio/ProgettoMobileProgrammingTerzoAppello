@@ -21,113 +21,143 @@ class DatabaseHelper {
       onCreate: (db, version) async {
         await db.execute("""
           CREATE TABLE IF NOT EXISTS rooms (
-              nameRoom text PRIMARY KEY
+              room TEXT PRIMARY KEY
           )
           """);
+
         await db.execute("""
           CREATE TABLE IF NOT EXISTS device (
-              idDevice INTEGER NOT NULL,
+              id INTEGER PRIMARY KEY ,
               nameRoom TEXT NOT NULL,
               deviceName TEXT NOT NULL,
               type TEXT NOT NULL,
-              isActive Boolean NOT NULL,
-              FOREIGN KEY (nameRoom) REFERENCES rooms(nameRoom),
-              PRIMARY KEY(idDevice, nameRoom)
+              FOREIGN KEY (room) REFERENCES rooms(room)
+          )
+          """);
+        await db.execute("""
+          CREATE TABLE IF NOT EXISTS camera (
+              id INTEGER PRIMARY KEY,
+              video TEXT NOT NULL,
+              FOREIGN KEY (id) REFERENCES device(id)
           )
           """);
         await db.execute("""
           CREATE TABLE IF NOT EXISTS alarms (
-              idAlarm INTEGER PRIMARY KEY,
-              FOREIGN KEY (idAlarm) REFERENCES device(idDevice)
+              id INTEGER PRIMARY KEY,
+              isActive BOOLEAN,
+              FOREIGN KEY (id) REFERENCES device(id)
           )
           """);
+
         await db.execute("""
           CREATE TABLE IF NOT EXISTS locks (
-              idLocks INTEGER PRIMARY KEY,
-              FOREIGN KEY (idLocks) REFERENCES device(idDevice)
+              id INTEGER PRIMARY KEY,
+              isActive BOOLEAN,
+              FOREIGN KEY (id) REFERENCES device(id)
           )
           """);
+
         await db.execute("""
           CREATE TABLE IF NOT EXISTS lights (
-              idLights INTEGER PRIMARY KEY,
+              id INTEGER PRIMARY KEY,
               lightTemperature INTEGER NOT NULL,
-              FOREIGN KEY (idLights) REFERENCES device(idDevice)
+              isActive BOOLEAN,
+              FOREIGN KEY (id) REFERENCES device(id)
           )
           """);
+
         await db.execute("""
           CREATE TABLE IF NOT EXISTS thermostats (
-              idThermostats INTEGER PRIMARY KEY,
+              id INTEGER PRIMARY KEY,
               currentTemp REAL NOT NULL,
               desiredTemp REAL NOT NULL,
-              FOREIGN KEY (idThermostats) REFERENCES device(idDevice)
+              FOREIGN KEY (id) REFERENCES device(id)
           )
           """);
+
         await db.execute("""
           CREATE TABLE IF NOT EXISTS automation (
-            name TEXT PRIMARY KEY,
-            startTime TIME NOT NULL
+              name TEXT PRIMARY KEY,
+              startTime TIME NOT NULL
           )
           """);
+
         await db.execute("""
           CREATE TABLE IF NOT EXISTS gestioneAutomazione (
-            idDevice INTEGER NOT NULL,
-            name TEXT NOT NULL,
-            FOREIGN KEY (idDevice) REFERENCES device(idDevice),
-            FOREIGN KEY (name) REFERENCES automation(name),
-            PRIMARY KEY(idDevice, name)
+              id INTEGER NOT NULL,
+              name TEXT NOT NULL,
+              FOREIGN KEY (id) REFERENCES device(id),
+              FOREIGN KEY (name) REFERENCES automation(name),
+              PRIMARY KEY(id, name)
           )
           """);
+
+        // Insert initial data
         await db.execute("""
-          INSERT INTO rooms (nameRoom) 
+          INSERT INTO rooms (room) 
           VALUES
           ('Cucina'),
           ('Salotto'),
           ('Cameretta')
           """);
+
         await db.execute("""
-          INSERT INTO device (idDevice, nameRoom, deviceName, type, isActive) 
+          INSERT INTO device (id, room, deviceName, type) 
           VALUES
-          (1, 'Salotto', 'Allarme ingresso', 'allarme', True),
-          (3, 'Cameretta', 'Allarme barriera', 'allarme', False),
-          (2, 'Salotto', 'Lock1', 'locks', True),
-          (4, 'Cucina', 'Lock2','locks', False),
-          (5, 'Cameretta', 'luce di Simnone', 'lights', True),
-          (7, 'Cameretta', 'luce di Mario', 'lights', False),
-          (6, 'Salotto', 'Thermo1', 'thermostats', True),
-          (8, 'Cucina', 'Thermo2', 'thermostats', False)
+          (1, 'Salotto', 'Allarme ingresso', 'allarme'),
+          (3, 'Cameretta', 'Allarme barriera', 'allarme'),
+          (2, 'Salotto', 'Lock1', 'locks'),
+          (4, 'Cucina', 'Lock2', 'locks'),
+          (5, 'Cameretta', 'Luce di Simone', 'lights'),
+          (7, 'Cameretta', 'Luce di Mario', 'lights'),
+          (6, 'Salotto', 'Thermo1', 'thermostats'),
+          (8, 'Cucina', 'Thermo2', 'thermostats'),
+          (9, 'Salotto', 'Camera1', 'camera'),
+          (10, 'Cameretta', 'Camera2', 'camera')
           """);
         await db.execute("""
-          INSERT INTO alarms (idAlarm) 
+          INSERT INTO camera (id,video)
           VALUES
-          (1),
-          (3)
+          (9, 'linkvideo1'),
+          (10, 'linkvideo2')
           """);
         await db.execute("""
-          INSERT INTO locks (idLocks) 
+          INSERT INTO alarms (id, isActive) 
+          VALUES
+          (1, True),
+          (3, False)
+          """);
+
+        await db.execute("""
+          INSERT INTO locks (id, isActive) 
           VALUES 
-          (2),
-          (4)
+          (2, True),
+          (4, False)
           """);
+
         await db.execute("""
-          INSERT INTO lights (idLights, lightTemperature)
+          INSERT INTO lights (id, lightTemperature, isActive)
           VALUES
-          (5, 27.0),
-          (7, 30.5)
+          (5, 27, True),
+          (7, 30, False)
           """);
+
         await db.execute("""
-          INSERT INTO thermostats (idThermostats, currentTempo, desiredTemp)
+          INSERT INTO thermostats (id, currentTemp, desiredTemp)
           VALUES
           (6, 20.0, 22.0),
           (8, 18.0, 20.0)
           """);
+
         await db.execute("""
           INSERT INTO automation (name, startTime)
            VALUES
             ('Automazione mattutina', '06:00:00'),
             ('Automazione serale', '18:00:00')
           """);
+
         await db.execute("""
-          INSERT INTO gestioneAutomazione (idDevice, name)
+          INSERT INTO gestioneAutomazione (id, name)
            VALUES
             (6, 'Automazione mattutina'),
             (8, 'Automazione serale')
@@ -135,6 +165,71 @@ class DatabaseHelper {
       },
       version: 1,
     );
+  }
+
+  Future<void> _fetchDevices() async {
+    final db = await database;
+
+    final List<Map<String, dynamic>> mapsOfAlarms = await db.rawQuery("""
+      SELECT a.id, d.deviceName, d.nameRoom, a.isActive
+      FROM device d 
+      JOIN alarms a ON d.id = a.id
+    """);
+
+    final List<Map<String, dynamic>> mapsOfLocks = await db.rawQuery("""
+      SELECT l.id, d.deviceName, d.nameRoom, l.isActive 
+      FROM device d 
+      JOIN locks l ON d.id = l.id
+    """);
+
+    final List<Map<String, dynamic>> mapsOfLights = await db.rawQuery("""
+      SELECT l.id, d.deviceName, d.nameRoom, l.lightTemperature, l.isActive
+      FROM device d 
+      JOIN lights l ON d.id = l.id
+    """);
+
+    final List<Map<String, dynamic>> mapsOfthermostats = await db.rawQuery("""
+      SELECT t.id, d.deviceName, d.nameRoom, d.isActive, t.currentTemp, t.desiredTemp 
+      FROM device d 
+      JOIN thermostats t ON d.id = t.id
+    """);
+
+    final alarms = List.generate(mapsOfAlarms.length, (i) {
+      return Alarm(
+        id: mapsOfAlarms[i]['id'] as int,
+        deviceName: mapsOfAlarms[i]['deviceName'] as String,
+        room: mapsOfAlarms[i]['room'] as String,
+        isActive: mapsOfAlarms[i]['isActive'] == 1 ? true : false,
+      );
+    });
+
+    final locks = List.generate(mapsOfLocks.length, (i) {
+      return Lock(
+        id: mapsOfLocks[i]['id'] as int,
+        deviceName: mapsOfLocks[i]['deviceName'] as String,
+        room: mapsOfLocks[i]['nameRoom'] as String,
+        isActive: mapsOfLocks[i]['isActive'] == 1 ? true : false,
+      );
+    });
+
+    final lights = List.generate(mapsOfLights.length, (i) {
+      return Light(
+          id: mapsOfLights[i]['id'] as int,
+          deviceName: mapsOfLights[i]['deviceName'] as String,
+          room: mapsOfLights[i]['nameRoom'] as String,
+          lightTemperature: mapsOfLights[i]['lightTemperature'] as int,
+          isActive: mapsOfLights[i]['isActive'] == 1 ? true : false);
+    });
+
+    final thermostats = List.generate(mapsOfthermostats.length, (i) {
+      return Thermostat(
+        id: mapsOfthermostats[i]['id'] as int,
+        deviceName: mapsOfthermostats[i]['deviceName'] as String,
+        room: mapsOfthermostats[i]['nameRoom'] as String,
+        desiredTemp: mapsOfthermostats[i]['desiredTemp'] as double,
+        detectedTemp: mapsOfthermostats[i]['currentTemp'] as double,
+      );
+    });
   }
 
   Future<void> insertDevice(Device device) async {
