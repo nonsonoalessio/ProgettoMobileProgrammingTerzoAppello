@@ -7,11 +7,13 @@ class Thermostat extends Device {
   Thermostat(
       {required super.deviceName,
       required super.room,
+      required super.id,
       required this.desiredTemp,
       required this.detectedTemp});
 
   factory Thermostat.fromMap(Map<String, dynamic> map) {
     return Thermostat(
+      id: map['id'] as int,
       deviceName: map['deviceName'] as String,
       room: map['room'] as String,
       desiredTemp: map['desiredTemp'] as double,
