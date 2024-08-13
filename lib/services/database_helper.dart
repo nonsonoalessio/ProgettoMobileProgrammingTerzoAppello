@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:progetto_mobile_programming/models/objects/alarm.dart';
 import 'package:progetto_mobile_programming/models/objects/device.dart';
 import 'package:progetto_mobile_programming/models/objects/light.dart';
@@ -14,6 +15,10 @@ class DatabaseHelper {
 
   static Database? _database;
   Future<Database> get database async => _database ??= await _initDatabase();
+
+  List<Device> devices = [];
+  //  List<Automation> automations = [];
+  //  List<Notification> notifications = [];
 
   Future<Database> _initDatabase() async {
     return openDatabase(
@@ -167,7 +172,23 @@ class DatabaseHelper {
     );
   }
 
-  Future<void> _fetchDevices() async {
+/*
+TODO: Future<void> fetchAutomations() async {
+  automations = List.generate(mapsOfAutomations.length, (i){
+    return Automation(...);
+  })
+}
+*/
+
+/*
+TODO: Future<void> fetchNotifications() async {
+  notifications = List.generate(mapsOfNotifications.length, (i){
+    return Notification(...);
+  })
+}
+*/
+
+  Future<void> fetchDevices() async {
     final db = await database;
 
     final List<Map<String, dynamic>> mapsOfAlarms = await db.rawQuery("""
@@ -230,6 +251,8 @@ class DatabaseHelper {
         detectedTemp: mapsOfthermostats[i]['currentTemp'] as double,
       );
     });
+
+    devices = [...alarms, ...locks, ...lights, ...thermostats];
   }
 
   Future<void> insertDevice(Device device) async {

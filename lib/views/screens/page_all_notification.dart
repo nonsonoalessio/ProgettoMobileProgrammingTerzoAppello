@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'package:progetto_mobile_programming/models/functionalities/device_notification.dart';
-import 'package:progetto_mobile_programming/models/objects/device.dart';
 import 'package:progetto_mobile_programming/models/objects/light.dart';
 import 'package:progetto_mobile_programming/models/objects/thermostat.dart';
 

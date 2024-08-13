@@ -11,86 +11,28 @@ part 'devices_provider.g.dart';
 @riverpod
 class DeviceNotifier extends _$DeviceNotifier {
   DatabaseHelper db = DatabaseHelper.instance;
-  final List<Device> _devices = [];
+  // campo non final: per ogni operazione, viene riassegnata una nuova lista
+  List<Device> devices = [];
 
-  Future<void> _fetchDevices() async {
-    final List<Map<String, dynamic>> mapsOfAlarms =
-        await db.database.then((db) => db.query('alarms'));
+  //List<Automation> automations = [];
+  //List<Notification> notifications = [];
 
-    final List<Map<String, dynamic>> mapsOfLocks =
-        await db.database.then((db) => db.query('locks'));
+  Future<void> initStatus() async {
+    await db.fetchDevices();
+    // await db.fetchAutomations();
+    // await db.fetchNotifications();
 
-    final List<Map<String, dynamic>> mapsOfLights =
-        await db.database.then((db) => db.query('lights'));
-
-    final List<Map<String, dynamic>> mapsOfthermostats =
-        await db.database.then((db) => db.query('thermostats'));
-
-    final alarms = List.generate(mapsOfAlarms.length, (i) {
-      final deviceName = mapsOfAlarms[i]['deviceName'];
-      final room = mapsOfAlarms[i]['room'];
-      final isActive = mapsOfAlarms[i]['isActive'];
-      return Alarm(
-        deviceName: deviceName as String,
-        room: room as String,
-        isActive: isActive == 1 ? true : false,
-      );
-    });
-
-    final locks = List.generate(mapsOfLocks.length, (i) {
-      final deviceName = mapsOfLocks[i]['deviceName'];
-      final room = mapsOfLocks[i]['room'];
-      final isActive = mapsOfLocks[i]['isActive'];
-      return Lock(
-        deviceName: deviceName as String,
-        room: room as String,
-        isActive: isActive == 1 ? true : false,
-      );
-    });
-
-    final lights = List.generate(mapsOfLights.length, (i) {
-      final deviceName = mapsOfLights[i]['deviceName'];
-      final room = mapsOfLights[i]['room'];
-      final isActive = mapsOfLights[i]['isActive'];
-      final lightTemperature = mapsOfLights[i]['lightTemperature'];
-      return Light(
-        deviceName: deviceName as String,
-        room: room as String,
-        isActive: isActive == 1 ? true : false,
-        lightTemperature: lightTemperature as int,
-      );
-    });
-
-    final thermostats = List.generate(mapsOfthermostats.length, (i) {
-      final deviceName = mapsOfthermostats[i]['deviceName'];
-      final room = mapsOfthermostats[i]['room'];
-      final desiredTemp = mapsOfthermostats[i]['desiderTemp'];
-      final detectedTemp = mapsOfthermostats[i]['detectedTemp'];
-      return Thermostat(
-        deviceName: deviceName as String,
-        room: room as String,
-        desiredTemp: desiredTemp as double,
-        detectedTemp: detectedTemp as double,
-      );
-    });
-
-    state = [...alarms, ...locks, ...lights, ...thermostats];
-  }
-
-  Future<void> addNewDevice(Device d) async {
-    await db.insertDevice(d);
-    await _fetchDevices(); // Attendi il completamento del fetch
-  }
-
-  List<Device> getDevices() {
-    _fetchDevices();
-    return _devices;
+    // si sfrutta il passaggio per riferimento, quindi non viene allocata una nuova lista
+    // piuttosto, viene passato l'indirizzo di memoria della lista presente in DbHelper
+    devices = db.devices;
+    //automations = db.automations;
+    //notifications = db.notifications;
   }
 
   @override
   List<Device> build() {
-    _fetchDevices();
-    return _devices;
+    initStatus();
+    return devices;
   }
 }
 
