@@ -303,20 +303,16 @@ class _DeviceCardState extends State<DeviceCard> {
   }
 }
 
-class ListGenerator extends StatelessWidget {
-  final String roomName;
-  final List<Device> allDevices;
+// TODO: gestire nome stanza
+class ListGenerator extends ConsumerWidget {
   final bool Function(Device) predicate;
 
-  const ListGenerator(
-      {super.key,
-      required this.roomName,
-      required this.allDevices,
-      required this.predicate});
+  const ListGenerator({super.key, required this.predicate});
 
   @override
-  Widget build(BuildContext context) {
-    List<Device> devices = allDevices.where(predicate).toList();
+  Widget build(BuildContext context, WidgetRef ref) {
+    List<Device> devices =
+        ref.watch(deviceNotifierProvider).where(predicate).toList();
     late Icon deviceIcon;
     return Padding(
       padding: const EdgeInsets.only(top: 8.0, left: 8.0),

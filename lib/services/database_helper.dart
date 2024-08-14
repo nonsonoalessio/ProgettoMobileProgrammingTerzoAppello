@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:progetto_mobile_programming/models/functionalities/automation.dart';
 import 'package:progetto_mobile_programming/models/objects/alarm.dart';
 import 'package:progetto_mobile_programming/models/objects/device.dart';
 import 'package:progetto_mobile_programming/models/objects/light.dart';
@@ -17,8 +18,8 @@ class DatabaseHelper {
   Future<Database> get database async => _database ??= await _initDatabase();
 
   List<Device> devices = [];
-  //  List<Automation> automations = [];
-  //  List<Notification> notifications = [];
+  List<Automation> automations = [];
+  List<Notification> notifications = [];
   int lastIndexForId = 0;
 
   Future<Database> _initDatabase() async {
@@ -285,6 +286,7 @@ TODO: Future<void> fetchIndex() async {
     );
   }
 
+// TODO: non viene rimosso nessun dispositivo! Manca la query per la rimozione!
   Future<void> removeDevice(Device device) async {
     String tableName;
     if (device is Alarm) {

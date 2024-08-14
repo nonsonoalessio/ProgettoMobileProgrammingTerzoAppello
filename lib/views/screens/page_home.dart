@@ -72,6 +72,7 @@ class Homepage extends ConsumerWidget {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: SearchBar(
+                
                 leading: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Icon(Icons.search),
