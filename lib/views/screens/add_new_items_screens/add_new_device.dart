@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:progetto_mobile_programming/models/objects/alarm.dart';
+import 'package:progetto_mobile_programming/models/objects/camera.dart';
 import 'package:progetto_mobile_programming/models/objects/device.dart';
 import 'package:progetto_mobile_programming/models/objects/light.dart';
 import 'package:progetto_mobile_programming/models/objects/lock.dart';
@@ -141,6 +142,11 @@ class _AddNewDevicePageState extends ConsumerState<AddNewDevicePage> {
                         room: _selectedRoom as String,
                         isActive:
                             _deviceStatus == DeviceStatus.on ? true : false);
+                  } else if (deviceType == DeviceType.camera) {
+                    device = Camera(
+                        deviceName: _deviceNameController.text,
+                        room: _selectedRoom as String,
+                        video: "");
                   } else {
                     // deviceType == DeviceType.thermostat
                     device = Thermostat(
@@ -317,6 +323,19 @@ class _AddNewDevicePageState extends ConsumerState<AddNewDevicePage> {
           ),
         ],
       );
+    } else if (_selectedDeviceType == DeviceType.camera) {
+      return Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: DeviceStatusSelector(
+              onValueChanged: _handleDeviceStatus,
+              currentStatus: _deviceStatus,
+              deviceType: DeviceType.camera,
+            ),
+          ),
+        ],
+      );
     } else {
       return Container(
         height: 10.0,
@@ -350,7 +369,7 @@ class _AddNewDevicePageState extends ConsumerState<AddNewDevicePage> {
   }
 }
 
-enum DeviceType { light, thermostat, lock, alarm }
+enum DeviceType { light, thermostat, lock, alarm, camera }
 
 enum DeviceStatus { on, off }
 
@@ -411,6 +430,17 @@ class _DeviceChooserState extends State<DeviceChooser> {
                   children: [
                     Icon(Icons.lock),
                     Text('Serratura'),
+                  ],
+                ),
+        ),
+        ButtonSegment<DeviceType>(
+          value: DeviceType.camera,
+          label: deviceType == DeviceType.camera
+              ? Icon(Icons.camera)
+              : Column(
+                  children: [
+                    Icon(Icons.camera),
+                    Text('Videocamera'),
                   ],
                 ),
         ),
