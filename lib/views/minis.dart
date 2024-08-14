@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:progetto_mobile_programming/models/objects/alarm.dart';
 import 'package:progetto_mobile_programming/models/objects/device.dart';
+import 'package:progetto_mobile_programming/models/objects/light.dart';
+import 'package:progetto_mobile_programming/models/objects/lock.dart';
+import 'package:progetto_mobile_programming/models/objects/thermostat.dart';
 import 'package:progetto_mobile_programming/providers/devices_provider.dart';
+import 'package:progetto_mobile_programming/views/screens/page_device_detail.dart';
 
 class ListOfChips extends StatelessWidget {
   final Future<List<String>> future;
@@ -295,5 +300,90 @@ class _DeviceCardState extends State<DeviceCard> {
   Widget build(BuildContext context) {
     Device _device = widget.device;
     return Container();
+  }
+}
+
+class ListGenerator extends StatelessWidget {
+  final String roomName;
+  final List<Device> allDevices;
+  final bool Function(Device) predicate;
+
+  const ListGenerator(
+      {super.key,
+      required this.roomName,
+      required this.allDevices,
+      required this.predicate});
+
+  @override
+  Widget build(BuildContext context) {
+    List<Device> devices = allDevices.where(predicate).toList();
+    late Icon deviceIcon;
+    return Padding(
+      padding: const EdgeInsets.only(top: 8.0, left: 8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              vertical: 8.0,
+            ),
+            child: Text(
+              roomName,
+              style: Theme.of(context).textTheme.displayMedium,
+            ),
+          ),
+          SizedBox(
+            height: 200,
+            child: GridView.count(
+              crossAxisCount: 2,
+              mainAxisSpacing: 8.0,
+              crossAxisSpacing: 8.0,
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              children: List.generate(devices.length, (index) {
+                Icon deviceIcon;
+                if (devices[index] is Lock) {
+                  deviceIcon = Icon(Icons.lock);
+                } else if (devices[index] is Alarm) {
+                  deviceIcon = Icon(Icons.doorbell);
+                } else if (devices[index] is Thermostat) {
+                  deviceIcon = Icon(Icons.thermostat);
+                } else if (devices[index] is Light) {
+                  deviceIcon = Icon(Icons.lightbulb);
+                } else {
+                  deviceIcon = Icon(Icons.camera);
+                }
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                DeviceDetailPage(device: devices[index])));
+                  },
+                  child: SizedBox(
+                    height: 100,
+                    width: 100,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          devices[index].deviceName,
+                        ),
+                        IconButton(
+                          onPressed: () {},
+                          icon: deviceIcon,
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }),
+            ),
+          ),
+          Divider(),
+        ],
+      ),
+    );
   }
 }
