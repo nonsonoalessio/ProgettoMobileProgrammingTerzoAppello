@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../models/objects/camera.dart';
 import '../../models/objects/device.dart';
 import '../../models/objects/alarm.dart';
 import '../../models/objects/light.dart';
@@ -82,11 +83,10 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
       return _buildLockWidget(device);
     } else if (device is Thermostat) {
       return _buildThermostatWidget(device);
-    } // else if (device is Camera) {
-    // return _buildCameraWidget(device);
-    //}
-    else {
-      return const Text('Debive sconosciuto'); // mettere buildCamera qui
+    } else if (device is Camera) {
+      return _buildCameraWidget(device);
+    } else {
+      return const Text('Device sconosciuto'); 
     }
   }
 
@@ -162,7 +162,7 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
     );
   }
 
-/*
+
   Widget _buildCameraWidget(Camera camera) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -172,10 +172,9 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
           onPressed: () {
             // Spegni/accendi camera
           },
-          child:,
+          child: null,
         ),
       ],
     );
   }
-  */
 }

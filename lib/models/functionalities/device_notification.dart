@@ -27,10 +27,18 @@ class DeviceNotification {
       isActive: map['isActive'] as bool,
     );
   }
+  */
+
 
   @override
   Map<String, Object?> toMap() {
-    return {'deviceName': deviceName, 'room': room, 'isActive': isActive};
+    return {
+      'title': title,
+      'device': device.toMap(), 
+      'type': type.toString(), 
+      'deliveryTime': deliveryTime,
+      'isRead': isRead,
+      'description': description,
+    };
   }
-  */
 }
