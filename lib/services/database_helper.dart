@@ -35,7 +35,7 @@ class DatabaseHelper {
         await db.execute("""
           CREATE TABLE IF NOT EXISTS device (
               id INTEGER PRIMARY KEY ,
-              nameRoom TEXT NOT NULL,
+              room TEXT NOT NULL,
               deviceName TEXT NOT NULL,
               type TEXT NOT NULL,
               FOREIGN KEY (room) REFERENCES rooms(room)
@@ -200,25 +200,25 @@ TODO: Future<void> fetchIndex() async {
     final db = await database;
 
     final List<Map<String, dynamic>> mapsOfAlarms = await db.rawQuery("""
-      SELECT a.id, d.deviceName, d.nameRoom, a.isActive
+      SELECT a.id, d.deviceName, d.room, a.isActive
       FROM device d 
       JOIN alarms a ON d.id = a.id
     """);
 
     final List<Map<String, dynamic>> mapsOfLocks = await db.rawQuery("""
-      SELECT l.id, d.deviceName, d.nameRoom, l.isActive 
+      SELECT l.id, d.deviceName, d.room, l.isActive 
       FROM device d 
       JOIN locks l ON d.id = l.id
     """);
 
     final List<Map<String, dynamic>> mapsOfLights = await db.rawQuery("""
-      SELECT l.id, d.deviceName, d.nameRoom, l.lightTemperature, l.isActive
+      SELECT l.id, d.deviceName, d.room, l.lightTemperature, l.isActive
       FROM device d 
       JOIN lights l ON d.id = l.id
     """);
 
     final List<Map<String, dynamic>> mapsOfthermostats = await db.rawQuery("""
-      SELECT t.id, d.deviceName, d.nameRoom, d.isActive, t.currentTemp, t.desiredTemp 
+      SELECT t.id, d.deviceName, d.room, d.isActive, t.currentTemp, t.desiredTemp 
       FROM device d 
       JOIN thermostats t ON d.id = t.id
     """);
@@ -236,7 +236,7 @@ TODO: Future<void> fetchIndex() async {
       return Lock(
         id: mapsOfLocks[i]['id'] as int,
         deviceName: mapsOfLocks[i]['deviceName'] as String,
-        room: mapsOfLocks[i]['nameRoom'] as String,
+        room: mapsOfLocks[i]['room'] as String,
         isActive: mapsOfLocks[i]['isActive'] == 1 ? true : false,
       );
     });
@@ -245,7 +245,7 @@ TODO: Future<void> fetchIndex() async {
       return Light(
           id: mapsOfLights[i]['id'] as int,
           deviceName: mapsOfLights[i]['deviceName'] as String,
-          room: mapsOfLights[i]['nameRoom'] as String,
+          room: mapsOfLights[i]['room'] as String,
           lightTemperature: mapsOfLights[i]['lightTemperature'] as int,
           isActive: mapsOfLights[i]['isActive'] == 1 ? true : false);
     });
@@ -254,7 +254,7 @@ TODO: Future<void> fetchIndex() async {
       return Thermostat(
         id: mapsOfthermostats[i]['id'] as int,
         deviceName: mapsOfthermostats[i]['deviceName'] as String,
-        room: mapsOfthermostats[i]['nameRoom'] as String,
+        room: mapsOfthermostats[i]['room'] as String,
         desiredTemp: mapsOfthermostats[i]['desiredTemp'] as double,
         detectedTemp: mapsOfthermostats[i]['currentTemp'] as double,
       );
