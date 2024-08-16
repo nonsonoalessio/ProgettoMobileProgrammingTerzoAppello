@@ -243,6 +243,7 @@ TODO: Future<void> fetchIndex() async {
       JOIN lights l ON d.id = l.id
     """);
 
+    //is active da eliminare
     final List<Map<String, dynamic>> mapsOfthermostats = await db.rawQuery("""
       SELECT t.id, d.deviceName, d.room, d.isActive, t.currentTemp, t.desiredTemp 
       FROM device d 
