@@ -7,6 +7,7 @@ import 'package:progetto_mobile_programming/models/objects/device.dart';
 import 'package:progetto_mobile_programming/models/objects/light.dart';
 import 'package:progetto_mobile_programming/models/objects/lock.dart';
 import 'package:progetto_mobile_programming/models/objects/thermostat.dart';
+import 'package:progetto_mobile_programming/views/minis.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -85,7 +86,9 @@ class DatabaseHelper {
         await db.execute("""
           CREATE TABLE IF NOT EXISTS automation (
               name TEXT PRIMARY KEY,
-              startTime TIME NOT NULL
+              executionTime TIME NOT NULL,
+              weather TEXT NOT NULL,
+              actions TEXT NOT NULL
           )
           """);
 
@@ -98,7 +101,17 @@ class DatabaseHelper {
               PRIMARY KEY(id, name)
           )
           """);
-
+        await db.execute("""
+          CREATE TABLE IF NOT EXISTS notifications (
+              title TEXT PRIMARY KEY,
+              id INTEGER NOT NULL,
+              type TEXT NOT NULL,
+              deliveryTime TIME NOT NULL,
+              isRead BOOLEAN,
+              description TEXT,
+              FOREIGN KEY (id) references device(id)
+          )
+          """);
         // Insert initial data
         await db.execute("""
           INSERT INTO rooms (room) 
@@ -169,24 +182,36 @@ class DatabaseHelper {
             (6, 'Automazione mattutina'),
             (8, 'Automazione serale')
           """);
+        //TODO POPOLAMENTO TABELLA notifications
       },
       version: 1,
     );
   }
 
-/*
-TODO: Future<void> fetchAutomations() async {
-  automations = List.generate(mapsOfAutomations.length, (i){
-    return Automation(...);
-  })
-}
-*/
+  //TODO
+  Future<void> fetchAutomations() async {
+    final db = await database;
 
-/*
-TODO: Future<void> fetchNotifications() async {
-  notifications = List.generate(mapsOfNotifications.length, (i){
+    final List<Map<String, dynamic>> mapsOfAutomations = await db.rawQuery("""
+      SELECT name, executionTime, weather, actions
+      FROM automations
+      """);
+    automations = List.generate(mapsOfAutomations.length, (i) {
+      return Automation(
+        name: mapsOfAutomations[i]['name'] as String,
+        executionTime: mapsOfAutomations[i]['executionTime'] as int,
+        weather: mapsOfAutomations[i]['weather'],
+        actions: mapsOfAutomations[i]['actions'],
+      );
+    });
+    automations = [...automations];
+  }
+
+/*TODO
+  Future<void> fetchNotifications() async {
+    notifications = List.generate(mapsOfNotifications.length, (i){
     return Notification(...);
-  })
+  });
 }
 */
 

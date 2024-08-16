@@ -15,7 +15,7 @@ class Automation {
     required this.actions,
   });
 
-/*
+  /*
   factory Automation.fromMap(Map<String, dynamic> map) {
     WeatherCondition weatherCondition;
     if(map['weateher'] == "sunny"){
