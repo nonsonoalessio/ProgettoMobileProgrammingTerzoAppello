@@ -1,7 +1,9 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:progetto_mobile_programming/models/functionalities/automation.dart';
 import 'package:progetto_mobile_programming/models/objects/alarm.dart';
+import 'package:progetto_mobile_programming/models/objects/camera.dart';
 import 'package:progetto_mobile_programming/models/objects/device.dart';
 import 'package:progetto_mobile_programming/models/objects/light.dart';
 import 'package:progetto_mobile_programming/models/objects/lock.dart';
@@ -17,8 +19,8 @@ class DatabaseHelper {
   Future<Database> get database async => _database ??= await _initDatabase();
 
   List<Device> devices = [];
-  //  List<Automation> automations = [];
-  //  List<Notification> notifications = [];
+  List<Automation> automations = [];
+  List<Notification> notifications = [];
   int lastIndexForId = 0;
 
   Future<Database> _initDatabase() async {
@@ -37,7 +39,7 @@ class DatabaseHelper {
               room TEXT NOT NULL,
               deviceName TEXT NOT NULL,
               type TEXT NOT NULL,
-              FOREIGN KEY (nameRoom) REFERENCES rooms(room)
+              FOREIGN KEY (room) REFERENCES rooms(room)
           )
           """);
         await db.execute("""
@@ -108,7 +110,7 @@ class DatabaseHelper {
           """);
 
         await db.execute("""
-          INSERT INTO device (id, nameRoom, deviceName, type) 
+          INSERT INTO device (id, room, deviceName, type) 
           VALUES
           (1, 'Salotto', 'Allarme ingresso', 'allarme'),
           (3, 'Cameretta', 'Allarme barriera', 'allarme'),
@@ -222,6 +224,12 @@ TODO: Future<void> fetchIndex() async {
       JOIN thermostats t ON d.id = t.id
     """);
 
+    final List<Map<String, dynamic>> mapsOfCameras = await db.rawQuery("""
+      SELECT c.id, d.deviceName, d.room, c.video
+      FROM device d 
+      JOIN camera c ON d.id = c.id
+    """);
+
     final alarms = List.generate(mapsOfAlarms.length, (i) {
       return Alarm(
         id: mapsOfAlarms[i]['id'] as int,
@@ -259,7 +267,16 @@ TODO: Future<void> fetchIndex() async {
       );
     });
 
-    devices = [...alarms, ...locks, ...lights, ...thermostats];
+    final cameras = List.generate(mapsOfthermostats.length, (i) {
+      return Camera(
+        id: mapsOfCameras[i]['id'] as int,
+        deviceName: mapsOfCameras[i]['deviceName'] as String,
+        room: mapsOfCameras[i]['room'] as String,
+        video: mapsOfCameras[i]['video'],
+      );
+    });
+
+    devices = [...alarms, ...locks, ...lights, ...thermostats, ...cameras];
   }
 
   Future<void> insertDevice(Device device) async {
@@ -272,6 +289,8 @@ TODO: Future<void> fetchIndex() async {
       tableName = 'lights';
     } else if (device is Thermostat) {
       tableName = 'thermostats';
+    } else if (device is Camera) {
+      tableName = 'camera';
     } else {
       // ramo else fittizio per evitare errori di compilazione; nessun dispositivo verrà mai aggiunto e non serve creare la tabella
       tableName = 'devices';
@@ -285,6 +304,7 @@ TODO: Future<void> fetchIndex() async {
     );
   }
 
+// TODO: non viene rimosso nessun dispositivo! Manca la query per la rimozione!
   Future<void> removeDevice(Device device) async {
     String tableName;
     if (device is Alarm) {
@@ -295,10 +315,14 @@ TODO: Future<void> fetchIndex() async {
       tableName = 'lights';
     } else if (device is Thermostat) {
       tableName = 'thermostats';
+    } else if (device is Camera) {
+      tableName = 'camera';
     } else {
       // ramo else fittizio per evitare errori di compilazione; nessun dispositivo verrà mai aggiunto e non serve creare la tabella
       tableName = 'devices';
     }
+
+    //TODO rimuovere il device dal database
   }
 
   Future<void> destroyDb() async {
