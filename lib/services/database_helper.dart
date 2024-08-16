@@ -37,7 +37,7 @@ class DatabaseHelper {
               nameRoom TEXT NOT NULL,
               deviceName TEXT NOT NULL,
               type TEXT NOT NULL,
-              FOREIGN KEY (room) REFERENCES rooms(room)
+              FOREIGN KEY (nameRoom) REFERENCES rooms(room)
           )
           """);
         await db.execute("""
@@ -108,7 +108,7 @@ class DatabaseHelper {
           """);
 
         await db.execute("""
-          INSERT INTO device (id, room, deviceName, type) 
+          INSERT INTO device (id, nameRoom, deviceName, type) 
           VALUES
           (1, 'Salotto', 'Allarme ingresso', 'allarme'),
           (3, 'Cameretta', 'Allarme barriera', 'allarme'),
@@ -217,7 +217,7 @@ TODO: Future<void> fetchIndex() async {
     """);
 
     final List<Map<String, dynamic>> mapsOfthermostats = await db.rawQuery("""
-      SELECT t.id, d.deviceName, d.nameRoom, d.isActive, t.currentTemp, t.desiredTemp 
+      SELECT t.id, d.deviceName, d.nameRoom, t.currentTemp, t.desiredTemp 
       FROM device d 
       JOIN thermostats t ON d.id = t.id
     """);
@@ -226,7 +226,7 @@ TODO: Future<void> fetchIndex() async {
       return Alarm(
         id: mapsOfAlarms[i]['id'] as int,
         deviceName: mapsOfAlarms[i]['deviceName'] as String,
-        room: mapsOfAlarms[i]['room'] as String,
+        room: mapsOfAlarms[i]['nameRoom'] as String,
         isActive: mapsOfAlarms[i]['isActive'] == 1 ? true : false,
       );
     });
