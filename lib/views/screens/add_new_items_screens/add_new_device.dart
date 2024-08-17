@@ -30,12 +30,23 @@ class _AddNewDevicePageState extends ConsumerState<AddNewDevicePage> {
   double? _temperaturePicked;
   double? _colorTemperature;
 
-int generateUniqueId() {
-  final int timestamp = (DateTime.now().millisecondsSinceEpoch / 1000).floor(); // Ridurre il timestamp
-  final int randomPart = Random().nextInt(1000); // Numero casuale tra 0 e 999
-  final int uniqueId = (timestamp % 1000000) * 1000 + randomPart; // Combinazione del timestamp ridotto e numero casuale
+  Future<int> _generateUniqueId() async {
+  final devices = ref.watch(deviceNotifierProvider);
+  int uniqueId = -1; // Inizializzazione con un valore predefinito
+  bool isUnique = false;
+
+  while (!isUnique) {
+    final int timestamp = (DateTime.now().millisecondsSinceEpoch / 1000).floor();
+    final int randomPart = Random().nextInt(1000);
+    uniqueId = (timestamp % 1000000) * 1000 + randomPart;
+
+    // Controlla se l'ID è già presente
+    isUnique = !devices.any((device) => device.id == uniqueId);
+  }
+
   return uniqueId;
 }
+
 
 
   void _handleDeviceTypeChanged(DeviceType newType) {
@@ -129,9 +140,9 @@ int generateUniqueId() {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: IconButton(
-              onPressed: () {
+              onPressed: () async {
                 if (_checkfields()) {
-                  final uniqueId = generateUniqueId(); 
+                  final uniqueId = await _generateUniqueId(); 
                   DeviceType deviceType = _selectedDeviceType;
                   Device device;
                   if (deviceType == DeviceType.light) {
