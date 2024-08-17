@@ -1,5 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -27,6 +29,14 @@ class _AddNewDevicePageState extends ConsumerState<AddNewDevicePage> {
   DeviceStatus _deviceStatus = DeviceStatus.on;
   double? _temperaturePicked;
   double? _colorTemperature;
+
+int generateUniqueId() {
+  final int timestamp = (DateTime.now().millisecondsSinceEpoch / 1000).floor(); // Ridurre il timestamp
+  final int randomPart = Random().nextInt(1000); // Numero casuale tra 0 e 999
+  final int uniqueId = (timestamp % 1000000) * 1000 + randomPart; // Combinazione del timestamp ridotto e numero casuale
+  return uniqueId;
+}
+
 
   void _handleDeviceTypeChanged(DeviceType newType) {
     setState(() {
@@ -121,13 +131,15 @@ class _AddNewDevicePageState extends ConsumerState<AddNewDevicePage> {
             child: IconButton(
               onPressed: () {
                 if (_checkfields()) {
+                  final uniqueId = generateUniqueId(); 
                   DeviceType deviceType = _selectedDeviceType;
                   Device device;
                   if (deviceType == DeviceType.light) {
                     device = Light(
                       deviceName: _deviceNameController.text,
                       room: _selectedRoom as String,
-                      isActive: _deviceStatus == DeviceStatus.on ? true : false,
+                      isActive: _deviceStatus == DeviceStatus.on ? true : false, 
+                      id: uniqueId,
                       // lightTemperature:
                     );
                   } else if (deviceType == DeviceType.alarm) {
@@ -135,18 +147,24 @@ class _AddNewDevicePageState extends ConsumerState<AddNewDevicePage> {
                         deviceName: _deviceNameController.text,
                         room: _selectedRoom as String,
                         isActive:
-                            _deviceStatus == DeviceStatus.on ? true : false);
+                        _deviceStatus == DeviceStatus.on ? true : false,
+                        id: uniqueId
+                        );
                   } else if (deviceType == DeviceType.lock) {
                     device = Lock(
                         deviceName: _deviceNameController.text,
                         room: _selectedRoom as String,
                         isActive:
-                            _deviceStatus == DeviceStatus.on ? true : false);
+                        _deviceStatus == DeviceStatus.on ? true : false,
+                        id: uniqueId
+                        );
                   } else if (deviceType == DeviceType.camera) {
                     device = Camera(
                         deviceName: _deviceNameController.text,
                         room: _selectedRoom as String,
-                        video: "");
+                        video: "",
+                        id: uniqueId
+                        );
                   } else {
                     // deviceType == DeviceType.thermostat
                     device = Thermostat(
@@ -154,6 +172,7 @@ class _AddNewDevicePageState extends ConsumerState<AddNewDevicePage> {
                       room: _selectedRoom as String,
                       detectedTemp: 0.0,
                       desiredTemp: 0.0,
+                      id: uniqueId
                     );
                   }
                   ref
