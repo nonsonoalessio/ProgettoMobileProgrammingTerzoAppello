@@ -306,24 +306,39 @@ TODO: Future<void> fetchIndex() async {
 
 // TODO: non viene rimosso nessun dispositivo! Manca la query per la rimozione!
   Future<void> removeDevice(Device device) async {
-    String tableName;
-    if (device is Alarm) {
-      tableName = 'alarms';
-    } else if (device is Lock) {
-      tableName = 'locks';
-    } else if (device is Light) {
-      tableName = 'lights';
-    } else if (device is Thermostat) {
-      tableName = 'thermostats';
-    } else if (device is Camera) {
-      tableName = 'camera';
-    } else {
-      // ramo else fittizio per evitare errori di compilazione; nessun dispositivo verrà mai aggiunto e non serve creare la tabella
-      tableName = 'devices';
-    }
+  final db = await database;
 
-    //TODO rimuovere il device dal database
+  // Determina il nome della tabella specifica del dispositivo
+  String tableName;
+  if (device is Alarm) {
+    tableName = 'alarms';
+  } else if (device is Lock) {
+    tableName = 'locks';
+  } else if (device is Light) {
+    tableName = 'lights';
+  } else if (device is Thermostat) {
+    tableName = 'thermostats';
+  } else if (device is Camera) {
+    tableName = 'camera';
+  } else {
+    throw Exception("Tipo di dispositivo non supportato");
   }
+
+  // Rimuovi il dispositivo dalla tabella specifica
+  await db.delete(
+    tableName,
+    where: 'id = ?',
+    whereArgs: [device.id],
+  );
+
+  // Rimuovi il dispositivo dalla tabella generale 'device'
+  await db.delete(
+    'device',
+    where: 'id = ?',
+    whereArgs: [device.id],
+  );
+}
+
 
   Future<void> destroyDb() async {
     var databasesPath = await getDatabasesPath();
