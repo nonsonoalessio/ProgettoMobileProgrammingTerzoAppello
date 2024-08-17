@@ -45,7 +45,7 @@ class _NotificationPageState extends ConsumerState<NotificationPage> {
 
   @override
   Widget build(BuildContext context) {
-    final notificationsList = ref.watch(notificationsNotifierProvider) 
+    final notificationsList = ref.watch(notificationsNotifierProvider);
 
     return Scaffold(
       appBar: AppBar(
