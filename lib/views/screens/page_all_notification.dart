@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:progetto_mobile_programming/models/functionalities/device_notification.dart';
 import 'package:progetto_mobile_programming/models/objects/light.dart';
 import 'package:progetto_mobile_programming/models/objects/thermostat.dart';
+import 'package:progetto_mobile_programming/providers/notifications_provider.dart';
 
-class NotificationPage extends StatefulWidget {
+class NotificationPage extends ConsumerStatefulWidget {
   const NotificationPage({super.key});
 
   @override
-  State<NotificationPage> createState() => _NotificationPageState();
+  ConsumerState<NotificationPage> createState() => _NotificationPageState();
 }
 
-class _NotificationPageState extends State<NotificationPage> {
+class _NotificationPageState extends ConsumerState<NotificationPage> {
   final List<DeviceNotification> _notifications = [
     DeviceNotification(
       title: "Titolo 1",
@@ -43,6 +45,8 @@ class _NotificationPageState extends State<NotificationPage> {
 
   @override
   Widget build(BuildContext context) {
+    final notificationsList = ref.watch(notificationsNotifierProvider) 
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Notifiche'),
