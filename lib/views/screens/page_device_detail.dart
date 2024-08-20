@@ -164,17 +164,65 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
 
 
   Widget _buildCameraWidget(Camera camera) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(''),
-        ElevatedButton(
-          onPressed: () {
-            // Spegni/accendi camera
-          },
-          child: null,
+  String? _capturedImage; // Variabile per memorizzare l'immagine catturata
+
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(
+        'Video corrente:',
+        style: Theme.of(context).textTheme.headlineSmall,
+      ),
+      const SizedBox(height: 10),
+      Container(
+        width: double.infinity,
+        height: 200,
+        color: Colors.black,
+        child: Center(
+          child: Text(
+            'Video stream: ${camera.video}',
+            style: const TextStyle(color: Colors.white),
+            textAlign: TextAlign.center,
+          ),
         ),
-      ],
-    );
-  }
+      ),
+      const SizedBox(height: 20),
+      ElevatedButton(
+        onPressed: () {
+          // possibile aggiornamento del video/funzionalità aggiuntive ?
+        },
+        child: const Text('Aggiorna video stream'),
+      ),
+      const SizedBox(height: 20),
+      ElevatedButton(
+        onPressed: () {
+          setState(() {
+            // Quando il pulsante viene premuto, viene simulata la cattura di un'immagine
+            _capturedImage = 'assets/image/carmine.jpg'; // Immagine dummy
+          });
+        },
+        child: const Text('Scatta foto'),
+      ),
+      const SizedBox(height: 20),
+      if (_capturedImage != null)
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Foto catturata:',
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
+            const SizedBox(height: 10),
+            Image.asset(
+              _capturedImage!,
+              width: 150,
+              height: 150,
+            ),
+          ],
+        ),
+    ],
+  );
+}
+
+
 }
