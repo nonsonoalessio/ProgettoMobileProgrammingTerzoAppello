@@ -85,8 +85,9 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  WeatherConditionSelector(
-                    onValueChanged: _handleWeatherConditionChanged,
+                  ElevatedButton(
+                    onPressed: () {},
+                    child: Text("data"),
                   ),
                   TimeOfDaySelector(),
                 ],
