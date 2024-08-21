@@ -33,7 +33,7 @@ class EnergySavingSuggestions extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Suggerimenti per Risparmiare Energia:',
+          'Suggerimenti per risparmiare energia:',
           style: Theme.of(context).textTheme.headlineSmall,
         ),
         const SizedBox(height: 10),
@@ -213,17 +213,11 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
               LineChartBarData(
                 spots: const [
                   FlSpot(0, 1.2),
-                  FlSpot(2, 2.4),
                   FlSpot(4, 1.8),
-                  FlSpot(6, 3.0),
                   FlSpot(8, 2.6),
-                  FlSpot(10, 3.5),
                   FlSpot(12, 2.0),
-                  FlSpot(14, 2.8),
                   FlSpot(16, 3.6),
-                  FlSpot(18, 4.0),
                   FlSpot(20, 3.3),
-                  FlSpot(22, 2.7),
                   FlSpot(24, 2.5),
                 ],
                 isCurved: true,
