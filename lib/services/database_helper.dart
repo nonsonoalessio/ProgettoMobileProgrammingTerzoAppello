@@ -34,7 +34,7 @@ class DatabaseHelper {
       onCreate: (db, version) async {
         await db.execute("""
           CREATE TABLE IF NOT EXISTS rooms (
-              room TEXT PRIMARY KEY ON UPDATE CASCADE
+              room TEXT PRIMARY KEY
           )
           """);
 
@@ -90,7 +90,7 @@ class DatabaseHelper {
 
         await db.execute("""
           CREATE TABLE IF NOT EXISTS automation (
-              name TEXT PRIMARY KEY ON UPDATE CASCADE,
+              name TEXT PRIMARY KEY,
               executionTime TIME,
               weather TEXT
           )
