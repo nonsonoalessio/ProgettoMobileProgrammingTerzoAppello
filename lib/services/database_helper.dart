@@ -34,7 +34,7 @@ class DatabaseHelper {
       onCreate: (db, version) async {
         await db.execute("""
           CREATE TABLE IF NOT EXISTS rooms (
-              room TEXT PRIMARY KEY
+              room TEXT PRIMARY KEY ON UPDATE CASCADE
           )
           """);
 
@@ -90,7 +90,7 @@ class DatabaseHelper {
 
         await db.execute("""
           CREATE TABLE IF NOT EXISTS automation (
-              name TEXT PRIMARY KEY,
+              name TEXT PRIMARY KEY ON UPDATE CASCADE,
               executionTime TIME,
               weather TEXT
           )
@@ -383,31 +383,168 @@ class DatabaseHelper {
     devices = [...alarms, ...locks, ...lights, ...thermostats, ...cameras];
   }
 
+  Future<void> insertRoom(String roomName) async {
+    final db = await database;
+    await db.insert(
+      'rooms',
+      {'room': roomName},
+    );
+  }
+
+  String _getTableName(Device device) {
+    if (device is Alarm) return 'alarms';
+    if (device is Lock) return 'locks';
+    if (device is Light) return 'lights';
+    if (device is Thermostat) return 'thermostats';
+    if (device is Camera) return 'camera';
+    throw Exception('Device non supportato.');
+  }
+
   Future<void> insertDevice(Device device) async {
-    final String tableName;
-    if (device is Alarm) {
-      tableName = 'alarms';
-    } else if (device is Lock) {
-      tableName = 'locks';
-    } else if (device is Light) {
-      tableName = 'lights';
-    } else if (device is Thermostat) {
-      tableName = 'thermostats';
-    } else {
-      tableName = 'camera';
-    }
+    final tableName = _getTableName(device);
 
     final db = await database;
     await db.insert(
       'device',
       device.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
     );
 
     await db.insert(
       tableName,
       device.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  Future<void> insertAutomation(Automation automation) async {
+    final db = await database;
+    await db.insert(
+      'automation',
+      {
+        'name': automation.name,
+        'executionTime': automation.executionTime,
+        'weather': automation.weather,
+      },
+    );
+  }
+
+  Future<void> insertNotification(DeviceNotification notification) async {
+    final db = await database;
+    await db.insert(
+      'deviceNotification',
+      {
+        'id': notification.id,
+        'title': notification.title,
+        'device': notification.device,
+        'type': notification.type,
+        'deliveryTime': notification.deliveryTime,
+        'isRead': notification.isRead,
+        'description': notification.description,
+      },
+    );
+  }
+
+  Future<void> updateRoom(String oldRoomName, String newRoomName) async {
+    final db = await database;
+
+    await db.update(
+      'rooms',
+      {'room': newRoomName},
+      where: 'room = ?',
+      whereArgs: [oldRoomName],
+    );
+  }
+
+  Future<void> updateDevice(Device device) async {
+    final db = await database;
+
+    // Aggiorna la tabella
+    await db.update(
+      'device',
+      {
+        'deviceName': device.deviceName,
+        'room': device.room,
+      },
+      where: 'id = ?',
+      whereArgs: [device.id],
+    );
+
+    // Aggiorna la tabella specifica basandosi sul tipo
+    if (device is Alarm) {
+      await db.update(
+        'alarms',
+        {
+          'isActive': device.isActive,
+        },
+        where: 'id = ?',
+        whereArgs: [device.id],
+      );
+    } else if (device is Lock) {
+      await db.update(
+        'locks',
+        {
+          'isActive': device.isActive,
+        },
+        where: 'id = ?',
+        whereArgs: [device.id],
+      );
+    } else if (device is Light) {
+      await db.update(
+        'lights',
+        {
+          'lightTemperature': device.lightTemperature,
+          'isActive': device.isActive,
+        },
+        where: 'id = ?',
+        whereArgs: [device.id],
+      );
+    } else if (device is Thermostat) {
+      await db.update(
+        'thermostats',
+        {
+          'desiredTemp': device.desiredTemp,
+        },
+        where: 'id = ?',
+        whereArgs: [device.id],
+      );
+    } else if (device is Camera) {
+      await db.update(
+        'camera',
+        {
+          'video': device.video,
+        },
+        where: 'id = ?',
+        whereArgs: [device.id],
+      );
+    } else {
+      throw Exception("Unsupported device type");
+    }
+  }
+
+  Future<void> updateAutomation(Automation automation) async {
+    final db = await database;
+
+    // Modifica la table delle automazioni
+    await db.update(
+      'automation',
+      {
+        'name': automation.name,
+        'executionTime': automation.executionTime,
+        'weather': automation.weather,
+      },
+      where: 'name = ?',
+      whereArgs: [automation.name],
+    );
+  }
+
+  Future<void> updateNotification(int id, bool isRead) async {
+    final db = await database;
+
+    // Modifichiamo solo il campo isRead
+    await db.update(
+      'deviceNotification',
+      {'isRead': isRead},
+      where: 'id = ?',
+      whereArgs: [id],
     );
   }
 
@@ -442,6 +579,53 @@ class DatabaseHelper {
       'device',
       where: 'id = ?',
       whereArgs: [device.id],
+    );
+  }
+
+  Future<void> removeAutomation(String automationName) async {
+    final db = await database;
+
+    // Rimuovi tutte le azioni associate all'automazione
+    await db.delete(
+      'actions',
+      where: 'automationName = ?',
+      whereArgs: [automationName],
+    );
+
+    // Rimuovi l'automazione dalla tabella 'automation'
+    await db.delete(
+      'automation',
+      where: 'name = ?',
+      whereArgs: [automationName],
+    );
+  }
+
+  Future<void> removeNotification(int id) async {
+    final db = await database;
+
+    // Rimuovi la notifica dalla tabella 'deviceNotification'
+    await db.delete(
+      'deviceNotification',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
+  Future<void> removeRoom(String roomName) async {
+    final db = await database;
+
+    // Rimuovi i dispositivi associati alla stanza dalla tabella 'device'
+    await db.delete(
+      'device',
+      where: 'room = ?',
+      whereArgs: [roomName],
+    );
+
+    // Rimuovi la stanza dalla tabella 'rooms'
+    await db.delete(
+      'rooms',
+      where: 'room = ?',
+      whereArgs: [roomName],
     );
   }
 
