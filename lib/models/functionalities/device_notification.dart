@@ -1,8 +1,10 @@
 import 'package:progetto_mobile_programming/models/objects/device.dart';
+import 'dart:math';
 
 enum NotificationType { security, automationExecution, highEnergyConsumption }
 
 class DeviceNotification {
+  int id;
   String title;
   Device device;
   NotificationType type;
@@ -11,6 +13,7 @@ class DeviceNotification {
   String description;
 
   DeviceNotification({
+    required this.id,
     required this.title,
     required this.device,
     required this.type,
@@ -19,25 +22,31 @@ class DeviceNotification {
     this.description = "",
   });
 
-  /*
-  factory DeviceNotification.fromMap(Map<String, dynamic> map) {
-    return DeviceNotification(
-      title: map['deviceName'] as String,
-      device: map['room'] as String,
-      isActive: map['isActive'] as bool,
-    );
+  static int generateUniqueId() {
+    final int timestamp =
+        (DateTime.now().millisecondsSinceEpoch / 1000).floor();
+    final int randomPart = Random().nextInt(1000);
+    return (timestamp % 1000000) * 1000 + randomPart;
   }
-  */
 
+  DeviceNotification._fromMap({
+    required this.id,
+    required this.title,
+    required this.device,
+    required this.type,
+    required this.deliveryTime,
+    this.isRead = false,
+    this.description = "",
+  });
 
-  @override
   Map<String, Object?> toMap() {
     return {
+      'id': id,
       'title': title,
-      'device': device.toMap(), 
-      'type': type.toString(), 
+      'device': device.toMap(),
+      'type': type.toString(),
       'deliveryTime': deliveryTime,
-      'isRead': isRead,
+      'isRead': isRead ? 1 : 0,
       'description': description,
     };
   }

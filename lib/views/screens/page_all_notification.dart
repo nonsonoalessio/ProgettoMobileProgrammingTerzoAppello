@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:progetto_mobile_programming/models/functionalities/device_notification.dart';
-import 'package:progetto_mobile_programming/models/objects/light.dart';
-import 'package:progetto_mobile_programming/models/objects/thermostat.dart';
 import 'package:progetto_mobile_programming/providers/notifications_provider.dart';
 
 class NotificationPage extends ConsumerStatefulWidget {
@@ -14,28 +12,20 @@ class NotificationPage extends ConsumerStatefulWidget {
 }
 
 class _NotificationPageState extends ConsumerState<NotificationPage> {
+  /*
   final List<DeviceNotification> _notifications = [
     DeviceNotification(
       title: "Titolo 1",
       description: "Testo notifica 1",
-      device: Light(deviceName: 'Luce di emergenza', room: '1'),
+      device: Light(deviceName: 'Luce di emergenza', room: '1',
+      id: 
+      ),
       type: NotificationType.security,
       deliveryTime: DateTime.now().millisecondsSinceEpoch,
       isRead: false,
     ),
-    DeviceNotification(
-      title: "Titolo 2",
-      description: "Testo notifica 2",
-      device: Thermostat(
-          deviceName: 'Termostato cucina',
-          room: '1',
-          desiredTemp: 25,
-          detectedTemp: 30),
-      type: NotificationType.automationExecution,
-      deliveryTime: DateTime.now().millisecondsSinceEpoch,
-      isRead: true,
-    ),
   ];
+*/
 
   void _markAsRead(DeviceNotification notification) {
     setState(() {
@@ -58,16 +48,16 @@ class _NotificationPageState extends ConsumerState<NotificationPage> {
       ),
       body: SafeArea(
         child: ListView.builder(
-          itemCount: _notifications.length,
+          itemCount: notificationsList.length,
           itemBuilder: (context, index) => GestureDetector(
             onTap: () {
               // Quando una notifica non letta viene cliccata, la segniamo come letta
-              if (!_notifications[index].isRead) {
-                _markAsRead(_notifications[index]);
+              if (!notificationsList[index].isRead) {
+                _markAsRead(notificationsList[index]);
               }
               // Naviga pagina dettagli
             },
-            child: NotificationCard(notification: _notifications[index]),
+            child: NotificationCard(notification: notificationsList[index]),
           ),
         ),
       ),

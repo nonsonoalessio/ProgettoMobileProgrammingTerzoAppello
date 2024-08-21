@@ -7,12 +7,12 @@ part of 'notifications_provider.dart';
 // **************************************************************************
 
 String _$notificationsNotifierHash() =>
-    r'354f0074151e3e5f5bec781d2f63f1d6d3749c7f';
+    r'4300c7424e4358b5a829a80db12295832fb34fa1';
 
 /// See also [NotificationsNotifier].
 @ProviderFor(NotificationsNotifier)
 final notificationsNotifierProvider = AutoDisposeNotifierProvider<
-    NotificationsNotifier, List<Notification>>.internal(
+    NotificationsNotifier, List<DeviceNotification>>.internal(
   NotificationsNotifier.new,
   name: r'notificationsNotifierProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -22,6 +22,6 @@ final notificationsNotifierProvider = AutoDisposeNotifierProvider<
   allTransitiveDependencies: null,
 );
 
-typedef _$NotificationsNotifier = AutoDisposeNotifier<List<Notification>>;
+typedef _$NotificationsNotifier = AutoDisposeNotifier<List<DeviceNotification>>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

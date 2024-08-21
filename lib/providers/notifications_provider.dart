@@ -1,10 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:progetto_mobile_programming/models/objects/alarm.dart';
-import 'package:progetto_mobile_programming/models/objects/light.dart';
-import 'package:progetto_mobile_programming/models/objects/lock.dart';
-import 'package:progetto_mobile_programming/models/objects/thermostat.dart';
+import 'package:progetto_mobile_programming/models/functionalities/device_notification.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:progetto_mobile_programming/models/objects/device.dart';
 import 'package:progetto_mobile_programming/services/database_helper.dart';
 
 part 'notifications_provider.g.dart';
@@ -14,7 +9,7 @@ class NotificationsNotifier extends _$NotificationsNotifier {
   DatabaseHelper db = DatabaseHelper.instance;
   // campo non final: per ogni operazione, viene riassegnata una nuova lista
 
-  List<Notification> notifications = [];
+  List<DeviceNotification> notifications = [];
 
   Future<void> initStatus() async {
     // await db.fetchDevices();
@@ -31,10 +26,8 @@ class NotificationsNotifier extends _$NotificationsNotifier {
   }
 
   @override
-  List<Notification> build() {
+  List<DeviceNotification> build() {
     initStatus();
     return notifications;
   }
 }
-
-

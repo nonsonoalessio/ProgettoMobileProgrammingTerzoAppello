@@ -1,10 +1,5 @@
 import 'package:progetto_mobile_programming/models/functionalities/automation.dart';
-import 'package:progetto_mobile_programming/models/objects/alarm.dart';
-import 'package:progetto_mobile_programming/models/objects/light.dart';
-import 'package:progetto_mobile_programming/models/objects/lock.dart';
-import 'package:progetto_mobile_programming/models/objects/thermostat.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:progetto_mobile_programming/models/objects/device.dart';
 import 'package:progetto_mobile_programming/services/database_helper.dart';
 
 part 'automations_provider.g.dart';

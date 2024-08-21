@@ -147,19 +147,19 @@ class GraphPage extends StatefulWidget {
 class _GraphPageState extends State<GraphPage> {
   // Dati casuali riguardo il consumo durante 24 ore di un device (intervallo di 2 ore)
   final List<FlSpot> spots = [
-    FlSpot(0, 1.2),
-    FlSpot(2, 2.4),
-    FlSpot(4, 1.8),
-    FlSpot(6, 3.0),
-    FlSpot(8, 2.6),
-    FlSpot(10, 3.5),
-    FlSpot(12, 2.0),
-    FlSpot(14, 2.8),
-    FlSpot(16, 3.6),
-    FlSpot(18, 4.0),
-    FlSpot(20, 3.3),
-    FlSpot(22, 2.7),
-    FlSpot(24, 2.5),
+    const FlSpot(0, 1.2),
+    const FlSpot(2, 2.4),
+    const FlSpot(4, 1.8),
+    const FlSpot(6, 3.0),
+    const FlSpot(8, 2.6),
+    const FlSpot(10, 3.5),
+    const FlSpot(12, 2.0),
+    const FlSpot(14, 2.8),
+    const FlSpot(16, 3.6),
+    const FlSpot(18, 4.0),
+    const FlSpot(20, 3.3),
+    const FlSpot(22, 2.7),
+    const FlSpot(24, 2.5),
   ];
 
   @override
@@ -167,12 +167,12 @@ class _GraphPageState extends State<GraphPage> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new),
+          icon: const Icon(Icons.arrow_back_ios_new),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
-        title: Text("Overview consumo giornaliero elettricità in kWh"),
+        title: const Text("Overview consumo giornaliero elettricità in kWh"),
       ),
       body: SafeArea(
         child: Padding(
@@ -185,14 +185,14 @@ class _GraphPageState extends State<GraphPage> {
                 horizontalInterval: 1,
                 verticalInterval: 2,
                 getDrawingHorizontalLine: (value) {
-                  return FlLine(
+                  return const FlLine(
                     // Ritorna un oggetto FlLine che rappresenta una linea orizzontale
                     color: Colors.grey,
                     strokeWidth: 0.5,
                   );
                 },
                 getDrawingVerticalLine: (value) {
-                  return FlLine(
+                  return const FlLine(
                     // Ritorna un oggetto FlLine che rappresenta una linea verticale
                     color: Colors.grey,
                     strokeWidth: 0.5,
@@ -210,7 +210,7 @@ class _GraphPageState extends State<GraphPage> {
                       // Costruisce la stringa formattata da un value + kWh
                       return Text(
                         '${value.toStringAsFixed(1)} kWh',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize:
                               10, // Serve per gestire la grandezza delle label
                         ),
@@ -226,7 +226,7 @@ class _GraphPageState extends State<GraphPage> {
                     getTitlesWidget: (value, meta) {
                       return Text(
                         '${value.toInt()}:00',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize:
                               10, // Serve per gestire la grandezza delle label
                         ),
@@ -234,12 +234,12 @@ class _GraphPageState extends State<GraphPage> {
                     },
                   ),
                 ),
-                topTitles: AxisTitles(
+                topTitles: const AxisTitles(
                   sideTitles: SideTitles(
                       showTitles:
                           false), // Non mostrare top labels                )
                 ),
-                rightTitles: AxisTitles(
+                rightTitles: const AxisTitles(
                   sideTitles: SideTitles(
                       showTitles: false), // Non mostrare labels a destra
                 ),
@@ -259,7 +259,7 @@ class _GraphPageState extends State<GraphPage> {
                   color: Colors.red,
                   barWidth: 4,
                   isStrokeCapRound: true,
-                  dotData: FlDotData(
+                  dotData: const FlDotData(
                     show: true,
                   ),
                   belowBarData: BarAreaData(
@@ -303,7 +303,6 @@ class _DeviceCardState extends State<DeviceCard> {
   }
 }
 
-// TODO: gestire nome stanza
 class ListGenerator extends ConsumerWidget {
   final bool Function(Device) predicate;
 
@@ -319,13 +318,9 @@ class ListGenerator extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(
+          const Padding(
+            padding: EdgeInsets.symmetric(
               vertical: 8.0,
-            ),
-            child: Text(
-              roomName,
-              style: Theme.of(context).textTheme.displayMedium,
             ),
           ),
           SizedBox(
@@ -335,19 +330,19 @@ class ListGenerator extends ConsumerWidget {
               mainAxisSpacing: 8.0,
               crossAxisSpacing: 8.0,
               shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
+              physics: const NeverScrollableScrollPhysics(),
               children: List.generate(devices.length, (index) {
                 Icon deviceIcon;
                 if (devices[index] is Lock) {
-                  deviceIcon = Icon(Icons.lock);
+                  deviceIcon = const Icon(Icons.lock);
                 } else if (devices[index] is Alarm) {
-                  deviceIcon = Icon(Icons.doorbell);
+                  deviceIcon = const Icon(Icons.doorbell);
                 } else if (devices[index] is Thermostat) {
-                  deviceIcon = Icon(Icons.thermostat);
+                  deviceIcon = const Icon(Icons.thermostat);
                 } else if (devices[index] is Light) {
-                  deviceIcon = Icon(Icons.lightbulb);
+                  deviceIcon = const Icon(Icons.lightbulb);
                 } else {
-                  deviceIcon = Icon(Icons.camera);
+                  deviceIcon = const Icon(Icons.camera);
                 }
                 return GestureDetector(
                   onTap: () {
@@ -377,7 +372,7 @@ class ListGenerator extends ConsumerWidget {
               }),
             ),
           ),
-          Divider(),
+          const Divider(),
         ],
       ),
     );
