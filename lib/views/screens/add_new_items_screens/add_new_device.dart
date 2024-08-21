@@ -414,61 +414,20 @@ class _DeviceChooserState extends State<DeviceChooser> {
     return SegmentedButton(
       segments: [
         ButtonSegment<DeviceType>(
-          value: DeviceType.light,
-          label: deviceType == DeviceType.light
-              ? Icon(Icons.lightbulb)
-              : Column(
-                  children: [
-                    Icon(Icons.lightbulb),
-                    Text('Luce'),
-                  ],
-                ),
-        ),
+            value: DeviceType.light, 
+            label: Icon(Icons.lightbulb)),
         ButtonSegment<DeviceType>(
           value: DeviceType.thermostat,
-          // icon: Icon(Icons.thermostat),
-          label: deviceType == DeviceType.thermostat
-              ? Icon(Icons.thermostat)
-              : Column(
-                  children: [
-                    Icon(Icons.thermostat),
-                    Text('Termostato'),
-                  ],
-                ),
-        ),
+          label: Icon(Icons.thermostat)),
         ButtonSegment<DeviceType>(
           value: DeviceType.alarm,
-          label: deviceType == DeviceType.alarm
-              ? Icon(Icons.doorbell)
-              : Column(
-                  children: [
-                    Icon(Icons.doorbell),
-                    Text('Allarme'),
-                  ],
-                ),
-        ),
+          label:Icon(Icons.doorbell)),
         ButtonSegment<DeviceType>(
           value: DeviceType.lock,
-          label: deviceType == DeviceType.lock
-              ? Icon(Icons.lock)
-              : Column(
-                  children: [
-                    Icon(Icons.lock),
-                    Text('Serratura'),
-                  ],
-                ),
-        ),
+          label: Icon(Icons.lock)),
         ButtonSegment<DeviceType>(
           value: DeviceType.camera,
-          label: deviceType == DeviceType.camera
-              ? Icon(Icons.camera)
-              : Column(
-                  children: [
-                    Icon(Icons.camera),
-                    Text('Videocamera'),
-                  ],
-                ),
-        ),
+          label: Icon(Icons.camera)),
       ],
       selected: <DeviceType>{deviceType},
       onSelectionChanged: (Set<DeviceType> newSelection) {

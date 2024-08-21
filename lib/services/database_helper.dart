@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:progetto_mobile_programming/models/functionalities/action.dart';
 import 'package:progetto_mobile_programming/models/functionalities/alarm_action.dart';
 import 'package:progetto_mobile_programming/models/functionalities/automation.dart';
@@ -262,12 +263,14 @@ class DatabaseHelper {
     final db = await database;
 
     final List<Map<String, dynamic>> mapsOfAutomations =
-        await db.query('automations');
+        await db.query('automation');
 
     automations = List.generate(mapsOfAutomations.length, (i) {
       return Automation(
         name: mapsOfAutomations[i]['name'],
-        executionTime: mapsOfAutomations[i]['executionTime'],
+        // ignore: prefer_interpolation_to_compose_strings
+        executionTime: TimeOfDay.fromDateTime(DateTime.parse(
+            '1970-01-01 ' + mapsOfAutomations[i]['executionTime'])),
         weather: mapsOfAutomations[i]['weather'],
         actions: _getActions(mapsOfAutomations[i]['name']),
       );
@@ -391,7 +394,7 @@ class DatabaseHelper {
     } else {
       tableName = 'camera';
     }
-    
+
     final db = await database;
     await db.insert(
       'device',

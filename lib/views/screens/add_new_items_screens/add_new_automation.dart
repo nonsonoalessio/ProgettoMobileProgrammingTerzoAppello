@@ -86,7 +86,7 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
                 child: Text(
                   'Condizione meteorologica',
-                  style: Theme.of(context).textTheme.displaySmall,
+                  style: Theme.of(context).textTheme.displayMedium,
                 ),
               ),
               WeatherConditionSelector(
@@ -96,8 +96,8 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
                 child: Text(
-                  'Tempo di esecuzione (secondi)',
-                  style: Theme.of(context).textTheme.displaySmall,
+                  'Ora di esecuzione',
+                  style: Theme.of(context).textTheme.displayMedium,
                 ),
               ),
               TimePicker(
@@ -107,7 +107,7 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
                 child: Text(
                   'Azioni',
-                  style: Theme.of(context).textTheme.displaySmall,
+                  style: Theme.of(context).textTheme.displayMedium,
                 ),
               ),
               for (var device in devices)
@@ -157,27 +157,6 @@ class WeatherConditionSelector extends StatelessWidget {
           child: Text(condition.toString().split('.').last),
         );
       }).toList(),
-    );
-  }
-}
-
-class TimePicker extends StatelessWidget {
-  final ValueChanged<int> onTimeChanged;
-
-  const TimePicker({Key? key, required this.onTimeChanged}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Slider(
-      // Usiamo uno slider
-      min: 0,
-      max: 3600,
-      divisions: 60,
-      label: "Time",
-      value: 0,
-      onChanged: (value) {
-        onTimeChanged(value.toInt());
-      },
     );
   }
 }
