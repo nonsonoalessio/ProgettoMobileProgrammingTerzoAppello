@@ -82,40 +82,15 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
                   ),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: Text(
-                  'Condizione meteorologica',
-                  style: Theme.of(context).textTheme.displayMedium,
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  WeatherConditionSelector(
+                    onValueChanged: _handleWeatherConditionChanged,
+                  ),
+                  TimeOfDaySelector(),
+                ],
               ),
-              WeatherConditionSelector(
-                onValueChanged: _handleWeatherConditionChanged,
-                currentCondition: _selectedWeather,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: Text(
-                  'Ora di esecuzione',
-                  style: Theme.of(context).textTheme.displayMedium,
-                ),
-              ),
-              TimePicker(
-                onTimeChanged: _handleExecutionTimeChanged,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: Text(
-                  'Azioni',
-                  style: Theme.of(context).textTheme.displayMedium,
-                ),
-              ),
-              for (var device in devices)
-                ActionSelector(
-                  device: device,
-                  onActionChanged: (actions) =>
-                      _handleActionChanged(device, actions),
-                ),
             ],
           ),
         ),
@@ -124,84 +99,113 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
   }
 }
 
-class WeatherConditionSelector extends StatelessWidget {
+class TimeOfDaySelector extends StatefulWidget {
+  const TimeOfDaySelector({super.key});
+
+  @override
+  State<TimeOfDaySelector> createState() => _TimeOfDaySelectorState();
+}
+
+class _TimeOfDaySelectorState extends State<TimeOfDaySelector> {
+  TimeOfDay selectedTime = TimeOfDay(hour: 09, minute: 41);
+
+  Future<void> _selectTime(BuildContext context) async {
+    final TimeOfDay? timeOfDay = await showTimePicker(
+      context: context,
+      initialTime: selectedTime,
+      builder: (BuildContext context, Widget? child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+          child: child!,
+        );
+      },
+    );
+    if (timeOfDay != null && timeOfDay != selectedTime) {
+      setState(() {
+        selectedTime = timeOfDay;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () {
+        _selectTime(context);
+      },
+      child: Row(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Icon(Icons.access_time),
+          ),
+          Text(
+            selectedTime.format(context),
+          ),
+        ],
+      ),
+    );
+  }
+}
+/*
+class WeatherConditionSelector extends StatefulWidget {
   // Dropdown menu per selezionare una condizione meteorologica
   final ValueChanged<WeatherCondition>
       onValueChanged; // Contiene la nuova condizione dal menu a tendina
-  final WeatherCondition
-      currentCondition; // Rappresenta la condizione meteo attualmente selezionata
+  // Rappresenta la condizione meteo attualmente selezionata
 
   const WeatherConditionSelector({
-    Key? key,
+    super.key,
     required this.onValueChanged,
-    required this.currentCondition,
-  }) : super(key: key);
+  });
+
+  @override
+  State<WeatherConditionSelector> createState() =>
+      _WeatherConditionSelectorState();
+}
+
+class _WeatherConditionSelectorState extends State<WeatherConditionSelector> {
+  WeatherCondition currentCondition = WeatherCondition.sunny;
+
+  String enumToText(WeatherCondition condition) {
+    if (condition == WeatherCondition.cloudy) {
+      return "☁️ Nuvoloso";
+    } else if (condition == WeatherCondition.cold) {
+      return "❄️ Freddo";
+    } else if (condition == WeatherCondition.hot) {
+      return "🔥 Caldo";
+    } else if (condition == WeatherCondition.rainy) {
+      return "🌧️ Piggia";
+    } else if (condition == WeatherCondition.snowy) {
+      return "🌨️ Neve";
+    } else {
+      return "☀️ Sole";
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return DropdownButton<WeatherCondition>(
-      // Widget che crea il menu a tendina
-      value:
-          currentCondition, // Mostra la condizione meteorologica attualmente selezionata
-      onChanged: (WeatherCondition? newCondition) {
-        // Funzione callback che viene eseguita quando l'utente seleziona una nuova opzione
-        if (newCondition != null) {
-          // Siccome onchanged può accettare valori null facciamo questo controllo
-          onValueChanged(newCondition);
-        }
-      },
-      items: WeatherCondition.values.map((WeatherCondition condition) {
-        // Qui troviamo mappati i valori: enum WeatherCondition { sunny, cloudy, rainy, hot, cold, snowy }
-        return DropdownMenuItem<WeatherCondition>(
-          value: condition,
-          child: Text(condition.toString().split('.').last),
-        );
-      }).toList(),
+    return ElevatedButton(
+      onPressed: () {showModalBottomSheet(context: context, builder: WeatherConditionsModal(onValueChanged: onValueChanged))},
+      child: Text(
+        enumToText(currentCondition),
+      ),
     );
   }
 }
 
-// VERIFICARE
-class ActionSelector extends StatefulWidget {
-  // Mostra i device disponibili e permette di selezionare le azioni per ogni device
-  final Device device; // COSTRUTTORE: SOLO DEVICE?????
-  final ValueChanged<List<String>> onActionChanged;
-
-  const ActionSelector({
-    Key? key,
-    required this.device,
-    required this.onActionChanged,
-  }) : super(key: key);
+class WeatherConditionsModal extends StatefulWidget {
+  final ValueChanged<WeatherCondition> onValueChanged;
+  const WeatherConditionsModal({super.key, required this.onValueChanged});
 
   @override
-  State<ActionSelector> createState() => _ActionSelectorState();
+  State<WeatherConditionsModal> createState() => _WeatherConditionsModalState();
 }
 
-class _ActionSelectorState extends State<ActionSelector> {
-  List<String> selectedActions = [];
-
+class _WeatherConditionsModalState extends State<WeatherConditionsModal> {
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Text(widget.device.deviceName),
-        Wrap(
-          children: ['Turn On', 'Turn Off'].map((action) {
-            return ChoiceChip(
-              label: Text(action),
-              selected: selectedActions.contains(action),
-              onSelected: (selected) {
-                setState(() {
-                  selected
-                      ? selectedActions.add(action)
-                      : selectedActions.remove(action);
-                });
-                widget.onActionChanged(selectedActions);
-              },
-            );
-          }).toList(),
-        ),
-      ],
-    );
+    return Column();
   }
 }
+*/

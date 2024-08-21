@@ -414,20 +414,15 @@ class _DeviceChooserState extends State<DeviceChooser> {
     return SegmentedButton(
       segments: [
         ButtonSegment<DeviceType>(
-            value: DeviceType.light, 
-            label: Icon(Icons.lightbulb)),
+            value: DeviceType.light, label: Icon(Icons.lightbulb)),
         ButtonSegment<DeviceType>(
-          value: DeviceType.thermostat,
-          label: Icon(Icons.thermostat)),
+            value: DeviceType.thermostat, label: Icon(Icons.thermostat)),
         ButtonSegment<DeviceType>(
-          value: DeviceType.alarm,
-          label:Icon(Icons.doorbell)),
+            value: DeviceType.alarm, label: Icon(Icons.doorbell)),
         ButtonSegment<DeviceType>(
-          value: DeviceType.lock,
-          label: Icon(Icons.lock)),
+            value: DeviceType.lock, label: Icon(Icons.lock)),
         ButtonSegment<DeviceType>(
-          value: DeviceType.camera,
-          label: Icon(Icons.camera)),
+            value: DeviceType.camera, label: Icon(Icons.camera)),
       ],
       selected: <DeviceType>{deviceType},
       onSelectionChanged: (Set<DeviceType> newSelection) {
