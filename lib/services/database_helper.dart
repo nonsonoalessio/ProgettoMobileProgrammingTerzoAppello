@@ -91,7 +91,6 @@ class DatabaseHelper {
               executionTime TIME NOT NULL,
               weather TEXT NOT NULL,
               actions , //{required Map<Device, List<String>> actions}
-
           )
           """);
 

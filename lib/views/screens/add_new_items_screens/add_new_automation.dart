@@ -64,7 +64,6 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
                   name: _automationNameController.text,
                   executionTime: _executionTime,
                   weather: _selectedWeather,
-                  actions: _selectedActions,
                 );
                 Navigator.pop(context); // Verificare
               } else {
@@ -90,23 +89,23 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
                 child: TextField(
                   controller: _automationNameController,
                   decoration: InputDecoration(
-                  hintText: 'Inserisci nome dell\'automazione',
-                  border: OutlineInputBorder(),
+                    hintText: 'Inserisci nome dell\'automazione',
+                    border: OutlineInputBorder(),
                   ),
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: Text( 
+                child: Text(
                   'Condizione meteorologica',
                   style: Theme.of(context).textTheme.displaySmall,
-                  ),
+                ),
               ),
               WeatherConditionSelector(
                 onValueChanged: _handleWeatherConditionChanged,
                 currentCondition: _selectedWeather,
               ),
-                            Padding(
+              Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
                 child: Text(
                   'Tempo di esecuzione (secondi)',
@@ -123,12 +122,13 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
                   style: Theme.of(context).textTheme.displaySmall,
                 ),
               ),
-              for (var device in devices) 
+              for (var device in devices)
                 ActionSelector(
                   device: device,
-                  onActionChanged: (actions) => _handleActionChanged(device, actions),
+                  onActionChanged: (actions) =>
+                      _handleActionChanged(device, actions),
                 ),
-              ],
+            ],
           ),
         ),
       ),
@@ -136,9 +136,12 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
   }
 }
 
-class WeatherConditionSelector extends StatelessWidget { // Dropdown menu per selezionare una condizione meteorologica
-  final ValueChanged<WeatherCondition> onValueChanged;  // Contiene la nuova condizione dal menu a tendina
-  final WeatherCondition currentCondition;              // Rappresenta la condizione meteo attualmente selezionata
+class WeatherConditionSelector extends StatelessWidget {
+  // Dropdown menu per selezionare una condizione meteorologica
+  final ValueChanged<WeatherCondition>
+      onValueChanged; // Contiene la nuova condizione dal menu a tendina
+  final WeatherCondition
+      currentCondition; // Rappresenta la condizione meteo attualmente selezionata
 
   const WeatherConditionSelector({
     Key? key,
@@ -148,14 +151,19 @@ class WeatherConditionSelector extends StatelessWidget { // Dropdown menu per se
 
   @override
   Widget build(BuildContext context) {
-    return DropdownButton<WeatherCondition>(      // Widget che crea il menu a tendina
-      value: currentCondition,                    // Mostra la condizione meteorologica attualmente selezionata
-      onChanged: (WeatherCondition? newCondition) {   // Funzione callback che viene eseguita quando l'utente seleziona una nuova opzione
-        if (newCondition != null) {               // Siccome onchanged può accettare valori null facciamo questo controllo
+    return DropdownButton<WeatherCondition>(
+      // Widget che crea il menu a tendina
+      value:
+          currentCondition, // Mostra la condizione meteorologica attualmente selezionata
+      onChanged: (WeatherCondition? newCondition) {
+        // Funzione callback che viene eseguita quando l'utente seleziona una nuova opzione
+        if (newCondition != null) {
+          // Siccome onchanged può accettare valori null facciamo questo controllo
           onValueChanged(newCondition);
         }
       },
-      items: WeatherCondition.values.map((WeatherCondition condition) {   // Qui troviamo mappati i valori: enum WeatherCondition { sunny, cloudy, rainy, hot, cold, snowy }
+      items: WeatherCondition.values.map((WeatherCondition condition) {
+        // Qui troviamo mappati i valori: enum WeatherCondition { sunny, cloudy, rainy, hot, cold, snowy }
         return DropdownMenuItem<WeatherCondition>(
           value: condition,
           child: Text(condition.toString().split('.').last),
@@ -165,14 +173,15 @@ class WeatherConditionSelector extends StatelessWidget { // Dropdown menu per se
   }
 }
 
-class TimePicker extends StatelessWidget {    
-  final ValueChanged<int> onTimeChanged; 
+class TimePicker extends StatelessWidget {
+  final ValueChanged<int> onTimeChanged;
 
   const TimePicker({Key? key, required this.onTimeChanged}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Slider(      // Usiamo uno slider
+    return Slider(
+      // Usiamo uno slider
       min: 0,
       max: 3600,
       divisions: 60,
@@ -185,9 +194,10 @@ class TimePicker extends StatelessWidget {
   }
 }
 
-// VERIFICARE 
-class ActionSelector extends StatefulWidget { // Mostra i device disponibili e permette di selezionare le azioni per ogni device
-  final Device device;      // COSTRUTTORE: SOLO DEVICE?????
+// VERIFICARE
+class ActionSelector extends StatefulWidget {
+  // Mostra i device disponibili e permette di selezionare le azioni per ogni device
+  final Device device; // COSTRUTTORE: SOLO DEVICE?????
   final ValueChanged<List<String>> onActionChanged;
 
   const ActionSelector({
@@ -215,7 +225,9 @@ class _ActionSelectorState extends State<ActionSelector> {
               selected: selectedActions.contains(action),
               onSelected: (selected) {
                 setState(() {
-                  selected ? selectedActions.add(action) : selectedActions.remove(action);
+                  selected
+                      ? selectedActions.add(action)
+                      : selectedActions.remove(action);
                 });
                 widget.onActionChanged(selectedActions);
               },
