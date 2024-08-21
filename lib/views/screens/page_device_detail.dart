@@ -9,13 +9,6 @@ import '../../models/objects/light.dart';
 import '../../models/objects/lock.dart';
 import '../../models/objects/thermostat.dart';
 
-// Classe base per le pagine dei singoli devices
-// Questa classe include elementi UI comuni a tutti
-// i device come: AppBar, informazioni e statistiche sul device selezionato
-
-// Le sottoclassi implementeranno buildDeviceSpecificWidget
-// che mostrerà funzioni specifiche del device selezionato.
-
 class DeviceDetailPage extends ConsumerStatefulWidget {
   final Device device;
   const DeviceDetailPage({super.key, required this.device});
@@ -25,10 +18,44 @@ class DeviceDetailPage extends ConsumerStatefulWidget {
 }
 
 class EnergySavingSuggestions extends StatelessWidget {
-  const EnergySavingSuggestions({Key? key}) : super(key: key);
+  final Device device;
+  const EnergySavingSuggestions({Key? key, required this.device}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    List<String> suggestions;
+
+    if (device is Light) {
+      suggestions = [
+        'Spegni le luci quando non sono necessarie.',
+        'Utilizza lampadine a LED invece delle incandescenti.',
+      ];
+    } else if (device is Thermostat) {
+      suggestions = [
+        'Imposta il termostato a una temperatura ottimale.',
+        'Utilizza una programmazione per ridurre il consumo durante la notte.',
+      ];
+    } else if (device is Camera) {
+      suggestions = [
+        'Disattiva la telecamera quando non è necessaria.',
+        'Verifica le impostazioni di registrazione per ottimizzare il consumo energetico.',
+      ];
+    } else if (device is Lock) {
+      suggestions = [
+        'Controlla se la serratura è in modalità di risparmio energetico.',
+        'Verifica le impostazioni della batteria se è una serratura elettronica.',
+      ];
+    } else if (device is Alarm) {
+      suggestions = [
+        'Imposta l’allarme per spegnersi automaticamente quando non è in uso.',
+        'Controlla le impostazioni per evitare falsi allarmi e consumi inutili.',
+      ];
+    } else {
+      suggestions = [
+        'Controlla il manuale del dispositivo per suggerimenti specifici.',
+      ];
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -37,12 +64,7 @@ class EnergySavingSuggestions extends StatelessWidget {
           style: Theme.of(context).textTheme.headlineSmall,
         ),
         const SizedBox(height: 10),
-        _buildSuggestion('Spegni le luci quando non sono necessarie.'),
-        _buildSuggestion(
-            'Utilizza lampadine a LED invece delle incandescenti.'),
-        _buildSuggestion('Imposta il termostato a una temperatura ottimale.'),
-        _buildSuggestion('Scollega i dispositivi che non usi frequentemente.'),
-        _buildSuggestion('Utilizza apparecchi a basso consumo energetico.'),
+        ...suggestions.map((suggestion) => _buildSuggestion(suggestion)).toList(),
       ],
     );
   }
@@ -68,12 +90,12 @@ class EnergySavingSuggestions extends StatelessWidget {
 
 class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
   late TextEditingController _deviceNameController;
-  String? _selectedRoom; // memorizza la stanza nella quale si trova il device
+  String? _selectedRoom;
 
   @override
   void initState() {
-    super.initState(); //
-    TextEditingController(text: widget.device.deviceName);
+    super.initState();
+    _deviceNameController = TextEditingController(text: widget.device.deviceName);
     _selectedRoom = widget.device.room;
   }
 
@@ -95,24 +117,26 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
         actions: [
           IconButton(
             icon: const Icon(Icons.save),
-            onPressed: null, // _saveDevice,
+            onPressed: null,
           ),
         ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('${widget.device.deviceName}',
-                style: Theme.of(context).textTheme.displayMedium),
-            Text('Stanza: ${widget.device.room}',
-                style: Theme.of(context).textTheme.displayMedium),
-            const SizedBox(height: 20),
-            _buildDeviceSpecificWidget(widget.device),
-            const SizedBox(height: 20),
-            const EnergySavingSuggestions(),
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('${widget.device.deviceName}',
+                  style: Theme.of(context).textTheme.displayMedium),
+              Text('Stanza: ${widget.device.room}',
+                  style: Theme.of(context).textTheme.displayMedium),
+              const SizedBox(height: 20),
+              _buildDeviceSpecificWidget(widget.device),
+              const SizedBox(height: 20),
+              EnergySavingSuggestions(device: widget.device),
+            ],
+          ),
         ),
       ),
     );
@@ -135,9 +159,7 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
       widgets.add(const Text('Device sconosciuto'));
     }
 
-    widgets.add(
-      const SizedBox(height: 20),
-    );
+    widgets.add(const SizedBox(height: 20));
 
     widgets.add(
       const Text(
@@ -148,7 +170,7 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
 
     widgets.add(
       SizedBox(
-        height: 200,
+        height: 250,
         child: LineChart(
           LineChartData(
             gridData: FlGridData(
@@ -174,6 +196,7 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
                 sideTitles: SideTitles(
                   showTitles: true,
                   interval: 1,
+                  reservedSize: 50,
                   getTitlesWidget: (value, meta) {
                     return Text(
                       '${value.toStringAsFixed(1)} kWh',
@@ -185,10 +208,13 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
               bottomTitles: AxisTitles(
                 sideTitles: SideTitles(
                   showTitles: true,
-                  interval: 2,
+                  reservedSize: 50,
+                  interval: 4,
                   getTitlesWidget: (value, meta) {
+                    final int hour = value.toInt();
+                    final String hourStr = hour < 10 ? '0$hour:00' : '$hour:00';
                     return Text(
-                      '${value.toInt()}:00',
+                      hourStr,
                       style: const TextStyle(fontSize: 10),
                     );
                   },
@@ -315,7 +341,7 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
   }
 
   Widget _buildCameraWidget(Camera camera) {
-    String? _capturedImage; // Variabile per memorizzare l'immagine catturata
+    String? _capturedImage;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -348,8 +374,7 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
         ElevatedButton(
           onPressed: () {
             setState(() {
-              // Quando il pulsante viene premuto, viene simulata la cattura di un'immagine
-              _capturedImage = 'assets/image/carmine.jpg'; // Immagine dummy
+              _capturedImage = 'assets/image/carmine.jpg';
             });
           },
           child: const Text('Scatta foto'),
