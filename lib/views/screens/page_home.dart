@@ -85,7 +85,7 @@ class Homepage extends ConsumerWidget {
                     child: AvatarForDebugMenu(),
                   ),
                 ],
-                hintText: 'Cerca un sensore...',
+                hintText: 'Cerca un sensore... ',
               ),
             ),
             Expanded(
