@@ -37,14 +37,16 @@ class _NotificationPageState extends ConsumerState<NotificationPage> {
   Widget build(BuildContext context) {
     final notificationsList = ref.watch(notificationsNotifierProvider);
 
+    print(notificationsList);
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Notifiche'),
+        title: const Text('Notifiche'),
         leading: IconButton(
             onPressed: () {
               Navigator.pop(context);
             },
-            icon: Icon(Icons.arrow_back_ios_new)),
+            icon: const Icon(Icons.arrow_back_ios_new)),
       ),
       body: SafeArea(
         child: ListView.builder(
@@ -72,7 +74,7 @@ class NotificationCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
         border: Border(
           bottom: BorderSide(color: Colors.grey.shade300),
@@ -87,7 +89,7 @@ class NotificationCard extends StatelessWidget {
                 : Colors
                     .green, // Mostra icona verde per le notifiche non lette e icona grigia per le notifiche già lette
           ),
-          SizedBox(width: 16.0),
+          const SizedBox(width: 16.0),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -101,7 +103,7 @@ class NotificationCard extends StatelessWidget {
                         : FontWeight.bold,
                   ),
                 ),
-                SizedBox(height: 4.0),
+                const SizedBox(height: 4.0),
                 Text(
                   notification.description,
                   style: TextStyle(
@@ -113,7 +115,7 @@ class NotificationCard extends StatelessWidget {
             ),
           ),
           if (!notification.isRead)
-            Icon(
+            const Icon(
               Icons.circle,
               color: Colors.orange, // Notifiche non lette = pallino arancione
               size: 12.0,
