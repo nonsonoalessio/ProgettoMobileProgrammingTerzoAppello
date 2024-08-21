@@ -56,21 +56,9 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
           icon: Icon(Icons.arrow_back_ios_new),
         ),
         actions: [
+          // TODO: aggiunta salvataggio automazione
           IconButton(
-            onPressed: () {
-              if (_checkFields()) {
-                // Aggiungi automazione
-                Automation automation = Automation(
-                  name: _automationNameController.text,
-                  executionTime: _executionTime,
-                  weather: _selectedWeather,
-                );
-                Navigator.pop(context); // Verificare
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Completa tutti i campi.')));
-              }
-            },
+            onPressed: () {},
             icon: Icon(Icons.save),
           ),
         ],

@@ -1,5 +1,10 @@
 import 'dart:io';
+import 'package:progetto_mobile_programming/models/functionalities/action.dart';
+import 'package:progetto_mobile_programming/models/functionalities/alarm_action.dart';
 import 'package:progetto_mobile_programming/models/functionalities/automation.dart';
+import 'package:progetto_mobile_programming/models/functionalities/light_action.dart';
+import 'package:progetto_mobile_programming/models/functionalities/lock_action.dart';
+import 'package:progetto_mobile_programming/models/functionalities/thermostat_action.dart';
 import 'package:progetto_mobile_programming/models/objects/alarm.dart';
 import 'package:progetto_mobile_programming/models/objects/camera.dart';
 import 'package:progetto_mobile_programming/models/objects/device.dart';
@@ -21,7 +26,6 @@ class DatabaseHelper {
   List<Device> devices = [];
   List<Automation> automations = [];
   List<DeviceNotification> notifications = [];
-  int lastIndexForId = 0;
 
   Future<Database> _initDatabase() async {
     return openDatabase(
@@ -105,12 +109,14 @@ class DatabaseHelper {
               """);
 
         await db.execute("""
-          CREATE TABLE IF NOT EXISTS gestioneAutomazione (
-              id INTEGER NOT NULL,
-              name TEXT NOT NULL,
-              azione TEXT NOT NULL
-              FOREIGN KEY (id) REFERENCES device(id),
-              FOREIGN KEY (name) REFERENCES automation(name),
+          CREATE TABLE IF NOT EXISTS actions (
+              idDevice INTEGER NOT NULL,
+              automationName TEXT NOT NULL,
+              type TEXT NOT NULL,
+              azione TEXT NOT NULL,
+              temperatura REAL,
+              FOREIGN KEY (idDevice) REFERENCES device(id),
+              FOREIGN KEY (automationName) REFERENCES automation(name),
               PRIMARY KEY(id, name, azione)
           )
           """);
@@ -190,6 +196,70 @@ class DatabaseHelper {
     );
   }
 
+  Future<void> _fetchActions(String automationName, actions) async {
+    final db = await database;
+
+    final List<Map<String, dynamic>> mapsOfActions = await db.query('actions');
+
+/*
+- idDevice (id dispositivo)
+- automationName (nome automazione)
+- azione
+- temperatura
+- onOff
+ */
+    actions = List.generate(mapsOfActions.length, (i) {
+      Device d = devices
+          .where((d) => d.id == mapsOfActions[i]['idDevice'])
+          .toList()
+          .first;
+      if (mapsOfActions[i]['type'] == 'light') {
+        int colorTemp = 0;
+        LightsActions action;
+
+        if (mapsOfActions[i]['azione'] == 'setColorTemp') {
+          action = LightsActions.setColorTemp;
+          colorTemp = mapsOfActions[i]['temperatura'] as int;
+        } else if (mapsOfActions[i]['azione'] == 'turnOn') {
+          action = LightsActions.turnOn;
+        } else {
+          action = LightsActions.turnOff;
+        }
+        colorTemp == 0
+            ? LightAction(device: d, action: action)
+            : LightAction(
+                device: d, action: action, colorTemperature: colorTemp);
+      } else if (mapsOfActions[i]['type'] == 'alarm') {
+        AlarmsActions action;
+        if (mapsOfActions[i]['azione'] == 'turnOn') {
+          action = AlarmsActions.turnOn;
+        } else {
+          action = AlarmsActions.turnOff;
+        }
+        return AlarmAction(device: d, action: action);
+      } else if (mapsOfActions[i]['type'] == 'lock') {
+        LocksActions action;
+        if (mapsOfActions[i]['azione'] == 'activate') {
+          action = LocksActions.activate;
+        } else {
+          action = LocksActions.deactivate;
+        }
+        return LockAction(device: d, action: action);
+      } else {
+        return ThermostatAction(
+            device: d,
+            action: ThermostatsActions.setDesiredTemperature,
+            desiredTemp: mapsOfActions[i]['temperatura'] as double);
+      }
+    });
+  }
+
+  List<DeviceAction> _getActions(String automationName) {
+    List<DeviceAction> actions = [];
+    _fetchActions(automationName, actions);
+    return actions;
+  }
+
   Future<void> fetchAutomations() async {
     final db = await database;
 
@@ -198,13 +268,15 @@ class DatabaseHelper {
 
     automations = List.generate(mapsOfAutomations.length, (i) {
       return Automation(
-          name: mapsOfAutomations[i]['name'],
-          executionTime: mapsOfAutomations[i]['executionTime'],
-          weather: mapsOfAutomations[i]['weather']);
+        name: mapsOfAutomations[i]['name'],
+        executionTime: mapsOfAutomations[i]['executionTime'],
+        weather: mapsOfAutomations[i]['weather'],
+        actions: _getActions(mapsOfAutomations[i]['name']),
+      );
     });
+    automations = [...automations];
   }
 
-//TODO
   Future<void> fetchNotifications() async {
     final db = await database;
 
@@ -221,13 +293,10 @@ class DatabaseHelper {
           isRead: mapsOfNotifications[i]['isRead'],
           description: mapsOfNotifications[i]['description']);
     });
+    notifications = [
+      ...notifications,
+    ];
   }
-
-/*
-TODO: Future<void> fetchIndex() async {
-  // lastIndexForId = ??
-}
-*/
 
   Future<void> fetchDevices() async {
     final db = await database;
@@ -336,7 +405,6 @@ TODO: Future<void> fetchIndex() async {
     );
   }
 
-// TODO: non viene rimosso nessun dispositivo! Manca la query per la rimozione!
   Future<void> removeDevice(Device device) async {
     final db = await database;
 

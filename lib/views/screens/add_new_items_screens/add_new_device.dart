@@ -617,10 +617,8 @@ class _TemperaturePickerState extends State<TemperaturePicker> {
               child: TextButton(
                 onPressed: () {
                   setState(() {
-                    // TODO: controllo per immettere solo valori double
-                    temp = _temperaturePicked.text.isEmpty
-                        ? 18.0
-                        : _temperaturePicked as double;
+                    // Converte l'input in un double e controlla che sia valido. Se non è valido imposta temperatura di default a 18.0 gradi Celsius
+                    temp = double.tryParse(_temperaturePicked.text) ?? 18.0;
                   });
                   widget.onValueChanged(temp);
                   Navigator.pop(context);

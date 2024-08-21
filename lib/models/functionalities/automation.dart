@@ -1,4 +1,4 @@
-import 'package:progetto_mobile_programming/models/objects/device.dart';
+import 'package:progetto_mobile_programming/models/functionalities/action.dart';
 
 enum WeatherCondition { sunny, cloudy, rainy, hot, cold, snowy }
 
@@ -6,12 +6,13 @@ class Automation {
   String name;
   int executionTime;
   WeatherCondition weather;
+  List<DeviceAction> actions;
 
-  Automation({
-    required this.name,
-    required this.executionTime,
-    required this.weather,
-  });
+  Automation(
+      {required this.name,
+      required this.executionTime,
+      required this.weather,
+      required this.actions});
 
   /*
   factory Automation.fromMap(Map<String, dynamic> map) {
