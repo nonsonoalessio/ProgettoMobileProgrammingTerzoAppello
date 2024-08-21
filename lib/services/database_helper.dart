@@ -91,7 +91,7 @@ class DatabaseHelper {
           CREATE TABLE IF NOT EXISTS automation (
               name TEXT PRIMARY KEY,
               executionTime TIME,
-              weather TEXT,
+              weather TEXT
           )
           """);
 
@@ -117,7 +117,7 @@ class DatabaseHelper {
               temperatura REAL,
               FOREIGN KEY (idDevice) REFERENCES device(id),
               FOREIGN KEY (automationName) REFERENCES automation(name),
-              PRIMARY KEY(id, name, azione)
+              PRIMARY KEY(idDevice, automationName, azione)
           )
           """);
 
@@ -179,17 +179,15 @@ class DatabaseHelper {
           """);
 
         await db.execute("""
-          INSERT INTO automation (name, startTime)
+          INSERT INTO automation (name, executionTime)
            VALUES
-            ('Automazione mattutina', '06:00:00'),
             ('Automazione serale', '18:00:00')
           """);
 
         await db.execute("""
-          INSERT INTO gestioneAutomazione (id, name)
+          INSERT INTO actions (idDevice, automationName, type, azione)
            VALUES
-            (6, 'Automazione mattutina'),
-            (8, 'Automazione serale')
+            (5, 'Automazione serale', 'light', 'turnOn')
           """);
       },
       version: 1,
@@ -390,14 +388,17 @@ class DatabaseHelper {
       tableName = 'lights';
     } else if (device is Thermostat) {
       tableName = 'thermostats';
-    } else if (device is Camera) {
-      tableName = 'camera';
     } else {
-      // ramo else fittizio per evitare errori di compilazione; nessun dispositivo verrà mai aggiunto e non serve creare la tabella
-      tableName = 'devices';
+      tableName = 'camera';
     }
-
+    
     final db = await database;
+    await db.insert(
+      'device',
+      device.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+
     await db.insert(
       tableName,
       device.toMap(),
