@@ -100,9 +100,6 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
                   style: Theme.of(context).textTheme.displayMedium,
                 ),
               ),
-              TimePicker(
-                onTimeChanged: _handleExecutionTimeChanged,
-              ),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
                 child: Text(

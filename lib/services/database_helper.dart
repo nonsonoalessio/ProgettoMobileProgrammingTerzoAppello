@@ -302,6 +302,8 @@ class DatabaseHelper {
   Future<void> fetchDevices() async {
     final db = await database;
 
+    print("Connessione al database avvenuta con successo.");
+
     final List<Map<String, dynamic>> mapsOfAlarms = await db.rawQuery("""
       SELECT a.id, d.deviceName, d.room, a.isActive
       FROM device d 

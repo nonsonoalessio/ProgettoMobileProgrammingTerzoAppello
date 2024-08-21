@@ -22,6 +22,9 @@ class Homepage extends ConsumerWidget {
     final List<Device> devices = ref.watch(deviceNotifierProvider);
     final Set<String> rooms = ref.watch(roomsProvider);
 
+    print("Dispositivi: ${devices.length}");
+    print("Stanze: ${rooms.length}");
+
     final List<Widget> roomsLists = [];
     for (String room in rooms) {
       roomsLists.add(ListGenerator(
