@@ -21,7 +21,7 @@ class NotificationsNotifier extends _$NotificationsNotifier {
     // piuttosto, viene passato l'indirizzo di memoria della lista presente in DbHelper
     // devices = db.devices;
     // automations = db.automations;
-    notifications = db.notifications;
+    state = db.notifications;
     //lastIndexForId = db.lastIndexForId;
   }
 

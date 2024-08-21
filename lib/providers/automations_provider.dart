@@ -21,7 +21,7 @@ class AutomationsNotifier extends _$AutomationsNotifier {
 
     // si sfrutta il passaggio per riferimento, quindi non viene allocata una nuova lista
     // piuttosto, viene passato l'indirizzo di memoria della lista presente in DbHelper
-    automations = db.automations;
+    state = db.automations;
     //automations = db.automations;
     //notifications = db.notifications;
     //lastIndexForId = db.lastIndexForId;

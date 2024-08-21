@@ -218,8 +218,7 @@ class _AddNewDevicePageState extends ConsumerState<AddNewDevicePage> {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 20.0),
               child: DeviceChooser(
-                onDeviceTypeChanged:
-                    _handleDeviceTypeChanged, // Passa il callback
+                onDeviceTypeChanged: _handleDeviceTypeChanged,
               ),
             ),
             Padding(
@@ -270,21 +269,19 @@ class _AddNewDevicePageState extends ConsumerState<AddNewDevicePage> {
                       ),
                     ),
                   ),
-            SizedBox(
-              height: 10.0,
-            ),
-            Divider(),
-            SizedBox(
-              height: 10.0,
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: 12.0, bottom: 8.0),
-              child: Text(
-                'Personalizza il dispositivo',
-                style: Theme.of(context).textTheme.displayMedium,
+            if (_selectedDeviceType != DeviceType.camera) ...[
+              SizedBox(height: 10.0),
+              Divider(),
+              SizedBox(height: 10.0),
+              Padding(
+                padding: EdgeInsets.only(top: 12.0, bottom: 8.0),
+                child: Text(
+                  'Personalizza il dispositivo',
+                  style: Theme.of(context).textTheme.displayMedium,
+                ),
               ),
-            ),
-            _detailBuilder(),
+              _detailBuilder(),
+            ],
           ],
         ),
       ),
@@ -349,18 +346,7 @@ class _AddNewDevicePageState extends ConsumerState<AddNewDevicePage> {
         ],
       );
     } else if (_selectedDeviceType == DeviceType.camera) {
-      return Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: DeviceStatusSelector(
-              onValueChanged: _handleDeviceStatus,
-              currentStatus: _deviceStatus,
-              deviceType: DeviceType.camera,
-            ),
-          ),
-        ],
-      );
+      return Container();
     } else {
       return Container(
         height: 10.0,

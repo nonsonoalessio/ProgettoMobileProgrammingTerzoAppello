@@ -21,7 +21,7 @@ class DeviceNotifier extends _$DeviceNotifier {
 
     // si sfrutta il passaggio per riferimento, quindi non viene allocata una nuova lista
     // piuttosto, viene passato l'indirizzo di memoria della lista presente in DbHelper
-    devices = db.devices;
+    state = db.devices;
     //automations = db.automations;
     //notifications = db.notifications;
     //lastIndexForId = db.lastIndexForId;
