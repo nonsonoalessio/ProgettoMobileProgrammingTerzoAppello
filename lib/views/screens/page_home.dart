@@ -116,61 +116,61 @@ class ListGenerator extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(
-              vertical: 8.0,
-            ),
+            padding: const EdgeInsets.symmetric(vertical: 2.0),
             child: Text(
               roomName,
               style: Theme.of(context).textTheme.displayMedium,
             ),
           ),
           SizedBox(
-            height: 200,
-            child: GridView.count(
-              crossAxisCount: 2,
-              mainAxisSpacing: 8.0,
-              crossAxisSpacing: 8.0,
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              children: List.generate(devices.length, (index) {
-                Icon deviceIcon;
-                if (devices[index] is Lock) {
-                  deviceIcon = Icon(Icons.lock);
-                } else if (devices[index] is Alarm) {
-                  deviceIcon = Icon(Icons.doorbell);
-                } else if (devices[index] is Thermostat) {
-                  deviceIcon = Icon(Icons.thermostat);
-                } else if (devices[index] is Light) {
-                  deviceIcon = Icon(Icons.lightbulb);
-                } else {
-                  deviceIcon = Icon(Icons.camera);
-                }
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.push(
+            height: 165,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: List.generate(devices.length, (index) {
+                  if (devices[index] is Lock) {
+                    deviceIcon = Icon(Icons.lock, size: 40);
+                  } else if (devices[index] is Alarm) {
+                    deviceIcon = Icon(Icons.doorbell, size: 40);
+                  } else if (devices[index] is Thermostat) {
+                    deviceIcon = Icon(Icons.thermostat, size: 40);
+                  } else if (devices[index] is Light) {
+                    deviceIcon = Icon(Icons.lightbulb, size: 40);
+                  } else {
+                    deviceIcon = Icon(Icons.camera, size: 40);
+                  }
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) =>
-                                DeviceDetailPage(device: devices[index])));
-                  },
-                  child: SizedBox(
-                    height: 100,
-                    width: 100,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          devices[index].deviceName,
+                          builder: (context) => DeviceDetailPage(device: devices[index]),
                         ),
-                        IconButton(
-                          onPressed: () {},
-                          icon: deviceIcon,
+                      );
+                    },
+                    child: Container(
+                      width: 150, // Adjust width as needed
+                      padding: EdgeInsets.all(8),
+                      child: Card(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            SizedBox(
+                              height: 80,
+                              width: 100,
+                              child: Center(child: deviceIcon),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(4.0),
+                              child: Text(devices[index].deviceName),
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
-                  ),
-                );
-              }),
+                  );
+                }),
+              ),
             ),
           ),
           Divider(),
@@ -179,6 +179,7 @@ class ListGenerator extends StatelessWidget {
     );
   }
 }
+
 
 class AvatarForDebugMenu extends StatefulWidget {
   const AvatarForDebugMenu({super.key});

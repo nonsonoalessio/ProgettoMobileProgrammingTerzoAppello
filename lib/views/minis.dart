@@ -310,66 +310,106 @@ class ListGenerator extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    List<Device> devices =
+    final deviceList =
         ref.watch(deviceNotifierProvider).where(predicate).toList();
     late Icon deviceIcon;
+    final theme = Theme.of(context);
+
     return Padding(
       padding: const EdgeInsets.only(top: 8.0, left: 8.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Padding(
-            padding: EdgeInsets.symmetric(
-              vertical: 8.0,
+            padding: EdgeInsets.symmetric(vertical: 10.0),
+            child: Text(
+              "Device List",
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
           ),
           SizedBox(
-            height: 200,
-            child: GridView.count(
-              crossAxisCount: 2,
-              mainAxisSpacing: 8.0,
-              crossAxisSpacing: 8.0,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              children: List.generate(devices.length, (index) {
-                Icon deviceIcon;
-                if (devices[index] is Lock) {
-                  deviceIcon = const Icon(Icons.lock);
-                } else if (devices[index] is Alarm) {
-                  deviceIcon = const Icon(Icons.doorbell);
-                } else if (devices[index] is Thermostat) {
-                  deviceIcon = const Icon(Icons.thermostat);
-                } else if (devices[index] is Light) {
-                  deviceIcon = const Icon(Icons.lightbulb);
+            height: 150,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: deviceList.length,
+              itemBuilder: (context, index) {
+                if (deviceList[index] is Lock) {
+                  deviceIcon =
+                      Icon(Icons.lock, color: theme.colorScheme.primary);
+                } else if (deviceList[index] is Alarm) {
+                  deviceIcon =
+                      Icon(Icons.doorbell, color: theme.colorScheme.primary);
+                } else if (deviceList[index] is Thermostat) {
+                  deviceIcon =
+                      Icon(Icons.thermostat, color: theme.colorScheme.primary);
+                } else if (deviceList[index] is Light) {
+                  deviceIcon =
+                      Icon(Icons.lightbulb, color: theme.colorScheme.primary);
                 } else {
-                  deviceIcon = const Icon(Icons.camera);
+                  deviceIcon =
+                      Icon(Icons.camera, color: theme.colorScheme.primary);
                 }
                 return GestureDetector(
                   onTap: () {
                     Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                DeviceDetailPage(device: devices[index])));
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            DeviceDetailPage(device: deviceList[index]),
+                      ),
+                    );
                   },
-                  child: SizedBox(
-                    height: 100,
-                    width: 100,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          devices[index].deviceName,
+                  child: Container(
+                    width: 140, // Maggiore larghezza per la card
+                    margin: const EdgeInsets.only(right: 12.0),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          theme.colorScheme.surface,
+                          theme.colorScheme.surface
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(12.0),
+                      border: Border.all(
+                        color: theme.colorScheme.primary.withOpacity(0.3),
+                        width: 1.5,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.08),
+                          spreadRadius: 3,
+                          blurRadius: 6,
+                          offset: const Offset(0, 3),
                         ),
-                        IconButton(
-                          onPressed: () {},
-                          icon: deviceIcon,
+                      ],
+                    ),
+                    padding: const EdgeInsets.all(12.0), // Padding interno
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          height: 60,
+                          width: 60,
+                          child: deviceIcon,
+                        ),
+                        const SizedBox(height: 8.0),
+                        Text(
+                          deviceList[index].deviceName,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: theme.colorScheme.onSurface,
+                          ),
                         ),
                       ],
                     ),
                   ),
                 );
-              }),
+              },
             ),
           ),
           const Divider(),

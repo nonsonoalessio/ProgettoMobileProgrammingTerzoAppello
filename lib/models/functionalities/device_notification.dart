@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:progetto_mobile_programming/models/objects/device.dart';
 import 'dart:math';
 
@@ -8,7 +9,7 @@ class DeviceNotification {
   String title;
   Device device;
   NotificationType type;
-  int deliveryTime;
+  TimeOfDay deliveryTime;
   bool isRead;
   String description;
 

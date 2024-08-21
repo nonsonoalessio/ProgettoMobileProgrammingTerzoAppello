@@ -102,7 +102,7 @@ class DatabaseHelper {
               title TEXT NOT NULL,
               device INTEGER NOT NULL,
               type TEXT NOT NULL,
-              deliveryTime INTEGER NOT NULL,
+              deliveryTime TIME NOT NULL,
               isRead BOOLEAN NOT NULL,
               description TEXT NOT NULL,
               FOREIGN KEY (device) REFERENCES Device(id)
@@ -190,6 +190,12 @@ class DatabaseHelper {
            VALUES
             (5, 'Automazione serale', 'light', 'turnOn')
           """);
+
+        await db.execute("""
+          INSERT INTO deviceNotification (id, title, device, type, deliveryTime, isRead, description)
+           VALUES
+            (1, 'Mario guarda gatto', 9, 'security', '19:00:00', 0, 'mario pazzo')
+        """);
       },
       version: 1,
     );
@@ -270,6 +276,7 @@ class DatabaseHelper {
         name: mapsOfAutomations[i]['name'],
         // ignore: prefer_interpolation_to_compose_strings
         executionTime: TimeOfDay.fromDateTime(DateTime.parse(
+            // ignore: prefer_interpolation_to_compose_strings
             '1970-01-01 ' + mapsOfAutomations[i]['executionTime'])),
         weather: mapsOfAutomations[i]['weather'],
         actions: _getActions(mapsOfAutomations[i]['name']),
@@ -284,14 +291,27 @@ class DatabaseHelper {
     final List<Map<String, dynamic>> mapsOfNotifications =
         await db.query('deviceNotification');
 
+    print("notifiche recuperate: $mapsOfNotifications");
+
     notifications = List.generate(mapsOfNotifications.length, (i) {
+      Device d = devices
+          .where((d) => d.id == mapsOfNotifications[i]['device'])
+          .toList()
+          .first;
+      bool value;
+      mapsOfNotifications[i]['isRead'] == 0 ? value = false : value = true;
       return DeviceNotification(
-          id: DeviceNotification.generateUniqueId(),
+          id: mapsOfNotifications[i]['id'],
           title: mapsOfNotifications[i]['title'],
-          device: mapsOfNotifications[i]['device'],
-          type: mapsOfNotifications[i]['type'],
-          deliveryTime: mapsOfNotifications[i]['deliveryTime'],
-          isRead: mapsOfNotifications[i]['isRead'],
+          device: d,
+          type: NotificationType.values.firstWhere(
+            (e) => e.toString() == mapsOfNotifications[i]['type'],
+            orElse: () => NotificationType.security,
+          ),
+          // ignore: prefer_interpolation_to_compose_strings
+          deliveryTime: TimeOfDay.fromDateTime(DateTime.parse(
+              '1970-01-01' + mapsOfNotifications[i]['deliveryTime'])),
+          isRead: value,
           description: mapsOfNotifications[i]['description']);
     });
     notifications = [
@@ -432,7 +452,7 @@ class DatabaseHelper {
     await db.insert(
       'deviceNotification',
       {
-        'id': notification.id,
+        'id': DeviceNotification.generateUniqueId(),
         'title': notification.title,
         'device': notification.device,
         'type': notification.type,
