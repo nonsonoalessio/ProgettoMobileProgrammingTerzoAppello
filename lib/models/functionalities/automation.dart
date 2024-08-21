@@ -6,13 +6,11 @@ class Automation {
   String name;
   int executionTime;
   WeatherCondition weather;
-  Map<Device, List<String>> actions;
 
   Automation({
     required this.name,
     required this.executionTime,
     required this.weather,
-    required this.actions,
   });
 
   /*

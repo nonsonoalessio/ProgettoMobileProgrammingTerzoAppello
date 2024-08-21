@@ -31,23 +31,22 @@ class _AddNewDevicePageState extends ConsumerState<AddNewDevicePage> {
   double? _colorTemperature;
 
   Future<int> _generateUniqueId() async {
-  final devices = ref.watch(deviceNotifierProvider);
-  int uniqueId = -1; // Inizializzazione con un valore predefinito
-  bool isUnique = false;
+    final devices = ref.watch(deviceNotifierProvider);
+    int uniqueId = -1; // Inizializzazione con un valore predefinito
+    bool isUnique = false;
 
-  while (!isUnique) {
-    final int timestamp = (DateTime.now().millisecondsSinceEpoch / 1000).floor();
-    final int randomPart = Random().nextInt(1000);
-    uniqueId = (timestamp % 1000000) * 1000 + randomPart;
+    while (!isUnique) {
+      final int timestamp =
+          (DateTime.now().millisecondsSinceEpoch / 1000).floor();
+      final int randomPart = Random().nextInt(1000);
+      uniqueId = (timestamp % 1000000) * 1000 + randomPart;
 
-    // Controlla se l'ID è già presente
-    isUnique = !devices.any((device) => device.id == uniqueId);
+      // Controlla se l'ID è già presente
+      isUnique = !devices.any((device) => device.id == uniqueId);
+    }
+
+    return uniqueId;
   }
-
-  return uniqueId;
-}
-
-
 
   void _handleDeviceTypeChanged(DeviceType newType) {
     setState(() {
@@ -142,14 +141,14 @@ class _AddNewDevicePageState extends ConsumerState<AddNewDevicePage> {
             child: IconButton(
               onPressed: () async {
                 if (_checkfields()) {
-                  final uniqueId = await _generateUniqueId(); 
+                  final uniqueId = await _generateUniqueId();
                   DeviceType deviceType = _selectedDeviceType;
                   Device device;
                   if (deviceType == DeviceType.light) {
                     device = Light(
                       deviceName: _deviceNameController.text,
                       room: _selectedRoom as String,
-                      isActive: _deviceStatus == DeviceStatus.on ? true : false, 
+                      isActive: _deviceStatus == DeviceStatus.on ? true : false,
                       id: uniqueId,
                       // lightTemperature:
                     );
@@ -158,33 +157,29 @@ class _AddNewDevicePageState extends ConsumerState<AddNewDevicePage> {
                         deviceName: _deviceNameController.text,
                         room: _selectedRoom as String,
                         isActive:
-                        _deviceStatus == DeviceStatus.on ? true : false,
-                        id: uniqueId
-                        );
+                            _deviceStatus == DeviceStatus.on ? true : false,
+                        id: uniqueId);
                   } else if (deviceType == DeviceType.lock) {
                     device = Lock(
                         deviceName: _deviceNameController.text,
                         room: _selectedRoom as String,
                         isActive:
-                        _deviceStatus == DeviceStatus.on ? true : false,
-                        id: uniqueId
-                        );
+                            _deviceStatus == DeviceStatus.on ? true : false,
+                        id: uniqueId);
                   } else if (deviceType == DeviceType.camera) {
                     device = Camera(
                         deviceName: _deviceNameController.text,
                         room: _selectedRoom as String,
                         video: "",
-                        id: uniqueId
-                        );
+                        id: uniqueId);
                   } else {
                     // deviceType == DeviceType.thermostat
                     device = Thermostat(
-                      deviceName: _deviceNameController.text,
-                      room: _selectedRoom as String,
-                      detectedTemp: 0.0,
-                      desiredTemp: 0.0,
-                      id: uniqueId
-                    );
+                        deviceName: _deviceNameController.text,
+                        room: _selectedRoom as String,
+                        detectedTemp: 0.0,
+                        desiredTemp: 0.0,
+                        id: uniqueId);
                   }
                   ref
                       .read(deviceNotifierProvider.notifier)

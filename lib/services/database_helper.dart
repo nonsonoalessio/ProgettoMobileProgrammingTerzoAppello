@@ -1,6 +1,4 @@
 import 'dart:io';
-
-import 'package:flutter/material.dart';
 import 'package:progetto_mobile_programming/models/functionalities/automation.dart';
 import 'package:progetto_mobile_programming/models/objects/alarm.dart';
 import 'package:progetto_mobile_programming/models/objects/camera.dart';
@@ -88,9 +86,8 @@ class DatabaseHelper {
         await db.execute("""
           CREATE TABLE IF NOT EXISTS automation (
               name TEXT PRIMARY KEY,
-              executionTime TIME NOT NULL,
-              weather TEXT NOT NULL,
-              actions , //{required Map<Device, List<String>> actions}
+              executionTime TIME,
+              weather TEXT,
           )
           """);
 
@@ -111,9 +108,10 @@ class DatabaseHelper {
           CREATE TABLE IF NOT EXISTS gestioneAutomazione (
               id INTEGER NOT NULL,
               name TEXT NOT NULL,
+              azione TEXT NOT NULL
               FOREIGN KEY (id) REFERENCES device(id),
               FOREIGN KEY (name) REFERENCES automation(name),
-              PRIMARY KEY(id, name)
+              PRIMARY KEY(id, name, azione)
           )
           """);
 
@@ -202,8 +200,7 @@ class DatabaseHelper {
       return Automation(
           name: mapsOfAutomations[i]['name'],
           executionTime: mapsOfAutomations[i]['executionTime'],
-          weather: mapsOfAutomations[i]['weather'],
-          actions: mapsOfAutomations[i]['actions']);
+          weather: mapsOfAutomations[i]['weather']);
     });
   }
 
