@@ -18,7 +18,7 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
   final TextEditingController _automationNameController =
       TextEditingController();
   WeatherCondition _selectedWeather = WeatherCondition.sunny;
-  int _executionTime = 0;
+  TimeOfDay _executionTime = TimeOfDay(hour: 09, minute: 41);
   Map<Device, List<String>> _selectedActions = {};
 
   void _handleWeatherConditionChanged(WeatherCondition newCondition) {
@@ -27,21 +27,31 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
     });
   }
 
-  void _handleExecutionTimeChanged(int time) {
+  void _handleExecutionTimeChanged(TimeOfDay time) {
     setState(() {
       _executionTime = time;
-    });
-  }
-
-  void _handleActionChanged(Device device, List<String> actions) {
-    setState(() {
-      _selectedActions[device] = actions;
     });
   }
 
   bool _checkFields() {
     return _automationNameController.text.isNotEmpty &&
         _selectedActions.isNotEmpty;
+  }
+
+  String enumToText(WeatherCondition condition) {
+    if (condition == WeatherCondition.cloudy) {
+      return "☁️ Nuvoloso";
+    } else if (condition == WeatherCondition.cold) {
+      return "❄️ Freddo";
+    } else if (condition == WeatherCondition.hot) {
+      return "🔥 Caldo";
+    } else if (condition == WeatherCondition.rainy) {
+      return "🌧️ Piggia";
+    } else if (condition == WeatherCondition.snowy) {
+      return "🌨️ Neve";
+    } else {
+      return "☀️ Sole";
+    }
   }
 
   @override
@@ -86,12 +96,23 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   ElevatedButton(
-                    onPressed: () {},
-                    child: Text("data"),
+                    onPressed: () {
+                      showModalBottomSheet(
+                          context: context,
+                          builder: (context) => WeatherConditionsModal(
+                                onValueChanged: _handleWeatherConditionChanged,
+                              ));
+                    },
+                    child: Text(
+                      enumToText(_selectedWeather),
+                    ),
                   ),
-                  TimeOfDaySelector(),
+                  TimeOfDaySelector(
+                    onValueChanged: _handleExecutionTimeChanged,
+                  ),
                 ],
               ),
+              
             ],
           ),
         ),
@@ -101,7 +122,12 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
 }
 
 class TimeOfDaySelector extends StatefulWidget {
-  const TimeOfDaySelector({super.key});
+  final ValueChanged<TimeOfDay> onValueChanged;
+
+  const TimeOfDaySelector({
+    super.key,
+    required this.onValueChanged,
+  });
 
   @override
   State<TimeOfDaySelector> createState() => _TimeOfDaySelectorState();
@@ -113,7 +139,7 @@ class _TimeOfDaySelectorState extends State<TimeOfDaySelector> {
   Future<void> _selectTime(BuildContext context) async {
     final TimeOfDay? timeOfDay = await showTimePicker(
       context: context,
-      initialTime: selectedTime,
+      initialTime: TimeOfDay(hour: 09, minute: 41),
       builder: (BuildContext context, Widget? child) {
         return MediaQuery(
           data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
@@ -124,6 +150,7 @@ class _TimeOfDaySelectorState extends State<TimeOfDaySelector> {
     if (timeOfDay != null && timeOfDay != selectedTime) {
       setState(() {
         selectedTime = timeOfDay;
+        widget.onValueChanged(selectedTime);
       });
     }
   }
@@ -134,40 +161,33 @@ class _TimeOfDaySelectorState extends State<TimeOfDaySelector> {
       onPressed: () {
         _selectTime(context);
       },
-      child: Row(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: Icon(Icons.access_time),
-          ),
-          Text(
-            selectedTime.format(context),
-          ),
-        ],
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        child: Row(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: Icon(Icons.access_time),
+            ),
+            Text(
+              selectedTime.format(context),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
-/*
-class WeatherConditionSelector extends StatefulWidget {
-  // Dropdown menu per selezionare una condizione meteorologica
-  final ValueChanged<WeatherCondition>
-      onValueChanged; // Contiene la nuova condizione dal menu a tendina
-  // Rappresenta la condizione meteo attualmente selezionata
 
-  const WeatherConditionSelector({
-    super.key,
-    required this.onValueChanged,
-  });
+class WeatherConditionsModal extends StatefulWidget {
+  final ValueChanged<WeatherCondition> onValueChanged;
+  const WeatherConditionsModal({super.key, required this.onValueChanged});
 
   @override
-  State<WeatherConditionSelector> createState() =>
-      _WeatherConditionSelectorState();
+  State<WeatherConditionsModal> createState() => _WeatherConditionsModalState();
 }
 
-class _WeatherConditionSelectorState extends State<WeatherConditionSelector> {
-  WeatherCondition currentCondition = WeatherCondition.sunny;
-
+class _WeatherConditionsModalState extends State<WeatherConditionsModal> {
   String enumToText(WeatherCondition condition) {
     if (condition == WeatherCondition.cloudy) {
       return "☁️ Nuvoloso";
@@ -184,29 +204,28 @@ class _WeatherConditionSelectorState extends State<WeatherConditionSelector> {
     }
   }
 
+  WeatherCondition? _selectedCondition = WeatherCondition.sunny;
+
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: () {showModalBottomSheet(context: context, builder: WeatherConditionsModal(onValueChanged: onValueChanged))},
-      child: Text(
-        enumToText(currentCondition),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: WeatherCondition.values.map((WeatherCondition condition) {
+          return RadioListTile<WeatherCondition>(
+            title: Text(enumToText(condition)),
+            value: condition,
+            groupValue: _selectedCondition,
+            onChanged: (WeatherCondition? value) {
+              setState(() {
+                _selectedCondition = value;
+                widget.onValueChanged(value as WeatherCondition);
+              });
+            },
+          );
+        }).toList(),
       ),
     );
   }
 }
-
-class WeatherConditionsModal extends StatefulWidget {
-  final ValueChanged<WeatherCondition> onValueChanged;
-  const WeatherConditionsModal({super.key, required this.onValueChanged});
-
-  @override
-  State<WeatherConditionsModal> createState() => _WeatherConditionsModalState();
-}
-
-class _WeatherConditionsModalState extends State<WeatherConditionsModal> {
-  @override
-  Widget build(BuildContext context) {
-    return Column();
-  }
-}
-*/
