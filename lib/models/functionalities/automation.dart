@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:progetto_mobile_programming/models/functionalities/action.dart';
 
-enum WeatherCondition { sunny, cloudy, rainy, hot, cold, snowy }
+enum WeatherCondition { none, sunny, cloudy, rainy, hot, cold, snowy }
 
 class Automation {
   String name;

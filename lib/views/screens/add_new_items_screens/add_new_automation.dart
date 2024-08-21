@@ -49,6 +49,8 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
       return "🌧️ Piggia";
     } else if (condition == WeatherCondition.snowy) {
       return "🌨️ Neve";
+    } else if (condition == WeatherCondition.none) {
+      return "🚫 Nessuna condizione";
     } else {
       return "☀️ Sole";
     }
@@ -58,6 +60,12 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
   Widget build(BuildContext context) {
     final List<Device> devices = ref.watch(deviceNotifierProvider);
     return Scaffold(
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {},
+        label: Text('Aggiungi azione'),
+        icon: Icon(Icons.add),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       appBar: AppBar(
         leading: IconButton(
           onPressed: () {
@@ -76,7 +84,8 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: ListView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 "Nuova Automazione",
@@ -112,7 +121,7 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
                   ),
                 ],
               ),
-              
+              ListOfActions(),
             ],
           ),
         ),
@@ -199,6 +208,8 @@ class _WeatherConditionsModalState extends State<WeatherConditionsModal> {
       return "🌧️ Piggia";
     } else if (condition == WeatherCondition.snowy) {
       return "🌨️ Neve";
+    } else if (condition == WeatherCondition.none) {
+      return "🚫 Nessuna condizione";
     } else {
       return "☀️ Sole";
     }
@@ -227,5 +238,19 @@ class _WeatherConditionsModalState extends State<WeatherConditionsModal> {
         }).toList(),
       ),
     );
+  }
+}
+
+class ListOfActions extends StatefulWidget {
+  const ListOfActions({super.key});
+
+  @override
+  State<ListOfActions> createState() => _ListOfActionsState();
+}
+
+class _ListOfActionsState extends State<ListOfActions> {
+  @override
+  Widget build(BuildContext context) {
+    return Text("Azione 1");
   }
 }
