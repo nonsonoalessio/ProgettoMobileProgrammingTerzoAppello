@@ -95,7 +95,7 @@ class NotificationCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  notification.title,
+                  "${notification.title} - ${notification.device.deviceName}",
                   style: TextStyle(
                     fontSize: 16.0,
                     fontWeight: notification.isRead
@@ -106,6 +106,14 @@ class NotificationCard extends StatelessWidget {
                 const SizedBox(height: 4.0),
                 Text(
                   notification.description,
+                  style: TextStyle(
+                    fontSize: 14.0,
+                    color: notification.isRead ? Colors.grey : Colors.black,
+                  ),
+                ),
+                const SizedBox(height: 4.0),
+                Text(
+                  notification.deliveryTime.toString(),
                   style: TextStyle(
                     fontSize: 14.0,
                     color: notification.isRead ? Colors.grey : Colors.black,
