@@ -144,7 +144,8 @@ class ListGenerator extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => DeviceDetailPage(device: devices[index]),
+                          builder: (context) =>
+                              DeviceDetailPage(device: devices[index]),
                         ),
                       );
                     },
@@ -180,7 +181,6 @@ class ListGenerator extends StatelessWidget {
   }
 }
 
-
 class AvatarForDebugMenu extends StatefulWidget {
   const AvatarForDebugMenu({super.key});
 
@@ -194,7 +194,7 @@ class _AvatarForDebugMenuState extends State<AvatarForDebugMenu> {
   Widget build(BuildContext context) {
     return GestureDetector(
       child: CircleAvatar(
-        backgroundImage: AssetImage('assets/images/carmine.jpg'),
+        backgroundImage: AssetImage('assets/images/mario.jpg'),
       ),
       onLongPress: () {
         setState(() {

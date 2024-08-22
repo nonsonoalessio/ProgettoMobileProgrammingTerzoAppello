@@ -46,7 +46,7 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
     } else if (condition == WeatherCondition.hot) {
       return "🔥 Caldo";
     } else if (condition == WeatherCondition.rainy) {
-      return "🌧️ Piggia";
+      return "🌧️ Pioggia";
     } else if (condition == WeatherCondition.snowy) {
       return "🌨️ Neve";
     } else if (condition == WeatherCondition.none) {
@@ -205,7 +205,7 @@ class _WeatherConditionsModalState extends State<WeatherConditionsModal> {
     } else if (condition == WeatherCondition.hot) {
       return "🔥 Caldo";
     } else if (condition == WeatherCondition.rainy) {
-      return "🌧️ Piggia";
+      return "🌧️ Pioggia";
     } else if (condition == WeatherCondition.snowy) {
       return "🌨️ Neve";
     } else if (condition == WeatherCondition.none) {
@@ -219,24 +219,20 @@ class _WeatherConditionsModalState extends State<WeatherConditionsModal> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16.0),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: WeatherCondition.values.map((WeatherCondition condition) {
-          return RadioListTile<WeatherCondition>(
-            title: Text(enumToText(condition)),
-            value: condition,
-            groupValue: _selectedCondition,
-            onChanged: (WeatherCondition? value) {
-              setState(() {
-                _selectedCondition = value;
-                widget.onValueChanged(value as WeatherCondition);
-              });
-            },
-          );
-        }).toList(),
-      ),
+    return ListView(
+      children: WeatherCondition.values.map((WeatherCondition condition) {
+        return RadioListTile<WeatherCondition>(
+          title: Text(enumToText(condition)),
+          value: condition,
+          groupValue: _selectedCondition,
+          onChanged: (WeatherCondition? value) {
+            setState(() {
+              _selectedCondition = value;
+              widget.onValueChanged(value as WeatherCondition);
+            });
+          },
+        );
+      }).toList(),
     );
   }
 }
