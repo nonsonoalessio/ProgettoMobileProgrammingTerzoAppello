@@ -14,22 +14,58 @@ import 'package:progetto_mobile_programming/views/screens/add_new_items_screens/
 import 'package:progetto_mobile_programming/views/screens/page_all_notification.dart';
 import 'package:progetto_mobile_programming/views/screens/page_device_detail.dart';
 
-class Homepage extends ConsumerWidget {
+class Homepage extends ConsumerStatefulWidget {
   const Homepage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  _HomepageState createState() => _HomepageState();
+}
+
+class _HomepageState extends ConsumerState<Homepage> {
+  final TextEditingController _searchController = TextEditingController();
+  String _selectedType = 'All'; // Default to 'All' for no filtering
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Aggiorna la UI quando il testo cambia
+    _searchController.addListener(() {
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final List<Device> devices = ref.watch(deviceNotifierProvider);
     final Set<String> rooms = ref.watch(roomsProvider);
 
-    print("Dispositivi: ${devices.length}");
-    print("Stanze: ${rooms.length}");
+    // Filter devices based on search query and selected type
+    final filteredDevices = devices.where((device) {
+      final matchesSearch = _searchController.text.isEmpty ||
+          device.deviceName
+              .toLowerCase()
+              .contains(_searchController.text.toLowerCase());
+      final matchesType = _selectedType == 'All' ||
+          (device is Lock && _selectedType == 'Lock') ||
+          (device is Alarm && _selectedType == 'Alarm') ||
+          (device is Thermostat && _selectedType == 'Thermostat') ||
+          (device is Light && _selectedType == 'Light');
+
+      return matchesSearch && matchesType;
+    }).toList();
 
     final List<Widget> roomsLists = [];
     for (String room in rooms) {
       roomsLists.add(ListGenerator(
         roomName: room,
-        devices: devices.where((d) => d.room == room).toList(),
+        devices: filteredDevices.where((d) => d.room == room).toList(),
       ));
     }
 
@@ -37,13 +73,14 @@ class Homepage extends ConsumerWidget {
       appBar: AppBar(
         actions: [
           IconButton(
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => NotificationPage()));
-              },
-              icon: Icon(Icons.notifications))
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => NotificationPage()),
+              );
+            },
+            icon: Icon(Icons.notifications),
+          ),
         ],
         title: SizedBox(
           child: Image.asset(
@@ -56,17 +93,11 @@ class Homepage extends ConsumerWidget {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (context) => AddNewDevicePage(),
-            ),
+            MaterialPageRoute(builder: (context) => AddNewDevicePage()),
           );
         },
-        label: Text(
-          'Aggiungi dispositivo',
-        ),
-        icon: Icon(
-          Icons.add,
-        ),
+        label: Text('Aggiungi dispositivo'),
+        icon: Icon(Icons.add),
         enableFeedback: true,
       ),
       body: SafeArea(
@@ -74,18 +105,38 @@ class Homepage extends ConsumerWidget {
           children: [
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: SearchBar(
-                leading: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Icon(Icons.search),
-                ),
-                trailing: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: AvatarForDebugMenu(),
+              child: Column(
+                children: [
+                  SearchBar(
+                    controller: _searchController,
+                    leading: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Icon(Icons.search),
+                    ),
+                    trailing: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: AvatarForDebugMenu(),
+                      ),
+                    ],
+                    hintText: 'Cerca un sensore...',
+                  ),
+                  DropdownButton<String>(
+                    value: _selectedType,
+                    items: ['All', 'Lock', 'Alarm', 'Thermostat', 'Light']
+                        .map((type) => DropdownMenuItem<String>(
+                              value: type,
+                              child: Text(type),
+                            ))
+                        .toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedType = value ?? 'All';
+                      });
+                    },
+                    hint: Text('Select Device Type'),
                   ),
                 ],
-                hintText: 'Cerca un sensore... ',
               ),
             ),
             Expanded(
@@ -235,6 +286,39 @@ class _AvatarForDebugMenuState extends State<AvatarForDebugMenu> {
           _clicks = 0;
         }
       },
+    );
+  }
+}
+
+class SearchBar extends StatelessWidget {
+  final TextEditingController controller;
+  final Widget leading;
+  final List<Widget> trailing;
+  final String hintText;
+
+  const SearchBar({
+    super.key,
+    required this.controller,
+    required this.leading,
+    required this.trailing,
+    required this.hintText,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: controller,
+      decoration: InputDecoration(
+        prefixIcon: leading,
+        suffixIcon: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: trailing,
+        ),
+        hintText: hintText,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+      ),
     );
   }
 }
