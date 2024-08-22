@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:progetto_mobile_programming/firebase_options.dart';
 import 'package:progetto_mobile_programming/views/screens/page_all_device.dart';
 import 'package:progetto_mobile_programming/views/screens/page_automation.dart';
 import 'package:progetto_mobile_programming/views/screens/page_home.dart';
 import 'package:progetto_mobile_programming/views/screens/page_security.dart';
 
-void main() {
+import 'package:firebase_core/firebase_core.dart';
+import 'api/firebase_api.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await FirebaseApi().initNotifications();
   runApp(const ProviderScope(child: MainApp()));
 }
 
