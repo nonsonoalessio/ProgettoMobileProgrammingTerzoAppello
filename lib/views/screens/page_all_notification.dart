@@ -113,7 +113,7 @@ class NotificationCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 4.0),
                 Text(
-                  notification.deliveryTime.toString(),
+                  MaterialLocalizations.of(context).formatTimeOfDay(notification.deliveryTime),
                   style: TextStyle(
                     fontSize: 14.0,
                     color: notification.isRead ? Colors.grey : Colors.black,
