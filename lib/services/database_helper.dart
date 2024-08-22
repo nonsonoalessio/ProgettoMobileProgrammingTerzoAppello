@@ -310,7 +310,7 @@ class DatabaseHelper {
           ),
           // ignore: prefer_interpolation_to_compose_strings
           deliveryTime: TimeOfDay.fromDateTime(DateTime.parse(
-              '1970-01-01' + mapsOfNotifications[i]['deliveryTime'])),
+              '1970-01-01 ' + mapsOfNotifications[i]['deliveryTime'])),
           isRead: value,
           description: mapsOfNotifications[i]['description']);
     });
