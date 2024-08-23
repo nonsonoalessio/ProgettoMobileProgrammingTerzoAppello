@@ -15,6 +15,7 @@ import 'package:progetto_mobile_programming/views/screens/page_all_notification.
 import 'package:progetto_mobile_programming/views/screens/page_device_detail.dart';
 
 class Homepage extends ConsumerStatefulWidget {
+class Homepage extends ConsumerStatefulWidget {
   const Homepage({super.key});
 
   @override
@@ -60,11 +61,26 @@ class _HomepageState extends ConsumerState<Homepage> {
 
       return matchesSearch && matchesType;
     }).toList();
+    // Filter devices based on search query and selected type
+    final filteredDevices = devices.where((device) {
+      final matchesSearch = _searchController.text.isEmpty ||
+          device.deviceName
+              .toLowerCase()
+              .contains(_searchController.text.toLowerCase());
+      final matchesType = _selectedType == 'All' ||
+          (device is Lock && _selectedType == 'Lock') ||
+          (device is Alarm && _selectedType == 'Alarm') ||
+          (device is Thermostat && _selectedType == 'Thermostat') ||
+          (device is Light && _selectedType == 'Light');
+
+      return matchesSearch && matchesType;
+    }).toList();
 
     final List<Widget> roomsLists = [];
     for (String room in rooms) {
       roomsLists.add(ListGenerator(
         roomName: room,
+        devices: filteredDevices.where((d) => d.room == room).toList(),
         devices: filteredDevices.where((d) => d.room == room).toList(),
       ));
     }
@@ -73,13 +89,14 @@ class _HomepageState extends ConsumerState<Homepage> {
       appBar: AppBar(
         actions: [
           IconButton(
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => NotificationPage()));
-              },
-              icon: Icon(Icons.notifications))
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => NotificationPage()),
+              );
+            },
+            icon: Icon(Icons.notifications),
+          ),
         ],
         title: SizedBox(
           child: Image.asset(
@@ -92,17 +109,11 @@ class _HomepageState extends ConsumerState<Homepage> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (context) => AddNewDevicePage(),
-            ),
+            MaterialPageRoute(builder: (context) => AddNewDevicePage()),
           );
         },
-        label: Text(
-          'Aggiungi dispositivo',
-        ),
-        icon: Icon(
-          Icons.add,
-        ),
+        label: Text('Aggiungi dispositivo'),
+        icon: Icon(Icons.add),
         enableFeedback: true,
       ),
       body: SafeArea(
