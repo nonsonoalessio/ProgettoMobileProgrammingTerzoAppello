@@ -125,30 +125,34 @@ class _HomepageState extends ConsumerState<Homepage> {
                       borderSide: BorderSide.none,
                     ),
                   ),
-                  DropdownButtonFormField<String>(
-                    value: _selectedType,
-                    items: ['All', 'Lock', 'Alarm', 'Thermostat', 'Light']
-                        .map((type) => DropdownMenuItem<String>(
-                              value: type,
-                              child: Text(type),
-                            ))
-                        .toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedType = value ?? 'All';
-                      });
-                    },
-                    hint: Text('Select Device Type'),
-                    decoration: InputDecoration(
-                      contentPadding: EdgeInsets.symmetric(
-                          horizontal: 115.0, vertical: 16.0),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(40.0),
-                        borderSide: BorderSide.none,
+                  Wrap(
+                    children: [
+                      DropdownButtonFormField<String>(
+                        value: _selectedType,
+                        items: ['All', 'Lock', 'Alarm', 'Thermostat', 'Light']
+                            .map((type) => DropdownMenuItem<String>(
+                                  value: type,
+                                  child: Text(type),
+                                ))
+                            .toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedType = value ?? 'All';
+                          });
+                        },
+                        hint: Text('Select Device Type'),
+                        decoration: InputDecoration(
+                          contentPadding: EdgeInsets.symmetric(
+                              horizontal: 16.0, vertical: 16.0),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(40.0),
+                            borderSide: BorderSide.none,
+                          ),
+                          filled: true,
+                          fillColor: Colors.grey[200],
+                        ),
                       ),
-                      filled: true,
-                      fillColor: Colors.grey[200],
-                    ),
+                    ],
                   )
                 ],
               ),

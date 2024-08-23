@@ -90,93 +90,94 @@ class _AutomationDetailPageState extends State<AutomationDetailPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Modifica Automazione'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.save),
-            onPressed: () async {
-              await _updateAutomation();
-              Navigator.pop(context);
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+      title: Text('Modifica Automazione'),
+      actions: [
+        IconButton(
+          icon: Icon(Icons.save),
+          onPressed: () async {
+            await _updateAutomation();
+            Navigator.pop(context);
+          },
+        ),
+      ],
+    ),
+    body: SingleChildScrollView( // Aggiungi SingleChildScrollView qui
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TextField(
+            decoration: InputDecoration(
+              labelText: 'Nome automazione',
+              border: OutlineInputBorder(),
+            ),
+            onChanged: (value) => _name = value,
+            controller: TextEditingController(text: _name),
+          ),
+          const SizedBox(height: 8),
+          ListTile(
+            title: Text('Orario di esecuzione'),
+            subtitle: Text(MaterialLocalizations.of(context).formatTimeOfDay(_executionTime)),
+            trailing: Icon(Icons.edit),
+            onTap: () => _selectTime(context),
+          ),
+          const SizedBox(height: 8),
+          DropdownButtonFormField<WeatherCondition>(
+            decoration: InputDecoration(
+              labelText: 'Condizioni meteo',
+              border: OutlineInputBorder(),
+            ),
+            value: _weatherCondition,
+            items: WeatherCondition.values.map((WeatherCondition condition) {
+              return DropdownMenuItem<WeatherCondition>(
+                value: condition,
+                child: Text(formatWeatherCondition(condition)),
+              );
+            }).toList(),
+            onChanged: (value) {
+              setState(() {
+                _weatherCondition = value;
+              });
             },
+          ),
+          const SizedBox(height: 16),
+          const Text(
+            'Azioni:',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          ListView.builder(
+            shrinkWrap: true, 
+            physics: const NeverScrollableScrollPhysics(), 
+            itemCount: _actions.length,
+            itemBuilder: (context, index) {
+              final action = _actions[index];
+              return ListTile(
+                title: Text(action.runtimeType.toString()),
+                subtitle: Text(action.toMap().toString()),
+                leading: const Icon(Icons.device_unknown),
+                trailing: IconButton(
+                  icon: Icon(Icons.edit),
+                  onPressed: () => _editAction(index),
+                ),
+              );
+            },
+          ),
+          const SizedBox(height: 8),
+          ElevatedButton.icon(
+            onPressed: () {
+              // Aggiungi una nuova azione
+            },
+            icon: Icon(Icons.add),
+            label: Text('Aggiungi Azione'),
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TextField(
-              decoration: InputDecoration(
-                labelText: 'Nome automazione',
-                border: OutlineInputBorder(),
-              ),
-              onChanged: (value) => _name = value,
-              controller: TextEditingController(text: _name),
-            ),
-            const SizedBox(height: 8),
-            ListTile(
-              title: Text('Orario di esecuzione'),
-              subtitle: Text(MaterialLocalizations.of(context).formatTimeOfDay(_executionTime)),
-              trailing: Icon(Icons.edit),
-              onTap: () => _selectTime(context),
-            ),
-            const SizedBox(height: 8),
-            DropdownButtonFormField<WeatherCondition>(
-              decoration: InputDecoration(
-                labelText: 'Condizioni meteo',
-                border: OutlineInputBorder(),
-              ),
-              value: _weatherCondition,
-              items: WeatherCondition.values.map((WeatherCondition condition) {
-                return DropdownMenuItem<WeatherCondition>(
-                  value: condition,
-                  child: Text(formatWeatherCondition(condition)),
-                );
-              }).toList(),
-              onChanged: (value) {
-                setState(() {
-                  _weatherCondition = value;
-                });
-              },
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              'Azioni:',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Expanded(
-              child: ListView.builder(
-                itemCount: _actions.length,
-                itemBuilder: (context, index) {
-                  final action = _actions[index];
-                  return ListTile(
-                    title: Text(action.runtimeType.toString()),
-                    subtitle: Text(action.toMap().toString()),
-                    leading: const Icon(Icons.device_unknown),
-                    trailing: IconButton(
-                      icon: Icon(Icons.edit),
-                      onPressed: () => _editAction(index),
-                    ),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 8),
-            ElevatedButton.icon(
-              onPressed: () {
-                // Aggiungi una nuova azione
-              },
-              icon: Icon(Icons.add),
-              label: Text('Aggiungi Azione'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+    ),
+  );
+}
+
 }
