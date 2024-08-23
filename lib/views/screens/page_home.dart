@@ -14,7 +14,7 @@ import 'package:progetto_mobile_programming/views/screens/add_new_items_screens/
 import 'package:progetto_mobile_programming/views/screens/page_all_notification.dart';
 import 'package:progetto_mobile_programming/views/screens/page_device_detail.dart';
 
-class Homepage extends ConsumerStatefulWidget {
+
 class Homepage extends ConsumerStatefulWidget {
   const Homepage({super.key});
 
