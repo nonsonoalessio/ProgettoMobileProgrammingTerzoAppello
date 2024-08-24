@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:progetto_mobile_programming/models/objects/alarm.dart';
 import 'package:progetto_mobile_programming/models/objects/device.dart';
@@ -9,10 +10,15 @@ import 'package:progetto_mobile_programming/models/objects/lock.dart';
 import 'package:progetto_mobile_programming/models/objects/thermostat.dart';
 import 'package:progetto_mobile_programming/providers/devices_provider.dart';
 import 'package:progetto_mobile_programming/services/database_helper.dart';
+import 'package:progetto_mobile_programming/services/flutter_local_notifications.dart';
 import 'package:progetto_mobile_programming/views/minis.dart';
 import 'package:progetto_mobile_programming/views/screens/add_new_items_screens/add_new_device.dart';
 import 'package:progetto_mobile_programming/views/screens/page_all_notification.dart';
 import 'package:progetto_mobile_programming/views/screens/page_device_detail.dart';
+
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
+
 
 class Homepage extends ConsumerStatefulWidget {
   const Homepage({super.key});
@@ -28,6 +34,7 @@ class _HomepageState extends ConsumerState<Homepage> {
   @override
   void initState() {
     super.initState();
+    LocalNoti.initialize(flutterLocalNotificationsPlugin); 
 
     // Aggiorna la UI quando il testo cambia
     _searchController.addListener(() {

@@ -7,28 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1067442811457:android:a04746fc328d3d459e8cc0",
+        "mobilesdk_app_id": "1:1067442811457:android:a44960ee2b091c749e8cc0",
         "android_client_info": {
-          "package_name": "com.example.progetto_mobile_programming"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyAyAjIw-9okW31p3ZhigMbscP3SwpK_KxU"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:1067442811457:android:f2d9b0754112c75c9e8cc0",
-        "android_client_info": {
-          "package_name": "com.mobileprogramming.pushnotification"
+          "package_name": "com.mobileprogramming.app"
         }
       },
       "oauth_client": [],

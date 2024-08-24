@@ -42,7 +42,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyAyAjIw-9okW31p3ZhigMbscP3SwpK_KxU',
-    appId: '1:1067442811457:android:a04746fc328d3d459e8cc0',
+    appId: '1:1067442811457:android:a44960ee2b091c749e8cc0',
     messagingSenderId: '1067442811457',
     projectId: 'pushnotificationmp',
     storageBucket: 'pushnotificationmp.appspot.com',
@@ -50,7 +50,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyBYIHsECFGhfCfzue0NxFTAHBojQ844T9Q',
-    appId: '1:1067442811457:ios:95152e5a92fb01a59e8cc0',
+    appId: '1:1067442811457:ios:7fd5d8fc084562ff9e8cc0',
     messagingSenderId: '1067442811457',
     projectId: 'pushnotificationmp',
     storageBucket: 'pushnotificationmp.appspot.com',
