@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "1067442811457",
-    "project_id": "pushnotificationmp",
-    "storage_bucket": "pushnotificationmp.appspot.com"
+    "project_number": "1021244629365",
+    "project_id": "mppushnotification",
+    "storage_bucket": "mppushnotification.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1067442811457:android:a04746fc328d3d459e8cc0",
+        "mobilesdk_app_id": "1:1021244629365:android:940540cedfd6c674b0f33c",
         "android_client_info": {
           "package_name": "com.example.progetto_mobile_programming"
         }
@@ -15,26 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAyAjIw-9okW31p3ZhigMbscP3SwpK_KxU"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:1067442811457:android:f2d9b0754112c75c9e8cc0",
-        "android_client_info": {
-          "package_name": "com.mobileprogramming.pushnotification"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyAyAjIw-9okW31p3ZhigMbscP3SwpK_KxU"
+          "current_key": "AIzaSyABqURaTgImZDM2aogrpI1-YBUma3p44-A"
         }
       ],
       "services": {

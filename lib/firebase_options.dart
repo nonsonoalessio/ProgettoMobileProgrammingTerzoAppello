@@ -41,19 +41,19 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAyAjIw-9okW31p3ZhigMbscP3SwpK_KxU',
-    appId: '1:1067442811457:android:a04746fc328d3d459e8cc0',
-    messagingSenderId: '1067442811457',
-    projectId: 'pushnotificationmp',
-    storageBucket: 'pushnotificationmp.appspot.com',
+    apiKey: 'AIzaSyABqURaTgImZDM2aogrpI1-YBUma3p44-A',
+    appId: '1:1021244629365:android:940540cedfd6c674b0f33c',
+    messagingSenderId: '1021244629365',
+    projectId: 'mppushnotification',
+    storageBucket: 'mppushnotification.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyBYIHsECFGhfCfzue0NxFTAHBojQ844T9Q',
-    appId: '1:1067442811457:ios:95152e5a92fb01a59e8cc0',
-    messagingSenderId: '1067442811457',
-    projectId: 'pushnotificationmp',
-    storageBucket: 'pushnotificationmp.appspot.com',
+    apiKey: 'AIzaSyCRJf8DY1Ov8_Wxwjld2mA2spo5jsvTsEo',
+    appId: '1:1021244629365:ios:2ddcc85201bea6c0b0f33c',
+    messagingSenderId: '1021244629365',
+    projectId: 'mppushnotification',
+    storageBucket: 'mppushnotification.appspot.com',
     iosBundleId: 'com.example.progettoMobileProgramming',
   );
 
