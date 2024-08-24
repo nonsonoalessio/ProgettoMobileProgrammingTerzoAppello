@@ -133,34 +133,63 @@ class _HomepageState extends ConsumerState<Homepage> {
                     ),
                   ),
                   Wrap(
-                    children: [
-                      DropdownButtonFormField<String>(
-                        value: _selectedType,
-                        items: ['All', 'Lock', 'Alarm', 'Thermostat', 'Light']
-                            .map((type) => DropdownMenuItem<String>(
-                                  value: type,
-                                  child: Text(type),
-                                ))
-                            .toList(),
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedType = value ?? 'All';
-                          });
-                        },
-                        hint: Text('Select Device Type'),
-                        decoration: InputDecoration(
-                          contentPadding: EdgeInsets.symmetric(
-                              horizontal: 16.0, vertical: 16.0),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(40.0),
-                            borderSide: BorderSide.none,
-                          ),
-                          filled: true,
-                          fillColor: Colors.grey[200],
+                      spacing: 8.0, // Spacing between buttons
+                      runSpacing: 4.0, // Spacing between lines of buttons
+                      children: [
+                        FilterButton(
+                          label: 'Lock',
+                          isSelected: _selectedType == 'Lock',
+                          onTap: () {
+                            setState(() {
+                              if(_selectedType == 'Lock'){
+                                _selectedType = 'All';
+                              }else {
+                                _selectedType = 'Lock';
+                              }
+                            });
+                          },
                         ),
-                      ),
-                    ],
-                  )
+                        FilterButton(
+                          label: 'Alarm',
+                          isSelected: _selectedType == 'Alarm',
+                          onTap: () {
+                            setState(() {
+                              if(_selectedType == 'Alarm'){
+                                _selectedType = 'All';
+                              }else {
+                                _selectedType = 'Alarm';
+                              }
+                            });
+                          },
+                        ),
+                        FilterButton(
+                          label: 'Thermostat',
+                          isSelected: _selectedType == 'Thermostat',
+                          onTap: () {
+                            setState(() {
+                              if(_selectedType == 'Thermostat'){
+                                _selectedType = 'All';
+                              }else {
+                                _selectedType = 'Thermostat';
+                              }
+                            });
+                          },
+                        ),
+                        FilterButton(
+                          label: 'Light',
+                          isSelected: _selectedType == 'Light',
+                          onTap: () {
+                            setState(() {
+                              if(_selectedType == 'Light'){
+                                _selectedType = 'All';
+                              }else {
+                                _selectedType = 'Light';
+                              }
+                            });
+                          },
+                        ),
+                      ],
+                    )
                 ],
               ),
             ),
@@ -349,3 +378,30 @@ class SearchBar extends StatelessWidget {
     );
   }
 }
+
+class FilterButton extends StatelessWidget {
+  final String label;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const FilterButton({
+    Key? key,
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: onTap,
+      style: ElevatedButton.styleFrom(
+        foregroundColor: isSelected ? Colors.white : Colors.black, backgroundColor: isSelected ? Colors.blue : Colors.grey[300], shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20.0),
+        ),
+      ),
+      child: Text(label),
+    );
+  }
+}
+
