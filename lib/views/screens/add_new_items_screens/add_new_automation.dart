@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:progetto_mobile_programming/models/functionalities/automation.dart';
 import 'package:progetto_mobile_programming/models/objects/device.dart';
@@ -61,7 +62,12 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
     final List<Device> devices = ref.watch(deviceNotifierProvider);
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {},
+        onPressed: () {
+          showModalBottomSheet(
+            context: context,
+            builder: (context) => DeviceSelectionModal(),
+          );
+        },
         label: Text('Aggiungi azione'),
         icon: Icon(Icons.add),
       ),
@@ -248,5 +254,92 @@ class _ListOfActionsState extends State<ListOfActions> {
   @override
   Widget build(BuildContext context) {
     return Text("Azione 1");
+  }
+}
+
+class DeviceSelectionModal extends StatefulWidget {
+  const DeviceSelectionModal({super.key});
+
+  @override
+  State<DeviceSelectionModal> createState() => _DeviceSelectionModalState();
+}
+
+class _DeviceSelectionModalState extends State<DeviceSelectionModal> {
+  Device? _selectedDevice;
+
+  void _handleSelectedDevice(Device d) {
+    setState(() {
+      _selectedDevice = d;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: SizedBox(
+          width: double.infinity,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => DevicesListInModal(
+                      onDeviceSelected: _handleSelectedDevice,
+                    ),
+                  );
+                },
+                child: Text(_selectedDevice == null
+                    ? "Scegli dispositivo"
+                    : (_selectedDevice as Device).deviceName),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class DevicesListInModal extends ConsumerStatefulWidget {
+  final ValueChanged<Device> onDeviceSelected;
+
+  const DevicesListInModal({
+    super.key,
+    required this.onDeviceSelected,
+  });
+
+  @override
+  ConsumerState<DevicesListInModal> createState() => _DevicesListInModalState();
+}
+
+class _DevicesListInModalState extends ConsumerState<DevicesListInModal> {
+  Device? selectedOption;
+
+  @override
+  Widget build(BuildContext context) {
+    List<Device> options = ref.watch(deviceNotifierProvider);
+    return Dialog(
+      child: ListView(
+        children: options.map((option) {
+          return RadioListTile<Device>(
+            title: Text(option.deviceName),
+            value: option,
+            groupValue: selectedOption,
+            onChanged: (Device? value) {
+              setState(() {
+                selectedOption = value;
+                widget.onDeviceSelected(value as Device);
+                Navigator.pop(context);
+              });
+            },
+          );
+        }).toList(),
+      ),
+    );
   }
 }
