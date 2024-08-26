@@ -19,8 +19,6 @@ dependencies:
   http: ^1.2.2
   geolocator: ^13.0.1
   geocoding: ^3.0.0
-  firebase_core: ^2.24.2
-  firebase_messaging: ^14.7.10
   flutter_local_notifications: ^9.6.0
   
 dev_dependencies:

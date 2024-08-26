@@ -4,21 +4,21 @@ class LocalNoti {
   static Future initialize(
       FlutterLocalNotificationsPlugin flutterLocalNotificationPlugin) async {
     var androidInitialize =
-        new AndroidInitializationSettings('mipmap/ic_launcher');
-    var iOSInitialize = null;
-    var initializationsSettings = new InitializationSettings(
+        AndroidInitializationSettings('mipmap/ic_launcher');
+    var iOSInitialize = IOSInitializationSettings();
+    var initializationsSettings = InitializationSettings(
         android: androidInitialize, iOS: iOSInitialize);
     await flutterLocalNotificationPlugin.initialize(initializationsSettings);
   }
 
-  static Future showBigTextNotification(
+  static Future showBigTextNotification( 
       {var id = 0,
       required String title,
       required String body,
       var payload,
       required FlutterLocalNotificationsPlugin fln}) async {
     AndroidNotificationDetails androidPlatformChannelSpecifics =
-        new AndroidNotificationDetails('channelId', 'channelName',
+        AndroidNotificationDetails('channelId', 'channelName',
             playSound: true,
             // sound: RawResourceAndroidNotificationSound('notification'),
             importance: Importance.max,
@@ -30,11 +30,3 @@ class LocalNoti {
     await fln.show(0, title, body, not);
   }
 }
-
-/* Il bottone dovrà essere:
-child: ElevatedButton(
-  onPressed(){
-     LocalNoti.showBigTextNotification(title, body, fln: flutterLocalNotificationsPlugin);
-  }, child: Text("click"),
-),
-*/
