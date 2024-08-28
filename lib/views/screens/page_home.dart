@@ -16,9 +16,9 @@ import 'package:progetto_mobile_programming/views/screens/add_new_items_screens/
 import 'package:progetto_mobile_programming/views/screens/page_all_notification.dart';
 import 'package:progetto_mobile_programming/views/screens/page_device_detail.dart';
 
-  // Inizializzazione del plugin per le notifiche locali
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-
+// Inizializzazione del plugin per le notifiche locali
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
 
 class Homepage extends ConsumerStatefulWidget {
   const Homepage({super.key});
@@ -132,63 +132,63 @@ class _HomepageState extends ConsumerState<Homepage> {
                     ),
                   ),
                   Wrap(
-                      spacing: 8.0, // Spacing between buttons
-                      runSpacing: 4.0, // Spacing between lines of buttons
-                      children: [
-                        FilterButton(
-                          label: 'Lock',
-                          isSelected: _selectedType == 'Lock',
-                          onTap: () {
-                            setState(() {
-                              if(_selectedType == 'Lock'){
-                                _selectedType = 'All';
-                              }else {
-                                _selectedType = 'Lock';
-                              }
-                            });
-                          },
-                        ),
-                        FilterButton(
-                          label: 'Alarm',
-                          isSelected: _selectedType == 'Alarm',
-                          onTap: () {
-                            setState(() {
-                              if(_selectedType == 'Alarm'){
-                                _selectedType = 'All';
-                              }else {
-                                _selectedType = 'Alarm';
-                              }
-                            });
-                          },
-                        ),
-                        FilterButton(
-                          label: 'Thermostat',
-                          isSelected: _selectedType == 'Thermostat',
-                          onTap: () {
-                            setState(() {
-                              if(_selectedType == 'Thermostat'){
-                                _selectedType = 'All';
-                              }else {
-                                _selectedType = 'Thermostat';
-                              }
-                            });
-                          },
-                        ),
-                        FilterButton(
-                          label: 'Light',
-                          isSelected: _selectedType == 'Light',
-                          onTap: () {
-                            setState(() {
-                              if(_selectedType == 'Light'){
-                                _selectedType = 'All';
-                              }else {
-                                _selectedType = 'Light';
-                              }
-                            });
-                          },
-                        ),
-                      ],
-                    )
+                    spacing: 8.0, // Spacing between buttons
+                    runSpacing: 4.0, // Spacing between lines of buttons
+                    children: [
+                      FilterButton(
+                        label: 'Lock',
+                        isSelected: _selectedType == 'Lock',
+                        onTap: () {
+                          setState(() {
+                            if (_selectedType == 'Lock') {
+                              _selectedType = 'All';
+                            } else {
+                              _selectedType = 'Lock';
+                            }
+                          });
+                        },
+                      ),
+                      FilterButton(
+                        label: 'Alarm',
+                        isSelected: _selectedType == 'Alarm',
+                        onTap: () {
+                          setState(() {
+                            if (_selectedType == 'Alarm') {
+                              _selectedType = 'All';
+                            } else {
+                              _selectedType = 'Alarm';
+                            }
+                          });
+                        },
+                      ),
+                      FilterButton(
+                        label: 'Thermostat',
+                        isSelected: _selectedType == 'Thermostat',
+                        onTap: () {
+                          setState(() {
+                            if (_selectedType == 'Thermostat') {
+                              _selectedType = 'All';
+                            } else {
+                              _selectedType = 'Thermostat';
+                            }
+                          });
+                        },
+                      ),
+                      FilterButton(
+                        label: 'Light',
+                        isSelected: _selectedType == 'Light',
+                        onTap: () {
+                          setState(() {
+                            if (_selectedType == 'Light') {
+                              _selectedType = 'All';
+                            } else {
+                              _selectedType = 'Light';
+                            }
+                          });
+                        },
+                      ),
+                    ],
+                  )
                 ],
               ),
             ),
@@ -203,7 +203,6 @@ class _HomepageState extends ConsumerState<Homepage> {
     );
   }
 }
-
 
 class ListGenerator extends StatelessWidget {
   final String roomName;
@@ -220,16 +219,6 @@ class ListGenerator extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-            Padding(
-            padding: const EdgeInsets.symmetric(vertical: 2.0),
-            child: ElevatedButton(
-              onPressed: () { 
-                LocalNoti.showBigTextNotification(title: 'Titolo', body: 'Testo', fln: flutterLocalNotificationsPlugin);
-               },
-              child: Text("click"),
-            ),
-          ),
-
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 2.0),
             child: Text(
@@ -343,7 +332,20 @@ class _AvatarForDebugMenuState extends State<AvatarForDebugMenu> {
                                     MaterialPageRoute(
                                         builder: (context) => GraphPage()));
                               },
-                              child: Text("Componente dummy dei grafici"))
+                              child: Text("Componente dummy dei grafici")),
+                          Divider(),
+                          TextButton(
+                            onPressed: () {
+                              LocalNoti.showBigTextNotification(
+                                title: 'Titolo',
+                                body: 'Testo',
+                                fln: flutterLocalNotificationsPlugin,
+                              );
+                            },
+                            child: Text(
+                              'Invia notifica di prova',
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -406,7 +408,9 @@ class FilterButton extends StatelessWidget {
     return ElevatedButton(
       onPressed: onTap,
       style: ElevatedButton.styleFrom(
-        foregroundColor: isSelected ? Colors.white : Colors.black, backgroundColor: isSelected ? Colors.blue : Colors.grey[300], shape: RoundedRectangleBorder(
+        foregroundColor: isSelected ? Colors.white : Colors.black,
+        backgroundColor: isSelected ? Colors.blue : Colors.grey[300],
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20.0),
         ),
       ),
@@ -414,4 +418,3 @@ class FilterButton extends StatelessWidget {
     );
   }
 }
-
