@@ -8,7 +8,7 @@ import 'package:progetto_mobile_programming/views/screens/page_security.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  LocalNoti.initialize(flutterLocalNotificationsPlugin);
+  LocalNoti().initialize();
   runApp(const ProviderScope(child: MainApp()));
 }
 

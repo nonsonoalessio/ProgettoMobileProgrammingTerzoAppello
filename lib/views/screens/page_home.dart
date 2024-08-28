@@ -293,7 +293,7 @@ class NotificationButton extends ConsumerWidget {
 
     return TextButton(
       onPressed: () {
-        LocalNoti.showBigTextNotification(
+        LocalNoti().showBigTextNotification(
           title: 'Titolo',
           body: 'Testo',
           fln: flutterLocalNotificationsPlugin,
@@ -307,7 +307,7 @@ class NotificationButton extends ConsumerWidget {
         deliveryTime: TimeOfDay.now(),
         isRead: false,
         description: 'ciao2',
-        );
+        ); 
       },
       child: Text("Test notifiche push"),
     );
