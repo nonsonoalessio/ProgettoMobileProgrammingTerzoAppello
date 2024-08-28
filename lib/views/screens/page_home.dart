@@ -3,12 +3,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:progetto_mobile_programming/models/functionalities/device_notification.dart';
 import 'package:progetto_mobile_programming/models/objects/alarm.dart';
 import 'package:progetto_mobile_programming/models/objects/device.dart';
 import 'package:progetto_mobile_programming/models/objects/light.dart';
 import 'package:progetto_mobile_programming/models/objects/lock.dart';
 import 'package:progetto_mobile_programming/models/objects/thermostat.dart';
 import 'package:progetto_mobile_programming/providers/devices_provider.dart';
+import 'package:progetto_mobile_programming/providers/notifications_provider.dart';
 import 'package:progetto_mobile_programming/services/database_helper.dart';
 import 'package:progetto_mobile_programming/services/localnotification_service.dart';
 import 'package:progetto_mobile_programming/views/minis.dart';
@@ -285,6 +287,33 @@ class ListGenerator extends StatelessWidget {
   }
 }
 
+class NotificationButton extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+
+    return TextButton(
+      onPressed: () {
+        LocalNoti.showBigTextNotification(
+          title: 'Titolo',
+          body: 'Testo',
+          fln: flutterLocalNotificationsPlugin,
+        );
+          // Creazione della nuova notifica
+        final newNotification = DeviceNotification(
+        id: DeviceNotification.generateUniqueId(),
+        title: 'ciao',
+        device: Light(deviceName: 'Luce1', room: 'Salone', id: 0),
+        type: NotificationType.automationExecution,
+        deliveryTime: TimeOfDay.now(),
+        isRead: false,
+        description: 'ciao2',
+        );
+      },
+      child: Text("Test notifiche push"),
+    );
+  }
+}
+
 class AvatarForDebugMenu extends StatefulWidget {
   const AvatarForDebugMenu({super.key});
 
@@ -334,18 +363,7 @@ class _AvatarForDebugMenuState extends State<AvatarForDebugMenu> {
                               },
                               child: Text("Componente dummy dei grafici")),
                           Divider(),
-                          TextButton(
-                            onPressed: () {
-                              LocalNoti.showBigTextNotification(
-                                title: 'Titolo',
-                                body: 'Testo',
-                                fln: flutterLocalNotificationsPlugin,
-                              );
-                            },
-                            child: Text(
-                              'Invia notifica di prova',
-                            ),
-                          ),
+                          NotificationButton(),
                         ],
                       ),
                     ),

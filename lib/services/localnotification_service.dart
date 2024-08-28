@@ -1,32 +1,62 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class LocalNoti {
-  static Future initialize(
+  static Future<void> initialize(
       FlutterLocalNotificationsPlugin flutterLocalNotificationPlugin) async {
-    var androidInitialize =
+    // Configurazione per Android
+    const AndroidInitializationSettings androidInitialize =
         AndroidInitializationSettings('mipmap/ic_launcher');
-    var iOSInitialize = IOSInitializationSettings();
-    var initializationsSettings = InitializationSettings(
+
+    // Configurazione per iOS
+    const IOSInitializationSettings iOSInitialize = IOSInitializationSettings();
+
+    const InitializationSettings initializationSettings = InitializationSettings(
         android: androidInitialize, iOS: iOSInitialize);
-    await flutterLocalNotificationPlugin.initialize(initializationsSettings);
+
+    // Inizializzazione delle notifiche
+    await flutterLocalNotificationPlugin.initialize(initializationSettings);
+
+    // Richiesta permessi per iOS
+    await flutterLocalNotificationPlugin
+        .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>()
+        ?.requestPermissions(
+          alert: true,
+          badge: true,
+          sound: true,
+        );
   }
 
-  static Future showBigTextNotification( 
-      {var id = 0,
-      required String title,
-      required String body,
-      var payload,
-      required FlutterLocalNotificationsPlugin fln}) async {
-    AndroidNotificationDetails androidPlatformChannelSpecifics =
-        AndroidNotificationDetails('channelId', 'channelName',
-            playSound: true,
-            // sound: RawResourceAndroidNotificationSound('notification'),
-            importance: Importance.max,
-            priority: Priority.high);
+  static Future<void> showBigTextNotification({
+    int id = 0,
+    required String title,
+    required String body,
+    String? payload,
+    required FlutterLocalNotificationsPlugin fln,
+  }) async {
+    // Configurazione specifica per Android
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
+      'channelId',
+      'channelName',
+      playSound: true,
+      importance: Importance.max,
+      priority: Priority.high,
+    );
 
-    var not = NotificationDetails(
-        android: androidPlatformChannelSpecifics,
-        iOS: IOSNotificationDetails());
-    await fln.show(0, title, body, not);
+    // Configurazione specifica per iOS
+    const IOSNotificationDetails iOSPlatformChannelSpecifics = IOSNotificationDetails(
+      presentAlert: true,
+      presentBadge: true, 
+      presentSound: true, 
+    );
+
+    // Configurazione complessiva delle notifiche
+    const NotificationDetails platformChannelSpecifics = NotificationDetails(
+      android: androidPlatformChannelSpecifics,
+      iOS: iOSPlatformChannelSpecifics,
+    );
+
+    // Mostra la notifica
+    await fln.show(id, title, body, platformChannelSpecifics, payload: payload);
   }
 }
