@@ -222,9 +222,9 @@ class DatabaseHelper {
         await db.execute("""
           INSERT INTO categoryNotification(category, deviceNotifications)
           VALUES
-          (1, 'security'),
-          (2, 'automationExecution'),
-          (3, 'highEnergyConsumption')
+          ('security', 1),
+          ('automationExecution', 2),
+          ('highEnergyConsumption', 3)
         """);
       },
       version: 1,
