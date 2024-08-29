@@ -120,7 +120,7 @@ class DatabaseHelper {
 
         await db.execute("""
           CREATE TABLE IF NOT EXISTS category(
-              name TEXT PRIMARY KEY,
+              name TEXT PRIMARY KEY
               )
               """);
 
@@ -216,11 +216,11 @@ class DatabaseHelper {
           INSERT INTO deviceNotification (id, title, device, deliveryTime, isRead, description)
            VALUES
             (1, 'Mario guarda gatto', 9, '19:00:00', 0, 'mario pazzo'),
-            (2, 'Mario pazzo sgravato', 11, '09:00:00', 1, 'mario pazzo in culo proprio'),
-            (3, 'Mario scemo', 1, '02:00:00', 1, 'mario'),
+            (2, 'Mario pazzo sgravato', 10, '09:00:00', 1, 'mario pazzo in culo proprio'),
+            (3, 'Mario scemo', 10, '02:00:00', 1, 'mario')
         """);
         await db.execute("""
-          INSERT INTO categoryNotification(category, deviceNotification)
+          INSERT INTO categoryNotification(category, deviceNotifications)
           VALUES
           (1, 'security'),
           (2, 'automationExecution'),
