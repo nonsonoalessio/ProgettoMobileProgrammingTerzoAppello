@@ -69,7 +69,11 @@ class _NotificationPageState extends ConsumerState<NotificationPage> {
 
 class NotificationCard extends StatelessWidget {
   final DeviceNotification notification;
-  const NotificationCard({super.key, required this.notification});
+
+  const NotificationCard({
+    super.key,
+    required this.notification,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -117,9 +121,29 @@ class NotificationCard extends StatelessWidget {
                     fontSize: 14.0,
                     color: notification.isRead ? Colors.grey : Colors.black,
                   ),
-                )
+                ),
               ],
             ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.delete, color: Colors.red),
+            onPressed: () {
+              // Logica per eliminare la notifica
+            },
+          ),
+          PopupMenuButton<NotificationType>(
+            onSelected: (NotificationType type) {
+              // Logica per categorizzare la notifica
+            },
+            itemBuilder: (BuildContext context) {
+              return NotificationType.values.map((NotificationType type) {
+                return PopupMenuItem<NotificationType>(
+                  value: type,
+                  child: Text(type.toString().split('.').last),
+                );
+              }).toList();
+            },
+            icon: const Icon(Icons.category),
           ),
           if (!notification.isRead)
             const Icon(
@@ -132,4 +156,3 @@ class NotificationCard extends StatelessWidget {
     );
   }
 }
-
