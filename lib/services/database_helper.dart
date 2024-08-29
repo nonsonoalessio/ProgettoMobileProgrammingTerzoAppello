@@ -101,11 +101,26 @@ class DatabaseHelper {
               id INTEGER PRIMARY KEY,
               title TEXT NOT NULL,
               device INTEGER NOT NULL,
-              type TEXT NOT NULL,
               deliveryTime TIME NOT NULL,
               isRead BOOLEAN NOT NULL,
               description TEXT NOT NULL,
               FOREIGN KEY (device) REFERENCES Device(id)
+              )
+              """);
+
+        await db.execute("""
+          CREATE TABLE IF NOT EXISTS categoryNotification(
+              category TEXT NOT NULL,
+              deviceNotifications INTEGER NOT NULL,
+              FOREIGN KEY (category) references categoryNotification(name),
+              FOREIGN KEY (deviceNotifications) references deviceNotifications(id),
+              PRIMARY KEY(category, deviceNotifications)
+              )
+              """);
+
+        await db.execute("""
+          CREATE TABLE IF NOT EXISTS category(
+              name TEXT PRIMARY KEY,
               )
               """);
 
@@ -190,11 +205,26 @@ class DatabaseHelper {
            VALUES
             (5, 'Automazione serale', 'light', 'turnOn')
           """);
-
         await db.execute("""
-          INSERT INTO deviceNotification (id, title, device, type, deliveryTime, isRead, description)
+          INSERT INTO category(name)
+          VALUES
+          ('security'),
+          ('automationExecution'),
+          ('highEnergyConsumption')
+          """);
+        await db.execute("""
+          INSERT INTO deviceNotification (id, title, device, deliveryTime, isRead, description)
            VALUES
-            (1, 'Mario guarda gatto', 9, 'security', '19:00:00', 0, 'mario pazzo')
+            (1, 'Mario guarda gatto', 9, '19:00:00', 0, 'mario pazzo'),
+            (2, 'Mario pazzo sgravato', 11, '09:00:00', 1, 'mario pazzo in culo proprio'),
+            (3, 'Mario scemo', 1, '02:00:00', 1, 'mario'),
+        """);
+        await db.execute("""
+          INSERT INTO categoryNotification(category, deviceNotification)
+          VALUES
+          (1, 'security'),
+          (2, 'automationExecution'),
+          (3, 'highEnergyConsumption')
         """);
       },
       version: 1,
@@ -462,6 +492,8 @@ class DatabaseHelper {
       },
     );
   }
+
+  
 
   Future<void> updateRoom(String oldRoomName, String newRoomName) async {
     final db = await database;
