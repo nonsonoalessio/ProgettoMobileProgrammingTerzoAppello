@@ -319,7 +319,6 @@ class NotificationButton extends ConsumerWidget {
           id: DeviceNotification.generateUniqueId(),
           title: title,
           device: Light(deviceName: 'Luce1', room: 'Salone', id: 0),
-          type: NotificationType.automationExecution,
           deliveryTime: TimeOfDay.now(),
           isRead: false,
           description: body,

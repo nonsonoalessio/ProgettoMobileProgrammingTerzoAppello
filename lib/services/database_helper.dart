@@ -334,10 +334,6 @@ class DatabaseHelper {
           id: mapsOfNotifications[i]['id'],
           title: mapsOfNotifications[i]['title'],
           device: d,
-          type: NotificationType.values.firstWhere(
-            (e) => e.toString() == mapsOfNotifications[i]['type'],
-            orElse: () => NotificationType.security,
-          ),
           // ignore: prefer_interpolation_to_compose_strings
           deliveryTime: TimeOfDay.fromDateTime(DateTime.parse(
               '1970-01-01 ' + mapsOfNotifications[i]['deliveryTime'])),
@@ -485,7 +481,6 @@ class DatabaseHelper {
         'id': DeviceNotification.generateUniqueId(),
         'title': notification.title,
         'device': notification.device,
-        'type': notification.type,
         'deliveryTime': notification.deliveryTime,
         'isRead': notification.isRead,
         'description': notification.description,
