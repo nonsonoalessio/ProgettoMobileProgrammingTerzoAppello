@@ -14,6 +14,7 @@ class NotificationPage extends ConsumerStatefulWidget {
 }
 
 class _NotificationPageState extends ConsumerState<NotificationPage> {
+  // TODO: opera con provider anziché state locale
   void _markAsRead(DeviceNotification notification) {
     setState(() {
       notification.isRead = true;
@@ -67,7 +68,8 @@ class _NotificationPageState extends ConsumerState<NotificationPage> {
 }
 
 
-class NotificationCard extends StatelessWidget {
+// stato: notificaLetta (bool), Set<String> categories
+class NotificationCard extends StatefulWidget {
   final DeviceNotification notification;
 
   const NotificationCard({
@@ -75,6 +77,11 @@ class NotificationCard extends StatelessWidget {
     required this.notification,
   });
 
+  @override
+  State<NotificationCard> createState() => _NotificationCardState();
+}
+
+class _NotificationCardState extends State<NotificationCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -88,7 +95,7 @@ class NotificationCard extends StatelessWidget {
         children: [
           Icon(
             Icons.notifications,
-            color: notification.isRead ? Colors.grey : Colors.green,
+            color: widget.notification.isRead ? Colors.grey : Colors.green,
           ),
           const SizedBox(width: 16.0),
           Expanded(
@@ -97,10 +104,10 @@ class NotificationCard extends StatelessWidget {
               children: [
                 // Display the notification title and device name
                 Text(
-                  "${notification.title} - ${notification.device.deviceName}",
+                  "${widget.notification.title} - ${widget.notification.device.deviceName}",
                   style: TextStyle(
                     fontSize: 16.0,
-                    fontWeight: notification.isRead
+                    fontWeight: widget.notification.isRead
                         ? FontWeight.normal
                         : FontWeight.bold,
                   ),
@@ -108,29 +115,29 @@ class NotificationCard extends StatelessWidget {
                 const SizedBox(height: 4.0),
                 // Display the notification description
                 Text(
-                  notification.description,
+                  widget.notification.description,
                   style: TextStyle(
                     fontSize: 14.0,
-                    color: notification.isRead ? Colors.grey : Colors.black,
+                    color: widget.notification.isRead ? Colors.grey : Colors.black,
                   ),
                 ),
                 const SizedBox(height: 4.0),
                 // Display the notification delivery time
                 Text(
                   MaterialLocalizations.of(context)
-                      .formatTimeOfDay(notification.deliveryTime),
+                      .formatTimeOfDay(widget.notification.deliveryTime),
                   style: TextStyle(
                     fontSize: 14.0,
-                    color: notification.isRead ? Colors.grey : Colors.black,
+                    color: widget.notification.isRead ? Colors.grey : Colors.black,
                   ),
                 ),
                 const SizedBox(height: 4.0),
                 // Display the notification category
                 Text(
-                  "Category: ",  // New line to display category
+                  "Category: ", // New line to display category
                   style: TextStyle(
                     fontSize: 14.0,
-                    color: notification.isRead ? Colors.grey : Colors.black,
+                    color: widget.notification.isRead ? Colors.grey : Colors.black,
                   ),
                 ),
               ],
@@ -156,7 +163,7 @@ class NotificationCard extends StatelessWidget {
             },
             icon: const Icon(Icons.category),
           ),
-          if (!notification.isRead)
+          if (!widget.notification.isRead)
             const Icon(
               Icons.circle,
               color: Colors.orange,
@@ -165,5 +172,22 @@ class NotificationCard extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class CategoriesChooserModal extends ConsumerStatefulWidget {
+  const CategoriesChooserModal({super.key});
+
+  @override
+  ConsumerState<CategoriesChooserModal> createState() =>
+      _CategoriesChooserModalState();
+}
+
+class _CategoriesChooserModalState
+    extends ConsumerState<CategoriesChooserModal> {
+  @override
+  Widget build(BuildContext context) {
+    // Set<String> categories = ref.watch(NotificationCategoriesNotifierProvider);
+    return const Placeholder();
   }
 }
