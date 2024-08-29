@@ -38,7 +38,25 @@ class AutomationsNotifier extends _$AutomationsNotifier {
     _initStatus();
   }
 
+  void deleteAutomation(Automation automation) {
+    _removeAutomationFromDb(automation);
+    _initStatus();
+  }
+
+  void updateAutomation(Automation automation) {
+    _updateAutomationInDb(automation);
+    _initStatus();
+  }
+
   Future<void> _addAutomationToDb(Automation automation) async {
     await db.insertAutomation(automation);
+  }
+
+  Future<void> _removeAutomationFromDb(Automation automation) async {
+    await db.removeAutomation(automation.name);
+  }
+
+  Future<void> _updateAutomationInDb(Automation automation) async {
+    await db.updateAutomation(automation);
   }
 }

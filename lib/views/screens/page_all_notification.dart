@@ -37,8 +37,6 @@ class _NotificationPageState extends ConsumerState<NotificationPage> {
   Widget build(BuildContext context) {
     final notificationsList = ref.watch(notificationsNotifierProvider);
 
-    print(notificationsList);
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Notifiche'),

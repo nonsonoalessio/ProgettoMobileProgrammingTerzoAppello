@@ -38,8 +38,26 @@ class DeviceNotifier extends _$DeviceNotifier {
     _initStatus();
   }
 
+  void deleteDevice(Device device) {
+    _removeDeviceFromDb(device);
+    _initStatus();
+  }
+
+  void updateDevice(Device device) {
+    _updateDeviceInDb(device);
+    _initStatus();
+  }
+
   Future<void> _addDeviceToDb(Device device) async {
     await db.insertDevice(device);
+  }
+
+  Future<void> _removeDeviceFromDb(Device device) async {
+    await db.removeDevice(device);
+  }
+
+  Future<void> _updateDeviceInDb(Device device) async {
+    await db.updateDevice(device);
   }
 }
 

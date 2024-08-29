@@ -556,13 +556,13 @@ class DatabaseHelper {
     );
   }
 
-  Future<void> updateNotification(int id, bool isRead) async {
+  Future<void> updateNotification(int id) async {
     final db = await database;
 
     // Modifichiamo solo il campo isRead
     await db.update(
       'deviceNotification',
-      {'isRead': isRead},
+      {'isRead': 1},
       where: 'id = ?',
       whereArgs: [id],
     );

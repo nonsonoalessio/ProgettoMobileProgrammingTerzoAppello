@@ -7,7 +7,7 @@ part of 'automations_provider.dart';
 // **************************************************************************
 
 String _$automationsNotifierHash() =>
-    r'12dfdf31e4a8c5025941b4313f2d599b8f0f4a34';
+    r'a632dde81a967b1fb6e612f7fd0aaa0e07674a18';
 
 /// See also [AutomationsNotifier].
 @ProviderFor(AutomationsNotifier)

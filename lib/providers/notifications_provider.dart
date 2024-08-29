@@ -40,4 +40,12 @@ class NotificationsNotifier extends _$NotificationsNotifier {
   Future<void> _addNotificationToDb(DeviceNotification notification) async {
     await db.insertNotification(notification);
   }
+
+  Future<void> _markNotificationAsRead(DeviceNotification notification) async {
+    await db.updateNotification(notification.id);
+  }
+
+  Future<void> _deleteNotification(DeviceNotification notification) async {
+    await db.removeNotification(notification.id);
+  }
 }

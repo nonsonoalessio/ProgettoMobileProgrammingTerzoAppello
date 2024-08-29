@@ -20,7 +20,7 @@ final roomsProvider = AutoDisposeProvider<Set<String>>.internal(
 );
 
 typedef RoomsRef = AutoDisposeProviderRef<Set<String>>;
-String _$deviceNotifierHash() => r'9426664a9c02283ce8e98fb90fc8aa3e7c59d6af';
+String _$deviceNotifierHash() => r'a0c70e1145287185dc5d237597bbfa68ba5f5036';
 
 /// See also [DeviceNotifier].
 @ProviderFor(DeviceNotifier)
