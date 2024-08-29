@@ -3,7 +3,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 class LocalNoti {
   final FlutterLocalNotificationsPlugin flp = FlutterLocalNotificationsPlugin();
 
-  Future<void> initialize() async {
+  Future<void> init() async {
     // Configurazione per Android
     AndroidInitializationSettings initializationSettingsAndroid =
         const AndroidInitializationSettings('mipmap/ic_launcher');
