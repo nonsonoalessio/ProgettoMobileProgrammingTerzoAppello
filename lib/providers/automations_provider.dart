@@ -13,7 +13,7 @@ class AutomationsNotifier extends _$AutomationsNotifier {
   // List<Notification> notifications = [];
   // int lastIndexForId;
 
-  Future<void> initStatus() async {
+  Future<void> _initStatus() async {
     // await db.fetchDevices();
     await db.fetchAutomations();
     // await db.fetchNotifications();
@@ -29,7 +29,16 @@ class AutomationsNotifier extends _$AutomationsNotifier {
 
   @override
   List<Automation> build() {
-    initStatus();
+    _initStatus();
     return automations;
+  }
+
+  void addAutomation(Automation automation) {
+    _addAutomationToDb(automation);
+    _initStatus();
+  }
+
+  Future<void> _addAutomationToDb(Automation automation) async {
+    await db.insertAutomation(automation);
   }
 }

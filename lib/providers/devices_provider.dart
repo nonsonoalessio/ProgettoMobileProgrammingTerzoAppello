@@ -13,7 +13,7 @@ class DeviceNotifier extends _$DeviceNotifier {
   //List<Notification> notifications = [];
   //int lastIndexForId;
 
-  Future<void> initStatus() async {
+  Future<void> _initStatus() async {
     await db.fetchDevices();
     // await db.fetchAutomations();
     // await db.fetchNotifications();
@@ -29,8 +29,17 @@ class DeviceNotifier extends _$DeviceNotifier {
 
   @override
   List<Device> build() {
-    initStatus();
+    _initStatus();
     return devices;
+  }
+
+  void addDevice(Device device) {
+    _addDeviceToDb(device);
+    _initStatus();
+  }
+
+  Future<void> _addDeviceToDb(Device device) async {
+    await db.insertDevice(device);
   }
 }
 

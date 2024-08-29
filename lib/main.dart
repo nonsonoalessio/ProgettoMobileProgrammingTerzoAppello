@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:progetto_mobile_programming/services/localnotification_service.dart';
 import 'package:progetto_mobile_programming/views/screens/page_all_device.dart';
 import 'package:progetto_mobile_programming/views/screens/page_automation.dart';
 import 'package:progetto_mobile_programming/views/screens/page_home.dart';
 import 'package:progetto_mobile_programming/views/screens/page_security.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  LocalNoti().initialize();
+  await Permission.notification.isDenied.then((value){
+    if(value){
+      Permission.notification.request();
+    }
+  });
+  LocalNoti().init();
   runApp(const ProviderScope(child: MainApp()));
 }
 
@@ -26,6 +32,10 @@ class MainApp extends StatelessWidget {
           displayMedium: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 24.0,
+          ),
+          displaySmall: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 20.0,
           ),
         ),
       ),

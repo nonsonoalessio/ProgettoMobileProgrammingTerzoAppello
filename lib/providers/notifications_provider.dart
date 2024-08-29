@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:progetto_mobile_programming/models/functionalities/device_notification.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:progetto_mobile_programming/services/database_helper.dart';
@@ -11,7 +12,7 @@ class NotificationsNotifier extends _$NotificationsNotifier {
 
   List<DeviceNotification> notifications = [];
 
-  Future<void> initStatus() async {
+  Future<void> _initStatus() async {
     // await db.fetchDevices();
     // await db.fetchAutomations();
     await db.fetchNotifications();
@@ -27,7 +28,16 @@ class NotificationsNotifier extends _$NotificationsNotifier {
 
   @override
   List<DeviceNotification> build() {
-    initStatus();
+    _initStatus();
     return notifications;
+  }
+
+  void addNotification(DeviceNotification notification) {
+    _addNotificationToDb(notification);
+    _initStatus();
+  }
+
+  Future<void> _addNotificationToDb(DeviceNotification notification) async {
+    await db.insertNotification(notification);
   }
 }
