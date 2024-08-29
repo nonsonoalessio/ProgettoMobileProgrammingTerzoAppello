@@ -37,15 +37,64 @@ class NotificationsNotifier extends _$NotificationsNotifier {
     _initStatus();
   }
 
+  void markNotificationAsRead(DeviceNotification notification) {
+    _updateNotificationFromDb(notification);
+    _initStatus();
+  }
+
+  void deleteNotification(DeviceNotification notification) {
+    _removeNotificationFromDb(notification);
+    _initStatus();
+  }
+
   Future<void> _addNotificationToDb(DeviceNotification notification) async {
     await db.insertNotification(notification);
   }
 
-  Future<void> _markNotificationAsRead(DeviceNotification notification) async {
+  Future<void> _updateNotificationFromDb(
+      DeviceNotification notification) async {
     await db.updateNotification(notification.id);
   }
 
-  Future<void> _deleteNotification(DeviceNotification notification) async {
+  Future<void> _removeNotificationFromDb(
+      DeviceNotification notification) async {
     await db.removeNotification(notification.id);
+  }
+}
+
+@riverpod
+class NotificationCategoriesNotifier extends _$NotificationCategoriesNotifier {
+  Set<String> notificationCategories = {};
+  DatabaseHelper db = DatabaseHelper.instance;
+
+  Future<void> _initStatus() async {
+    await db.fetchNotificationCategories();
+
+    state = db.notificationCategories;
+  }
+
+  /* Chiamato al ritorno del textfield
+  void tempUpdate(String temporaryCategory){
+    state = {...notificationCategories, temporaryCategory};
+  }
+  */
+
+  /* Chiamato alla chiusura del modal
+  void categoriesRestore(){
+    _initStatus();
+  }
+  */
+
+  /* Chiamato all'aggiunta della categoria
+  void addCategories(Set<String> categories, Notification notification){
+    db.insertCategories(notification, categories);
+    _initStatus();
+  }
+   */
+
+  @override
+  Set<String> build() {
+    _initStatus();
+    return notificationCategories;
   }
 }

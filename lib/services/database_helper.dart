@@ -27,6 +27,7 @@ class DatabaseHelper {
   List<Device> devices = [];
   List<Automation> automations = [];
   List<DeviceNotification> notifications = [];
+  Set<String> notificationCategories = {};
 
   Future<Database> _initDatabase() async {
     return openDatabase(
@@ -321,8 +322,6 @@ class DatabaseHelper {
     final List<Map<String, dynamic>> mapsOfNotifications =
         await db.query('deviceNotification');
 
-    print("notifiche recuperate: $mapsOfNotifications");
-
     notifications = List.generate(mapsOfNotifications.length, (i) {
       Device d = devices
           .where((d) => d.id == mapsOfNotifications[i]['device'])
@@ -330,6 +329,19 @@ class DatabaseHelper {
           .first;
       bool value;
       mapsOfNotifications[i]['isRead'] == 0 ? value = false : value = true;
+
+      // final List<String> categories = [];
+
+      // final mapsOfCategories = rawQuery;
+      // l'id della notifica si ottiene con:
+      // $mapsOfNotification[i]['id']
+      // all'interno della rawquery
+
+      /* 
+      for(Map<String, dynamic> map){
+        categories.add(map[<camponomecategoria>]);
+      }
+      */
       return DeviceNotification(
           id: mapsOfNotifications[i]['id'],
           title: mapsOfNotifications[i]['title'],
@@ -338,16 +350,46 @@ class DatabaseHelper {
             (e) => e.toString() == mapsOfNotifications[i]['type'],
             orElse: () => NotificationType.security,
           ),
-          // ignore: prefer_interpolation_to_compose_strings
           deliveryTime: TimeOfDay.fromDateTime(DateTime.parse(
-              '1970-01-01 ' + mapsOfNotifications[i]['deliveryTime'])),
+              '1970-01-01  + ${mapsOfNotifications[i]['deliveryTime']}')),
           isRead: value,
           description: mapsOfNotifications[i]['description']);
+      // categories: categories;
     });
     notifications = [
       ...notifications,
     ];
   }
+
+  Future<void> fetchNotificationCategories() async {
+    final db = await database;
+
+    final List<Map<String, dynamic>> mapsOfCategories =
+        await db.query('category');
+    notificationCategories = List.generate(mapsOfCategories.length, (i) {
+      return mapsOfCategories[i]['name'] as String;
+    }).toSet();
+  }
+
+/*
+  Future<void> insertNotificationCategories(Notification notification, Set<String> categories) async {
+    final db = await database;
+
+    // insert in Category - solo nome
+    
+    for(String s in categories){
+      if(!notificationCategories.contains(s)){
+        await db.insert(...);
+      }
+    }
+
+    // insert in TabellaAssociazione
+    for(String s in categories){
+    // id notifica: notification.id - se serve cast a String: ${notification.id.toString()}
+    await db.insert(...); 
+    }
+  }
+ */
 
   Future<void> fetchDevices() async {
     final db = await database;
@@ -492,8 +534,6 @@ class DatabaseHelper {
       },
     );
   }
-
-  
 
   Future<void> updateRoom(String oldRoomName, String newRoomName) async {
     final db = await database;
