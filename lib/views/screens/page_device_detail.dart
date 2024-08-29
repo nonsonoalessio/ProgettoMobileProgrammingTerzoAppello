@@ -19,7 +19,8 @@ class DeviceDetailPage extends ConsumerStatefulWidget {
 
 class EnergySavingSuggestions extends StatelessWidget {
   final Device device;
-  const EnergySavingSuggestions({Key? key, required this.device}) : super(key: key);
+  const EnergySavingSuggestions({Key? key, required this.device})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -61,10 +62,15 @@ class EnergySavingSuggestions extends StatelessWidget {
       children: [
         Text(
           'Suggerimenti per risparmiare energia:',
-          style: Theme.of(context).textTheme.headlineSmall,
+          style: Theme.of(context)
+              .textTheme
+              .headlineSmall
+              ?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 10),
-        ...suggestions.map((suggestion) => _buildSuggestion(suggestion)).toList(),
+        ...suggestions
+            .map((suggestion) => _buildSuggestion(suggestion))
+            .toList(),
       ],
     );
   }
@@ -95,7 +101,8 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
   @override
   void initState() {
     super.initState();
-    _deviceNameController = TextEditingController(text: widget.device.deviceName);
+    _deviceNameController =
+        TextEditingController(text: widget.device.deviceName);
     _selectedRoom = widget.device.room;
   }
 
@@ -104,6 +111,9 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
       _selectedRoom = room;
     });
   }
+
+  // TODO: Metodo wrap da chiamare per accendere/spegnere lampadina/serratura/allarme e mandare notifica
+  void _wrap() {}
 
   bool _checkFields() {
     return _deviceNameController.text.isNotEmpty && _selectedRoom != null;
@@ -127,10 +137,15 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('${widget.device.deviceName}',
-                  style: Theme.of(context).textTheme.displayMedium),
-              Text('Stanza: ${widget.device.room}',
-                  style: Theme.of(context).textTheme.displayMedium),
+              Text(
+                widget.device.deviceName,
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
+              Divider(),
+              Text(
+                'Stanza: ${widget.device.room}',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
               const SizedBox(height: 20),
               _buildDeviceSpecificWidget(widget.device),
               const SizedBox(height: 20),
@@ -168,154 +183,202 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
       ),
     );
 
+    widgets.add(const SizedBox(height: 20));
+
     widgets.add(
       SizedBox(
         height: 250,
-        child: LineChart(
-          LineChartData(
-            gridData: FlGridData(
-              show: true,
-              drawVerticalLine: true,
-              horizontalInterval: 1,
-              verticalInterval: 2,
-              getDrawingHorizontalLine: (value) {
-                return const FlLine(
-                  color: Colors.grey,
-                  strokeWidth: 0.5,
-                );
-              },
-              getDrawingVerticalLine: (value) {
-                return const FlLine(
-                  color: Colors.grey,
-                  strokeWidth: 0.5,
-                );
-              },
-            ),
-            titlesData: FlTitlesData(
-              leftTitles: AxisTitles(
-                sideTitles: SideTitles(
-                  showTitles: true,
-                  interval: 1,
-                  reservedSize: 50,
-                  getTitlesWidget: (value, meta) {
-                    return Text(
-                      '${value.toStringAsFixed(1)} kWh',
-                      style: const TextStyle(fontSize: 10),
-                    );
-                  },
+        child: Padding(
+          padding: const EdgeInsets.only(right: 10), // Padding a destra
+          child: LineChart(
+            LineChartData(
+              gridData: FlGridData(
+                show: true,
+                drawVerticalLine: true,
+                horizontalInterval: 1,
+                verticalInterval: 2,
+                getDrawingHorizontalLine: (value) {
+                  return const FlLine(
+                    color: Colors.grey,
+                    strokeWidth: 0.5,
+                  );
+                },
+                getDrawingVerticalLine: (value) {
+                  return const FlLine(
+                    color: Colors.grey,
+                    strokeWidth: 0.5,
+                  );
+                },
+              ),
+              titlesData: FlTitlesData(
+                leftTitles: AxisTitles(
+                  sideTitles: SideTitles(
+                    showTitles: true,
+                    interval: 1,
+                    reservedSize:
+                        40, // Abbassando questo valore: grafico shifta verso sinistra
+                    getTitlesWidget: (value, meta) {
+                      return Text(
+                        '${value.toStringAsFixed(1)} kWh',
+                        style: const TextStyle(fontSize: 10),
+                      );
+                    },
+                  ),
+                ),
+                bottomTitles: AxisTitles(
+                  sideTitles: SideTitles(
+                    showTitles: true,
+                    reservedSize: 50,
+                    interval: 4,
+                    getTitlesWidget: (value, meta) {
+                      final int hour = value.toInt();
+                      final String hourStr =
+                          hour < 10 ? '0$hour:00' : '$hour:00';
+                      return Text(
+                        hourStr,
+                        style: const TextStyle(fontSize: 10),
+                      );
+                    },
+                  ),
+                ),
+                topTitles: const AxisTitles(
+                  sideTitles: SideTitles(showTitles: false),
+                ),
+                rightTitles: AxisTitles(
+                  sideTitles: SideTitles(
+                    showTitles: true,
+                    reservedSize: 10, // Riserva spazio a destra
+                    getTitlesWidget: (value, meta) {
+                      return Text(
+                        '',
+                        style: const TextStyle(fontSize: 10),
+                      );
+                    },
+                  ),
                 ),
               ),
-              bottomTitles: AxisTitles(
-                sideTitles: SideTitles(
-                  showTitles: true,
-                  reservedSize: 50,
-                  interval: 4,
-                  getTitlesWidget: (value, meta) {
-                    final int hour = value.toInt();
-                    final String hourStr = hour < 10 ? '0$hour:00' : '$hour:00';
-                    return Text(
-                      hourStr,
-                      style: const TextStyle(fontSize: 10),
-                    );
-                  },
+              borderData: FlBorderData(
+                show: true,
+                border: Border.all(color: Colors.black, width: 1),
+              ),
+              minX: 0,
+              maxX: 24,
+              minY: 0,
+              maxY: 5,
+              lineBarsData: [
+                LineChartBarData(
+                  spots: const [
+                    FlSpot(0, 1.2),
+                    FlSpot(4, 1.8),
+                    FlSpot(8, 2.6),
+                    FlSpot(12, 2.0),
+                    FlSpot(16, 3.6),
+                    FlSpot(20, 3.3),
+                    FlSpot(24, 2.5),
+                  ],
+                  isCurved: true,
+                  color: Colors.red,
+                  barWidth: 4,
+                  isStrokeCapRound: true,
+                  dotData: const FlDotData(show: true),
+                  belowBarData: BarAreaData(
+                    show: true,
+                    color: Colors.orange.withOpacity(0.3),
+                  ),
                 ),
-              ),
-              topTitles: const AxisTitles(
-                sideTitles: SideTitles(showTitles: false),
-              ),
-              rightTitles: const AxisTitles(
-                sideTitles: SideTitles(showTitles: false),
-              ),
+              ],
             ),
-            borderData: FlBorderData(
-              show: true,
-              border: Border.all(color: Colors.black, width: 1),
-            ),
-            minX: 0,
-            maxX: 24,
-            minY: 0,
-            maxY: 5,
-            lineBarsData: [
-              LineChartBarData(
-                spots: const [
-                  FlSpot(0, 1.2),
-                  FlSpot(4, 1.8),
-                  FlSpot(8, 2.6),
-                  FlSpot(12, 2.0),
-                  FlSpot(16, 3.6),
-                  FlSpot(20, 3.3),
-                  FlSpot(24, 2.5),
-                ],
-                isCurved: true,
-                color: Colors.red,
-                barWidth: 4,
-                isStrokeCapRound: true,
-                dotData: const FlDotData(show: true),
-                belowBarData: BarAreaData(
-                  show: true,
-                  color: Colors.orange.withOpacity(0.3),
-                ),
-              ),
-            ],
           ),
         ),
       ),
     );
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: widgets,
     );
   }
 
-  Widget _buildLightWidget(Light light) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text('Stato del dispositivo: ${light.isActive ? "On" : "Off"}'),
-        Slider(
-          value: light.lightTemperature.toDouble(),
-          min: 0,
-          max: 100,
-          onChanged: (double value) {
-            // Aggiorna la lightTemperature
-          },
-        ),
-        ElevatedButton(
-          onPressed: () {
-            // Spegni/accendi luce
-          },
-          child: Text(light.isActive ? 'Spegni la luce' : 'Accendi la luce'),
-        ),
-      ],
-    );
-  }
+Widget _buildLightWidget(Light light) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text('Stato del dispositivo: ${light.isActive ? "On" : "Off"}'),
+          ElevatedButton(
+            onPressed: () {
+              _wrap();
+            },
+            child: Text(light.isActive ? 'Spegni la luce' : 'Accendi la luce'),
+          ),
+        ],
+      ),
+      SizedBox(height: 8),
+      Text('Temperatura della lampadina:'),
+      Stack(
+        alignment: Alignment.centerLeft,
+        children: [
+          Container(
+            height: 20,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Color(0xFFFF3300), // 2000K
+                  Color(0xFFFFB266), // 2700K
+                  Color(0xFFFFFFE0), // 3000K
+                  Color(0xFFFAFAFA), // 4000K
+                  Color(0xFFD4EFFF), // 5500K
+                  Color(0xFFB8DAFF), // 6500K
+                  Color(0xFF4D8EFF), // 8000K
+                ],
+                stops: [0.0, 0.15, 0.25, 0.5, 0.7, 0.85, 1.0],
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+              ),
+            ),
+          ),
+          Slider(
+            value: light.lightTemperature.toDouble(),
+            min: 0,
+            max: 100,
+            onChanged: (double value) {
+              // Aggiorna lightTemperature
+            },
+            activeColor: Colors.transparent,
+            inactiveColor: Colors.transparent,
+            divisions: 100,
+          ),
+        ],
+      ),
+    ],
+  );
+}
 
-  Widget _buildAlarmWidget(Alarm alarm) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-            'Stato dell\' allarme: ${alarm.isActive ? "Attivo" : "Disattivo"}'),
-        ElevatedButton(
-          onPressed: () {
-            // Accendi spegni allarme
-          },
-          child: Text(alarm.isActive ? 'Disattiva' : 'Attiva'),
-        ),
-      ],
-    );
-  }
+Widget _buildAlarmWidget(Alarm alarm) {
+  return Row( 
+    mainAxisAlignment: MainAxisAlignment.spaceBetween, 
+    children: [
+      Text('Stato dell\'allarme: ${alarm.isActive ? "Attivo" : "Disattivo"}'),
+      ElevatedButton(
+        onPressed: () {
+          _wrap();
+        },
+        child: Text(alarm.isActive ? 'Disattiva' : 'Attiva'),
+      ),
+    ],
+  );
+}
 
   Widget _buildLockWidget(Lock lock) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween, 
       children: [
         Text(
             'Stato della serratura: ${lock.isActive ? "Bloccata" : "Sbloccata"}'),
         ElevatedButton(
           onPressed: () {
-            // Spegni/accendi
+            _wrap();
           },
           child: Text(lock.isActive ? 'Sblocca' : 'Blocca'),
         ),
@@ -348,9 +411,12 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
       children: [
         Text(
           'Video corrente:',
-          style: Theme.of(context).textTheme.headlineSmall,
+          style: Theme.of(context)
+              .textTheme
+              .headlineSmall
+              ?.copyWith(fontWeight: FontWeight.bold),
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 20),
         Container(
           width: double.infinity,
           height: 200,
@@ -364,20 +430,24 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
           ),
         ),
         const SizedBox(height: 20),
-        ElevatedButton(
-          onPressed: () {
-            // possibile aggiornamento del video/funzionalità aggiuntive ?
-          },
-          child: const Text('Aggiorna video stream'),
-        ),
-        const SizedBox(height: 20),
-        ElevatedButton(
-          onPressed: () {
-            setState(() {
-              _capturedImage = 'assets/image/carmine.jpg';
-            });
-          },
-          child: const Text('Scatta foto'),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                // possibile aggiornamento del video/funzionalità aggiuntive ?
+              },
+              child: const Text('Aggiorna video stream'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  _capturedImage = 'assets/image/carmine.jpg';
+                });
+              },
+              child: const Text('Scatta foto'),
+            ),
+          ],
         ),
         const SizedBox(height: 20),
         if (_capturedImage != null)
