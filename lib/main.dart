@@ -27,6 +27,10 @@ class MainApp extends StatelessWidget {
             fontWeight: FontWeight.bold,
             fontSize: 24.0,
           ),
+          displaySmall: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 20.0,
+          ),
         ),
       ),
       home: const Scaffold(

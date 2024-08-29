@@ -15,37 +15,48 @@ class AutomationPage extends ConsumerWidget {
 
     return Scaffold(
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: automations.isEmpty
-              ? Center(
-                  child: Text(
-                      'Non hai aggiunto nessuna automazione')) // Caso in cui la lista è vuota
-              : ListView.builder(
-                  itemCount: automations.length,
-                  itemBuilder: (context, index) {
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ListTile(
-                          title: Text(automations[index].name),
-                          subtitle: Text(
-                              "L'automazione andrà in azione alle ore ${MaterialLocalizations.of(context).formatTimeOfDay(automations[index].executionTime)}"),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => AutomationDetailPage(
-                                    automation: automations[index]),
+        child: Column(
+          children: [
+            Text(
+              'Le tue automazioni',
+              style: Theme.of(context).textTheme.displayMedium,
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: automations.isEmpty
+                    ? Center(
+                        child: Text('Non hai aggiunto nessuna automazione'),
+                      ) // Caso in cui la lista è vuota
+                    : ListView.builder(
+                        itemCount: automations.length,
+                        itemBuilder: (context, index) {
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              ListTile(
+                                title: Text(automations[index].name),
+                                subtitle: Text(
+                                    "L'automazione andrà in azione alle ore ${MaterialLocalizations.of(context).formatTimeOfDay(automations[index].executionTime)}"),
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          AutomationDetailPage(
+                                              automation: automations[index]),
+                                    ),
+                                  );
+                                },
                               ),
-                            );
-                          },
-                        ),
-                        Divider(),
-                      ],
-                    );
-                  },
-                ),
+                              Divider(),
+                            ],
+                          );
+                        },
+                      ),
+              ),
+            ),
+          ],
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(

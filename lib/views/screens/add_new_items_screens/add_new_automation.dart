@@ -273,7 +273,8 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
     ).then((result) {
       if (result != null) {
         setState(() {
-          _selectedActions[selectedDevice as Device]?.add(result as DeviceAction);
+          _selectedActions[selectedDevice as Device]
+              ?.add(result as DeviceAction);
         });
       }
     });
@@ -346,7 +347,11 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
                   ),
                 ],
               ),
-              ListOfActions(),
+              Expanded(
+                child: ListOfActions(
+                  map: _selectedActions,
+                ),
+              ),
             ],
           ),
         ),
@@ -463,7 +468,8 @@ class _WeatherConditionsModalState extends State<WeatherConditionsModal> {
 }
 
 class ListOfActions extends StatefulWidget {
-  const ListOfActions({super.key});
+  final Map<Device, List<DeviceAction>> map;
+  const ListOfActions({super.key, required this.map});
 
   @override
   State<ListOfActions> createState() => _ListOfActionsState();
@@ -472,7 +478,26 @@ class ListOfActions extends StatefulWidget {
 class _ListOfActionsState extends State<ListOfActions> {
   @override
   Widget build(BuildContext context) {
-    return Text("Azione 1");
+    var map = widget.map; // per non riscrivere "widget." ogni volta
+    var devices = map.keys;
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 16.0),
+      child: Column(
+        children: [
+          Text(
+            "Passi dell'automazione",
+            style: Theme.of(context).textTheme.displaySmall,
+          ),
+          Expanded(
+            child: ListView.builder(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              itemBuilder: (context, index) => Text('ciao'),
+            ),
+          )
+        ],
+      ),
+    );
   }
 }
 
