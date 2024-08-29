@@ -54,7 +54,7 @@ class _HomepageState extends ConsumerState<Homepage> {
     final List<Device> devices = ref.watch(deviceNotifierProvider);
     final Set<String> rooms = ref.watch(roomsProvider);
 
-    // Filter devices based on search query and selected type
+    // Filtra i dispositivi in base alla ricerca e al tipo selezionato
     final filteredDevices = devices.where((device) {
       final matchesSearch = _searchController.text.isEmpty ||
           device.deviceName
@@ -69,12 +69,19 @@ class _HomepageState extends ConsumerState<Homepage> {
       return matchesSearch && matchesType;
     }).toList();
 
+    // Creiamo la lista delle stanze solo se contengono dispositivi filtrati
     final List<Widget> roomsLists = [];
     for (String room in rooms) {
-      roomsLists.add(ListGenerator(
-        roomName: room,
-        devices: filteredDevices.where((d) => d.room == room).toList(),
-      ));
+      // Filtra i dispositivi della stanza corrente
+      final roomDevices = filteredDevices.where((d) => d.room == room).toList();
+
+      // Aggiungiamo la stanza alla lista solo se contiene dispositivi filtrati
+      if (roomDevices.isNotEmpty) {
+        roomsLists.add(ListGenerator(
+          roomName: room,
+          devices: roomDevices,
+        ));
+      }
     }
 
     return Scaffold(
@@ -129,13 +136,12 @@ class _HomepageState extends ConsumerState<Homepage> {
                     ],
                     hintText: 'Cerca un sensore...',
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(40.0),
-                      borderSide: BorderSide.none,
+                      borderRadius: BorderRadius.circular(8.0),
                     ),
                   ),
                   Wrap(
-                    spacing: 8.0, // Spacing between buttons
-                    runSpacing: 4.0, // Spacing between lines of buttons
+                    spacing: 8.0, 
+                    runSpacing: 4.0, 
                     children: [
                       FilterButton(
                         label: 'Lock',
@@ -195,9 +201,17 @@ class _HomepageState extends ConsumerState<Homepage> {
               ),
             ),
             Expanded(
-              child: ListView(
-                children: roomsLists,
-              ),
+              child: filteredDevices.isEmpty
+                  ? Center(
+                      child: Text(
+                        'Nessun dispositivo corrispondente alla ricerca.',
+                        style: TextStyle(fontSize: 18, color: Colors.grey),
+                        textAlign: TextAlign.center,
+                      ),
+                    )
+                  : ListView(
+                      children: roomsLists,
+                    ),
             ),
           ],
         ),
@@ -290,24 +304,26 @@ class ListGenerator extends StatelessWidget {
 class NotificationButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-
     return TextButton(
       onPressed: () {
+        String title = 'Titolo';
+        String body = 'Testo';
+
         LocalNoti().showBigTextNotification(
-          title: 'Titolo',
-          body: 'Testo',
+          title: title,
+          body: body,
           fln: flutterLocalNotificationsPlugin,
         );
-          // Creazione della nuova notifica
+        // Creazione della nuova notifica
         final newNotification = DeviceNotification(
-        id: DeviceNotification.generateUniqueId(),
-        title: 'ciao',
-        device: Light(deviceName: 'Luce1', room: 'Salone', id: 0),
-        type: NotificationType.automationExecution,
-        deliveryTime: TimeOfDay.now(),
-        isRead: false,
-        description: 'ciao2',
-        ); 
+          id: DeviceNotification.generateUniqueId(),
+          title: title,
+          device: Light(deviceName: 'Luce1', room: 'Salone', id: 0),
+          type: NotificationType.automationExecution,
+          deliveryTime: TimeOfDay.now(),
+          isRead: false,
+          description: body,
+        );
       },
       child: Text("Test notifiche push"),
     );
@@ -401,9 +417,9 @@ class SearchBar extends StatelessWidget {
           children: trailing,
         ),
         hintText: hintText,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8.0),
-        ),
+        border: border,
+        filled: true,
+        fillColor: Colors.grey[200], // Background color of the search bar
       ),
     );
   }
