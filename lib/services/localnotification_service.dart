@@ -1,62 +1,44 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class LocalNoti {
-  static Future<void> initialize(
-      FlutterLocalNotificationsPlugin flutterLocalNotificationPlugin) async {
+  final FlutterLocalNotificationsPlugin flp = FlutterLocalNotificationsPlugin();
+
+  Future<void> initialize() async {
     // Configurazione per Android
-    const AndroidInitializationSettings androidInitialize =
-        AndroidInitializationSettings('mipmap/ic_launcher');
+    AndroidInitializationSettings initializationSettingsAndroid =
+        const AndroidInitializationSettings('mipmap/ic_launcher');
 
     // Configurazione per iOS
-    const IOSInitializationSettings iOSInitialize = IOSInitializationSettings();
+    var initializationSettingsIOS = DarwinInitializationSettings(
+        requestAlertPermission: true,
+        requestBadgePermission: true,
+        requestSoundPermission: true,
+        onDidReceiveLocalNotification:
+            (int id, String? title, String? body, String? payload) async {});
 
-    const InitializationSettings initializationSettings = InitializationSettings(
-        android: androidInitialize, iOS: iOSInitialize);
+    var initializationSettings = InitializationSettings(
+        android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
 
     // Inizializzazione delle notifiche
-    await flutterLocalNotificationPlugin.initialize(initializationSettings);
+    await flp.initialize(initializationSettings,
+        onDidReceiveNotificationResponse:
+            (NotificationResponse notificationResponse) async {});
+    }
 
-    // Richiesta permessi per iOS
-    await flutterLocalNotificationPlugin
-        .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>()
-        ?.requestPermissions(
-          alert: true,
-          badge: true,
-          sound: true,
-        );
+    notificationDetails() {
+      return const NotificationDetails(
+          android: AndroidNotificationDetails('channelId', 'channelName',
+              importance: Importance.max),
+          iOS: DarwinNotificationDetails());
   }
 
-  static Future<void> showBigTextNotification({
+  Future showBigTextNotification({
     int id = 0,
     required String title,
     required String body,
     String? payload,
     required FlutterLocalNotificationsPlugin fln,
   }) async {
-    // Configurazione specifica per Android
-    const AndroidNotificationDetails androidPlatformChannelSpecifics =
-        AndroidNotificationDetails(
-      'channelId',
-      'channelName',
-      playSound: true,
-      importance: Importance.max,
-      priority: Priority.high,
-    );
-
-    // Configurazione specifica per iOS
-    const IOSNotificationDetails iOSPlatformChannelSpecifics = IOSNotificationDetails(
-      presentAlert: true,
-      presentBadge: true, 
-      presentSound: true, 
-    );
-
-    // Configurazione complessiva delle notifiche
-    const NotificationDetails platformChannelSpecifics = NotificationDetails(
-      android: androidPlatformChannelSpecifics,
-      iOS: iOSPlatformChannelSpecifics,
-    );
-
-    // Mostra la notifica
-    await fln.show(id, title, body, platformChannelSpecifics, payload: payload);
+    return flp.show(id, title, body, await notificationDetails());
   }
 }
