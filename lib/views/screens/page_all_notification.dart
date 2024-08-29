@@ -88,15 +88,14 @@ class NotificationCard extends StatelessWidget {
         children: [
           Icon(
             Icons.notifications,
-            color: notification.isRead
-                ? Colors.grey
-                : Colors.green, // Mostra icona verde per le notifiche non lette e icona grigia per le notifiche già lette
+            color: notification.isRead ? Colors.grey : Colors.green,
           ),
           const SizedBox(width: 16.0),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Display the notification title and device name
                 Text(
                   "${notification.title} - ${notification.device.deviceName}",
                   style: TextStyle(
@@ -107,6 +106,7 @@ class NotificationCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 4.0),
+                // Display the notification description
                 Text(
                   notification.description,
                   style: TextStyle(
@@ -115,8 +115,19 @@ class NotificationCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 4.0),
+                // Display the notification delivery time
                 Text(
-                  MaterialLocalizations.of(context).formatTimeOfDay(notification.deliveryTime),
+                  MaterialLocalizations.of(context)
+                      .formatTimeOfDay(notification.deliveryTime),
+                  style: TextStyle(
+                    fontSize: 14.0,
+                    color: notification.isRead ? Colors.grey : Colors.black,
+                  ),
+                ),
+                const SizedBox(height: 4.0),
+                // Display the notification category
+                Text(
+                  "Category: ",  // New line to display category
                   style: TextStyle(
                     fontSize: 14.0,
                     color: notification.isRead ? Colors.grey : Colors.black,
@@ -128,12 +139,12 @@ class NotificationCard extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.delete, color: Colors.red),
             onPressed: () {
-              // Logica per eliminare la notifica
+              // Logic to delete the notification
             },
           ),
           PopupMenuButton<NotificationType>(
             onSelected: (NotificationType type) {
-              // Logica per categorizzare la notifica
+              // Logic to categorize the notification
             },
             itemBuilder: (BuildContext context) {
               return NotificationType.values.map((NotificationType type) {
@@ -148,7 +159,7 @@ class NotificationCard extends StatelessWidget {
           if (!notification.isRead)
             const Icon(
               Icons.circle,
-              color: Colors.orange, // Notifiche non lette = pallino arancione
+              color: Colors.orange,
               size: 12.0,
             ),
         ],

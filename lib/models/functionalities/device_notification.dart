@@ -8,7 +8,6 @@ class DeviceNotification {
   int id;
   String title;
   Device device;
-  NotificationType type;
   TimeOfDay deliveryTime;
   bool isRead;
   String description;
@@ -17,7 +16,6 @@ class DeviceNotification {
     required this.id,
     required this.title,
     required this.device,
-    required this.type,
     required this.deliveryTime,
     this.isRead = false,
     this.description = "",
@@ -34,7 +32,6 @@ class DeviceNotification {
     required this.id,
     required this.title,
     required this.device,
-    required this.type,
     required this.deliveryTime,
     this.isRead = false,
     this.description = "",
@@ -45,7 +42,6 @@ class DeviceNotification {
       'id': id,
       'title': title,
       'device': device.toMap(),
-      'type': type.toString(),
       'deliveryTime': deliveryTime,
       'isRead': isRead ? 1 : 0,
       'description': description,
