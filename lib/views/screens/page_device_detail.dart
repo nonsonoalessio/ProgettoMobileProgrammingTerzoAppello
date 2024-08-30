@@ -1,7 +1,8 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
+import 'package:progetto_mobile_programming/views/minis.dart';
+import 'package:progetto_mobile_programming/providers/devices_provider.dart';
 import '../../models/objects/camera.dart';
 import '../../models/objects/device.dart';
 import '../../models/objects/alarm.dart';
@@ -308,19 +309,22 @@ Widget _buildLightWidget(Light light) {
           Text('Stato del dispositivo: ${light.isActive ? "On" : "Off"}'),
           ElevatedButton(
             onPressed: () {
-              _wrap();
+              setState(() {
+                light.isActive = !light.isActive;
+              });
             },
             child: Text(light.isActive ? 'Spegni la luce' : 'Accendi la luce'),
           ),
         ],
       ),
       SizedBox(height: 8),
-      Text('Temperatura della lampadina:'),
+      //Text('Temperatura della lampadina: '),
       Stack(
         alignment: Alignment.centerLeft,
         children: [
           Container(
             height: 20,
+            /*
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
@@ -336,19 +340,15 @@ Widget _buildLightWidget(Light light) {
                 begin: Alignment.centerLeft,
                 end: Alignment.centerRight,
               ),
-            ),
+            ),*/
           ),
-          Slider(
-            value: light.lightTemperature.toDouble(),
-            min: 0,
-            max: 100,
-            onChanged: (double value) {
-              // Aggiorna lightTemperature
-            },
-            activeColor: Colors.transparent,
-            inactiveColor: Colors.transparent,
-            divisions: 100,
-          ),
+          ColorTemperatureSlider(
+            onValueChanged: (value){
+              setState(() {
+                light.lightTemperature = value.toInt();
+                ref.read(deviceNotifierProvider.notifier).updateDevice(light); 
+              });
+            })
         ],
       ),
     ],
@@ -359,11 +359,14 @@ Widget _buildAlarmWidget(Alarm alarm) {
   return Row( 
     mainAxisAlignment: MainAxisAlignment.spaceBetween, 
     children: [
-      Text('Stato dell\'allarme: ${alarm.isActive ? "Attivo" : "Disattivo"}'),
+        Text('Stato dell\'allarme: ${alarm.isActive ? "Attivo" : "Disattivo"}'),
       ElevatedButton(
         onPressed: () {
-          _wrap();
-        },
+          setState(() {
+            alarm.isActive = !alarm.isActive;
+          ref.read(deviceNotifierProvider.notifier).updateDevice(alarm); 
+          });       
+          },
         child: Text(alarm.isActive ? 'Disattiva' : 'Attiva'),
       ),
     ],
@@ -378,7 +381,10 @@ Widget _buildAlarmWidget(Alarm alarm) {
             'Stato della serratura: ${lock.isActive ? "Bloccata" : "Sbloccata"}'),
         ElevatedButton(
           onPressed: () {
-            _wrap();
+            setState(() {
+              lock.isActive = !lock.isActive;
+              ref.read(deviceNotifierProvider.notifier).updateDevice(lock);
+            });
           },
           child: Text(lock.isActive ? 'Sblocca' : 'Blocca'),
         ),
@@ -396,9 +402,13 @@ Widget _buildAlarmWidget(Alarm alarm) {
           min: 16,
           max: 30,
           onChanged: (double value) {
-            // Cambia la temperatura del termostato
+            setState(() {
+              thermostat.desiredTemp = value;
+              ref.read(deviceNotifierProvider.notifier).updateDevice(thermostat);
+            });
           },
         ),
+        Text('Temperatura desiderata: ${thermostat.desiredTemp.toStringAsFixed(1)}°C'),
       ],
     );
   }
