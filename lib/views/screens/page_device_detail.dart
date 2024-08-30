@@ -311,6 +311,7 @@ Widget _buildLightWidget(Light light) {
             onPressed: () {
               setState(() {
                 light.isActive = !light.isActive;
+                ref.read(deviceNotifierProvider.notifier).updateDevice(light);
               });
             },
             child: Text(light.isActive ? 'Spegni la luce' : 'Accendi la luce'),
