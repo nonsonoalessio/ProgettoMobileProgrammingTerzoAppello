@@ -1,5 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,6 +17,30 @@ import 'package:progetto_mobile_programming/models/objects/light.dart';
 import 'package:progetto_mobile_programming/models/objects/lock.dart';
 import 'package:progetto_mobile_programming/models/objects/thermostat.dart';
 import 'package:progetto_mobile_programming/providers/devices_provider.dart';
+
+String lightsActionsToStr(LightsActions action) {
+  if (action == LightsActions.setColorTemp) {
+    return "Imposta temperatura colore";
+  } else if (action == LightsActions.turnOff) {
+    return "Spegni";
+  } else {
+    return "Accendi";
+  }
+}
+
+String alarmsActionsToStr(AlarmsActions action) {
+  return action == AlarmsActions.turnOn
+      ? "Inserisci allarme"
+      : "Disinserisci allarme";
+}
+
+String locksActionsToStr(LocksActions action) {
+  return action == LocksActions.activate ? "Attiva" : "Disattiva";
+}
+
+String thermostatsActionsToStr(ThermostatsActions action) {
+  return "Imposta temperatura desiderata";
+}
 
 class AddNewAutomationPage extends ConsumerStatefulWidget {
   const AddNewAutomationPage({super.key});
@@ -79,10 +105,11 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
 
     showModalBottomSheet(
       context: context,
-      isScrollControlled: true, // Ensure the BottomSheet can scroll
+      isScrollControlled: true,
       builder: (context) {
         return StatefulBuilder(
-          builder: (context, setState) {
+          builder: (context, setModalState) {
+            // Usa setModalState per aggiornare lo stato all'interno del modal
             return Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
@@ -111,7 +138,8 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
                                 );
                               }).toList(),
                               onChanged: (device) {
-                                setState(() {
+                                setModalState(() {
+                                  // Aggiorna lo stato del modal
                                   selectedDevice = device;
                                   newAction = null; // Reset dell'azione
                                 });
@@ -130,11 +158,11 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
                         items: AlarmsActions.values.map((action) {
                           return DropdownMenuItem<AlarmsActions>(
                             value: action,
-                            child: Text(action.toString().split('.').last),
+                            child: Text(alarmsActionsToStr(action)),
                           );
                         }).toList(),
                         onChanged: (value) {
-                          setState(() {
+                          setModalState(() {
                             selectedAlarmAction = value;
                             newAction = AlarmAction(
                                 device: selectedDevice!, action: value!);
@@ -151,11 +179,11 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
                         items: LightsActions.values.map((action) {
                           return DropdownMenuItem<LightsActions>(
                             value: action,
-                            child: Text(action.toString().split('.').last),
+                            child: Text(lightsActionsToStr(action)),
                           );
                         }).toList(),
                         onChanged: (value) {
-                          setState(() {
+                          setModalState(() {
                             selectedLightAction = value;
                             newAction = LightAction(
                                 device: selectedDevice!, action: value!);
@@ -172,7 +200,7 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
                             ),
                             keyboardType: TextInputType.number,
                             onChanged: (value) {
-                              setState(() {
+                              setModalState(() {
                                 colorTemperature = int.tryParse(value);
                                 if (newAction != null) {
                                   newAction = LightAction(
@@ -195,11 +223,11 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
                         items: LocksActions.values.map((action) {
                           return DropdownMenuItem<LocksActions>(
                             value: action,
-                            child: Text(action.toString().split('.').last),
+                            child: Text(locksActionsToStr(action)),
                           );
                         }).toList(),
                         onChanged: (value) {
-                          setState(() {
+                          setModalState(() {
                             selectedLockAction = value;
                             newAction = LockAction(
                                 device: selectedDevice!, action: value!);
@@ -216,11 +244,11 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
                         items: ThermostatsActions.values.map((action) {
                           return DropdownMenuItem<ThermostatsActions>(
                             value: action,
-                            child: Text(action.toString().split('.').last),
+                            child: Text(thermostatsActionsToStr(action)),
                           );
                         }).toList(),
                         onChanged: (value) {
-                          setState(() {
+                          setModalState(() {
                             selectedThermostatAction = value;
                             newAction = ThermostatAction(
                                 device: selectedDevice!, action: value!);
@@ -238,7 +266,7 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
                             ),
                             keyboardType: TextInputType.number,
                             onChanged: (value) {
-                              setState(() {
+                              setModalState(() {
                                 desiredTemp = double.tryParse(value);
                                 if (newAction != null) {
                                   newAction = ThermostatAction(
@@ -273,8 +301,14 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
     ).then((result) {
       if (result != null) {
         setState(() {
-          _selectedActions[selectedDevice as Device]
-              ?.add(result as DeviceAction);
+          if (_selectedActions.containsKey(selectedDevice as Device)) {
+            _selectedActions[selectedDevice as Device]
+                ?.add(result as DeviceAction);
+          } else {
+            _selectedActions[selectedDevice as Device] = [
+              result as DeviceAction
+            ];
+          }
         });
       }
     });
@@ -282,7 +316,6 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
 
   @override
   Widget build(BuildContext context) {
-    final List<Device> devices = ref.watch(deviceNotifierProvider);
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
@@ -291,7 +324,6 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
         label: Text('Aggiungi azione'),
         icon: Icon(Icons.add),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       appBar: AppBar(
         leading: IconButton(
           onPressed: () {
@@ -479,7 +511,10 @@ class _ListOfActionsState extends State<ListOfActions> {
   @override
   Widget build(BuildContext context) {
     var map = widget.map; // per non riscrivere "widget." ogni volta
-    var devices = map.keys;
+
+    List<Device> devices = [];
+    devices.addAll(map.keys);
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16.0),
       child: Column(
@@ -489,13 +524,113 @@ class _ListOfActionsState extends State<ListOfActions> {
             style: Theme.of(context).textTheme.displaySmall,
           ),
           Expanded(
-            child: ListView.builder(
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              itemBuilder: (context, index) => Text('ciao'),
-            ),
+            child: devices.isNotEmpty
+                ? ListView.builder(
+                    itemCount: devices.length,
+                    itemBuilder: (context, index) => DeviceActionsDetail(
+                      device: devices[index],
+                      actions: (map[devices[index]] as List<DeviceAction>),
+                    ),
+                  )
+                : Center(
+                    child: Text('Nessuna azione da compiere. Aggiungine una!'),
+                  ),
           )
         ],
+      ),
+    );
+  }
+}
+
+class DeviceActionsDetail extends StatefulWidget {
+  final Device device;
+  final List<DeviceAction> actions;
+  const DeviceActionsDetail({
+    super.key,
+    required this.device,
+    required this.actions,
+  });
+
+  @override
+  State<DeviceActionsDetail> createState() => _DeviceActionsDetailState();
+}
+
+class _DeviceActionsDetailState extends State<DeviceActionsDetail> {
+  @override
+  Widget build(BuildContext context) {
+    Icon icon;
+
+    if (widget.device is Light) {
+      icon = Icon(
+        Icons.lightbulb,
+        size: 24.0,
+      );
+    } else if (widget.device is Lock) {
+      icon = Icon(
+        Icons.lock,
+        size: 24.0,
+      );
+    } else if (widget.device is Alarm) {
+      icon = Icon(
+        Icons.doorbell,
+        size: 24.0,
+      );
+    } else {
+      icon = Icon(
+        Icons.thermostat,
+        size: 24.0,
+      );
+    }
+
+    List<Text> actionTexts = [];
+    for (DeviceAction a in widget.actions) {
+      String str = "";
+      if (a is LockAction) {
+        str = locksActionsToStr(a.action);
+      } else if (a is AlarmAction) {
+        str = alarmsActionsToStr(a.action);
+      } else if (a is LightAction) {
+        str =
+            '${lightsActionsToStr(a.action)} a ${a.colorTemperature.toString()} K';
+      } else {
+        str =
+            '${thermostatsActionsToStr((a as ThermostatAction).action)} a ${a.desiredTemp.toString()} °C';
+      }
+      actionTexts.add(Text(
+        "- $str",
+        style: TextStyle(
+          color: Colors.grey[1000000],
+        ),
+      ));
+    }
+
+    return Container(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8.0),
+              child: Row(
+                children: [
+                  icon,
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Text(
+                      widget.device.deviceName,
+                      style: (TextStyle(
+                        fontWeight: FontWeight.bold,
+                      )),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            ...actionTexts,
+            Divider(),
+          ],
+        ),
       ),
     );
   }

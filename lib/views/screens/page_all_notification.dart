@@ -67,7 +67,6 @@ class _NotificationPageState extends ConsumerState<NotificationPage> {
   }
 }
 
-
 // stato: notificaLetta (bool), Set<String> categories
 class NotificationCard extends StatefulWidget {
   final DeviceNotification notification;
@@ -118,7 +117,8 @@ class _NotificationCardState extends State<NotificationCard> {
                   widget.notification.description,
                   style: TextStyle(
                     fontSize: 14.0,
-                    color: widget.notification.isRead ? Colors.grey : Colors.black,
+                    color:
+                        widget.notification.isRead ? Colors.grey : Colors.black,
                   ),
                 ),
                 const SizedBox(height: 4.0),
@@ -128,7 +128,8 @@ class _NotificationCardState extends State<NotificationCard> {
                       .formatTimeOfDay(widget.notification.deliveryTime),
                   style: TextStyle(
                     fontSize: 14.0,
-                    color: widget.notification.isRead ? Colors.grey : Colors.black,
+                    color:
+                        widget.notification.isRead ? Colors.grey : Colors.black,
                   ),
                 ),
                 const SizedBox(height: 4.0),
@@ -137,7 +138,8 @@ class _NotificationCardState extends State<NotificationCard> {
                   "Category: ", // New line to display category
                   style: TextStyle(
                     fontSize: 14.0,
-                    color: widget.notification.isRead ? Colors.grey : Colors.black,
+                    color:
+                        widget.notification.isRead ? Colors.grey : Colors.black,
                   ),
                 ),
               ],
@@ -176,6 +178,7 @@ class _NotificationCardState extends State<NotificationCard> {
 }
 
 class CategoriesChooserModal extends ConsumerStatefulWidget {
+  // final ValueChanged<List<String>> onValueChanged;
   const CategoriesChooserModal({super.key});
 
   @override
