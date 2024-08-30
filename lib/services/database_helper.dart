@@ -367,7 +367,7 @@ class DatabaseHelper {
     }).toSet();
   }
 
-/*
+/* GUARDA METODO DEFINITO IN BASSO
   Future<void> insertNotificationCategories(Notification notification, Set<String> categories) async {
     final db = await database;
 
@@ -530,6 +530,32 @@ class DatabaseHelper {
     );
   }
 
+  Future<void> insertCategory(String category) async {
+    final db = await database;
+    await db.insert(
+      'category',
+      {
+        'name': category,
+      },
+    );
+  }
+
+  // DA CAPIRE COME LA VUOLE ALESSIO TODO
+  Future<void> insertNotificationCategories(
+      DeviceNotification devNot, List<String> categories) async {
+    final db = await database;
+
+    // Utilizziamo una transazione per garantire che tutte le operazioni di inserimento siano atomiche.
+    await db.transaction((txn) async {
+      for (String category in categories) {
+        await txn.insert(
+          'categoryNotification',
+          {'category': category, 'deviceNotifications': devNot},
+        );
+      }
+    });
+  }
+
   Future<void> updateRoom(String oldRoomName, String newRoomName) async {
     final db = await database;
 
@@ -635,6 +661,50 @@ class DatabaseHelper {
     );
   }
 
+  Future<void> updateCategory(
+      String oldCategoryName, String newCategoryName) async {
+    final db = await database;
+
+    // Aggiorniamo il nome della categoria nella tabella 'category'
+    await db.update(
+      'category',
+      {'name': newCategoryName},
+      where: 'name = ?',
+      whereArgs: [oldCategoryName],
+    );
+
+    // Aggiorniamo anche le associazioni di categoria nella tabella 'categoryNotification'
+    await db.update(
+      'categoryNotification',
+      {'category': newCategoryName},
+      where: 'category = ?',
+      whereArgs: [oldCategoryName],
+    );
+  }
+
+  Future<void> updateCategoryNotification(
+      int deviceNotificationId, List<String> newCategories) async {
+    final db = await database;
+
+    // Avvio di una transazione per garantire che tutte le operazioni siano atomiche
+    await db.transaction((txn) async {
+      // Step 1: Rimuoviamo tutte le categorie associate alla notifica
+      await txn.delete(
+        'categoryNotification',
+        where: 'deviceNotifications = ?',
+        whereArgs: [deviceNotificationId],
+      );
+
+      // Step 2: Inseriamo le nuove categorie per la notifica
+      for (String category in newCategories) {
+        await txn.insert(
+          'categoryNotification',
+          {'deviceNotifications': deviceNotificationId, 'category': category},
+        );
+      }
+    });
+  }
+
   Future<void> removeDevice(Device device) async {
     final db = await database;
 
@@ -713,6 +783,36 @@ class DatabaseHelper {
       'rooms',
       where: 'room = ?',
       whereArgs: [roomName],
+    );
+  }
+
+  Future<void> removeCategory(String categoryName) async {
+    final db = await database;
+
+    // Rimuoviamo tutte le associazioni con la categoria dalla tabella 'categoryNotification'
+    await db.delete(
+      'categoryNotification',
+      where: 'category = ?',
+      whereArgs: [categoryName],
+    );
+
+    // Rimuoviamo la categoria dalla tabella 'category'
+    await db.delete(
+      'category',
+      where: 'name = ?',
+      whereArgs: [categoryName],
+    );
+  }
+
+  Future<void> removeCategoryNotification(
+      int deviceNotificationId, String category) async {
+    final db = await database;
+
+    // Rimuoviamo una specifica associazione dalla tabella 'categoryNotification'
+    await db.delete(
+      'categoryNotification',
+      where: 'category = ? AND deviceNotifications = ?',
+      whereArgs: [category, deviceNotificationId],
     );
   }
 
