@@ -11,15 +11,17 @@ class DeviceNotification {
   TimeOfDay deliveryTime;
   bool isRead;
   String description;
+  Set<String> categories;
 
-  DeviceNotification({
-    required this.id,
-    required this.title,
-    required this.device,
-    required this.deliveryTime,
-    this.isRead = false,
-    this.description = "",
-  });
+  DeviceNotification(
+      {required this.id,
+      required this.title,
+      required this.device,
+      required this.deliveryTime,
+      this.isRead = false,
+      this.description = "",
+      categories})
+      : categories = categories ?? {};
 
   static int generateUniqueId() {
     final int timestamp =
@@ -28,14 +30,15 @@ class DeviceNotification {
     return (timestamp % 1000000) * 1000 + randomPart;
   }
 
-  DeviceNotification._fromMap({
-    required this.id,
-    required this.title,
-    required this.device,
-    required this.deliveryTime,
-    this.isRead = false,
-    this.description = "",
-  });
+  DeviceNotification._fromMap(
+      {required this.id,
+      required this.title,
+      required this.device,
+      required this.deliveryTime,
+      this.isRead = false,
+      this.description = "",
+      categories})
+      : categories = categories ?? {};
 
   Map<String, Object?> toMap() {
     return {

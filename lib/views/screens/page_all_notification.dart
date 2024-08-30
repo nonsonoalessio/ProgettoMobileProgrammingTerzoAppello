@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:progetto_mobile_programming/models/functionalities/device_notification.dart';
 import 'package:progetto_mobile_programming/models/objects/device.dart';
+import 'package:progetto_mobile_programming/providers/devices_provider.dart';
 import 'package:progetto_mobile_programming/providers/notifications_provider.dart';
 import 'package:progetto_mobile_programming/views/screens/page_device_detail.dart';
 
@@ -14,11 +15,16 @@ class NotificationPage extends ConsumerStatefulWidget {
 }
 
 class _NotificationPageState extends ConsumerState<NotificationPage> {
-  // TODO: opera con provider anziché state locale
   void _markAsRead(DeviceNotification notification) {
     setState(() {
       notification.isRead = true;
     });
+  }
+
+  void _deleteNotification(DeviceNotification notification) {
+    ref.read(notificationsNotifierProvider.notifier).deleteNotification(notification);
+    // Notify Flutter that the state has changed
+    setState(() {});
   }
 
   void _navigateToDeviceDetail(Device device) {
@@ -51,14 +57,16 @@ class _NotificationPageState extends ConsumerState<NotificationPage> {
             final notification = notificationsList[index];
             return GestureDetector(
               onTap: () {
-                // Quando una notifica non letta viene cliccata, la segniamo come letta
                 if (!notification.isRead) {
                   _markAsRead(notification);
+                  ref.read(notificationsNotifierProvider.notifier).markNotificationAsRead(notification);
                 }
-                // Naviga alla pagina di dettaglio del dispositivo associato
                 _navigateToDeviceDetail(notification.device);
               },
-              child: NotificationCard(notification: notification),
+              child: NotificationCard(
+                notification: notification,
+                onDelete: () => _deleteNotification(notification),
+              ),
             );
           },
         ),
@@ -67,13 +75,16 @@ class _NotificationPageState extends ConsumerState<NotificationPage> {
   }
 }
 
+
 // stato: notificaLetta (bool), Set<String> categories
 class NotificationCard extends StatefulWidget {
   final DeviceNotification notification;
+  final VoidCallback onDelete;
 
   const NotificationCard({
     super.key,
     required this.notification,
+    required this.onDelete,
   });
 
   @override
@@ -81,6 +92,23 @@ class NotificationCard extends StatefulWidget {
 }
 
 class _NotificationCardState extends State<NotificationCard> {
+  void _chooseCategories() async {
+    // Open the categories chooser modal and wait for the selected categories
+    final selectedCategories = await showDialog<List<String>>(
+      context: context,
+      builder: (context) => CategoriesChooserModal(
+        selectedCategories: widget.notification.categories,
+      ),
+    );
+
+    // If the user confirmed their selection, update the notification categories
+    if (selectedCategories != null) {
+      setState(() {
+        widget.notification.categories = selectedCategories.toSet();
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -101,7 +129,6 @@ class _NotificationCardState extends State<NotificationCard> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Display the notification title and device name
                 Text(
                   "${widget.notification.title} - ${widget.notification.device.deviceName}",
                   style: TextStyle(
@@ -112,34 +139,28 @@ class _NotificationCardState extends State<NotificationCard> {
                   ),
                 ),
                 const SizedBox(height: 4.0),
-                // Display the notification description
                 Text(
                   widget.notification.description,
                   style: TextStyle(
                     fontSize: 14.0,
-                    color:
-                        widget.notification.isRead ? Colors.grey : Colors.black,
+                    color: widget.notification.isRead ? Colors.grey : Colors.black,
                   ),
                 ),
                 const SizedBox(height: 4.0),
-                // Display the notification delivery time
                 Text(
                   MaterialLocalizations.of(context)
                       .formatTimeOfDay(widget.notification.deliveryTime),
                   style: TextStyle(
                     fontSize: 14.0,
-                    color:
-                        widget.notification.isRead ? Colors.grey : Colors.black,
+                    color: widget.notification.isRead ? Colors.grey : Colors.black,
                   ),
                 ),
                 const SizedBox(height: 4.0),
-                // Display the notification category
                 Text(
-                  "Category: ", // New line to display category
+                  "Category: ${widget.notification.categories.join(', ')}",
                   style: TextStyle(
                     fontSize: 14.0,
-                    color:
-                        widget.notification.isRead ? Colors.grey : Colors.black,
+                    color: widget.notification.isRead ? Colors.grey : Colors.black,
                   ),
                 ),
               ],
@@ -147,23 +168,11 @@ class _NotificationCardState extends State<NotificationCard> {
           ),
           IconButton(
             icon: const Icon(Icons.delete, color: Colors.red),
-            onPressed: () {
-              // Logic to delete the notification
-            },
+            onPressed: widget.onDelete,
           ),
-          PopupMenuButton<NotificationType>(
-            onSelected: (NotificationType type) {
-              // Logic to categorize the notification
-            },
-            itemBuilder: (BuildContext context) {
-              return NotificationType.values.map((NotificationType type) {
-                return PopupMenuItem<NotificationType>(
-                  value: type,
-                  child: Text(type.toString().split('.').last),
-                );
-              }).toList();
-            },
+          IconButton(
             icon: const Icon(Icons.category),
+            onPressed: _chooseCategories, // Open the categories chooser modal
           ),
           if (!widget.notification.isRead)
             const Icon(
@@ -177,9 +186,15 @@ class _NotificationCardState extends State<NotificationCard> {
   }
 }
 
+
+
 class CategoriesChooserModal extends ConsumerStatefulWidget {
-  // final ValueChanged<List<String>> onValueChanged;
-  const CategoriesChooserModal({super.key});
+  final Set<String> selectedCategories;
+
+  const CategoriesChooserModal({
+    super.key,
+    required this.selectedCategories,
+  });
 
   @override
   ConsumerState<CategoriesChooserModal> createState() =>
@@ -188,9 +203,58 @@ class CategoriesChooserModal extends ConsumerStatefulWidget {
 
 class _CategoriesChooserModalState
     extends ConsumerState<CategoriesChooserModal> {
+  late Set<String> _selectedCategories;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedCategories = Set.from(widget.selectedCategories);
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Set<String> categories = ref.watch(NotificationCategoriesNotifierProvider);
-    return const Placeholder();
+    // Fetch the categories from the provider
+    final categories = ref.watch(notificationCategoriesNotifierProvider);
+
+    return AlertDialog(
+      title: const Text('Select Categories'),
+      content: SizedBox(
+        width: double.maxFinite,
+        child: ListView.builder(
+          shrinkWrap: true,
+          itemCount: categories.length,
+          itemBuilder: (context, index) {
+            final category = categories.elementAt(index);
+            final isSelected = _selectedCategories.contains(category);
+
+            return CheckboxListTile(
+              title: Text(category),
+              value: isSelected,
+              onChanged: (bool? selected) {
+                setState(() {
+                  if (selected == true) {
+                    _selectedCategories.add(category);
+                  } else {
+                    _selectedCategories.remove(category);
+                  }
+                });
+              },
+            );
+          },
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context, null), // Cancel the selection
+          child: const Text('Cancel'),
+        ),
+        ElevatedButton(
+          onPressed: () =>
+              Navigator.pop(context, _selectedCategories.toList()), // Confirm selection
+          child: const Text('OK'),
+        ),
+      ],
+    );
   }
 }
+

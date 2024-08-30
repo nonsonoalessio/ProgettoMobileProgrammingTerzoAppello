@@ -209,9 +209,9 @@ class DatabaseHelper {
         await db.execute("""
           INSERT INTO category(name)
           VALUES
-          ('security'),
-          ('automationExecution'),
-          ('highEnergyConsumption')
+          ('Sicurezza'),
+          ('Esecuzione automazione'),
+          ('Alti consumi')
           """);
         await db.execute("""
           INSERT INTO deviceNotification (id, title, device, deliveryTime, isRead, description)
