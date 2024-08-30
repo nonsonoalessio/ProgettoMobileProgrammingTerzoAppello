@@ -1,6 +1,10 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:progetto_mobile_programming/models/functionalities/device_notification.dart';
+import 'package:progetto_mobile_programming/providers/notifications_provider.dart';
+import 'package:progetto_mobile_programming/services/localnotification_service.dart';
 import 'package:progetto_mobile_programming/views/minis.dart';
 import 'package:progetto_mobile_programming/providers/devices_provider.dart';
 import '../../models/objects/camera.dart';
@@ -113,8 +117,97 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
     });
   }
 
-  // TODO: Metodo wrap da chiamare per accendere/spegnere lampadina/serratura/allarme e mandare notifica
-  void _wrap() {}
+// Remind: Le notifiche non vengono aggiunte al DB per problemi di casting
+  void _wrap(Device device) {
+    final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+        FlutterLocalNotificationsPlugin();
+    LocalNoti().init();
+
+    String body = "Stato del dispositivo modificato correttamente";
+
+    setState(() {
+    int notificationId = DeviceNotification.generateUniqueId(); 
+      if (device is Light) {
+        // Accendiamo o spegnamo la lampadina
+        device.isActive = !device.isActive;
+
+        // Creiamo la notifica
+        final newNotification = DeviceNotification(
+            id: notificationId,
+            title: 'Stato del dispositivo modificato correttamente',
+            device: Light(
+                deviceName: device.deviceName,
+                room: device.room,
+                id: device.id),
+            deliveryTime: TimeOfDay.now());
+
+        // Aggiungiamo la notifica al database
+        ref
+            .read(notificationsNotifierProvider.notifier)
+            .addNotification(newNotification);
+
+        // Mostriamo la notifica
+        LocalNoti().showBigTextNotification(
+          id: notificationId,
+          title: 'Hai modificato lo stato della luce!',
+          body: body,
+          fln: flutterLocalNotificationsPlugin,
+        );
+      } else if (device is Alarm) {
+        // Accendiamo o spegnamo l'allarme
+        device.isActive = !device.isActive;
+
+        // Creiamo la notifica
+        final newNotification = DeviceNotification(
+            id: notificationId,
+            title: 'Stato del dispositivo modificato correttamente',
+            device: Alarm(
+                deviceName: device.deviceName,
+                room: device.room,
+                id: device.id),
+            deliveryTime: TimeOfDay.now());
+
+        // Aggiungiamo la notifica al database
+        ref
+            .read(notificationsNotifierProvider.notifier)
+            .addNotification(newNotification);
+
+        // Mostriamo la notifica
+        LocalNoti().showBigTextNotification(
+          id: notificationId,
+          title: 'Hai modificato lo stato dell\'allarme!',
+          body: body,
+          fln: flutterLocalNotificationsPlugin,
+        );
+      } else if (device is Lock) {
+        // Accendiamo o spegnamo la serraturra
+        device.isActive = !device.isActive;
+
+        // Creiamo la notifica
+        final newNotification = DeviceNotification(
+            id: notificationId,
+            title: 'Stato del dispositivo modificato correttamente',
+            device: Light(
+                deviceName: device.deviceName,
+                room: device.room,
+                id: device.id),
+            deliveryTime: TimeOfDay.now());
+
+        // Aggiungiamo la notifica al database
+        ref
+            .read(notificationsNotifierProvider.notifier)
+            .addNotification(newNotification);
+
+        // Mostriamo la notifica
+        LocalNoti().showBigTextNotification(
+          id: notificationId,
+          title: 'Hai modificato lo stato della serratura!',
+          body: body,
+          fln: flutterLocalNotificationsPlugin,
+        );
+      }
+    });
+  }
 
   bool _checkFields() {
     return _deviceNameController.text.isNotEmpty && _selectedRoom != null;
@@ -299,92 +392,72 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
     );
   }
 
-Widget _buildLightWidget(Light light) {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text('Stato del dispositivo: ${light.isActive ? "On" : "Off"}'),
-          ElevatedButton(
-            onPressed: () {
-              setState(() {
-                light.isActive = !light.isActive;
-                ref.read(deviceNotifierProvider.notifier).updateDevice(light);
-              });
-            },
-            child: Text(light.isActive ? 'Spegni la luce' : 'Accendi la luce'),
-          ),
-        ],
-      ),
-      SizedBox(height: 8),
-      //Text('Temperatura della lampadina: '),
-      Stack(
-        alignment: Alignment.centerLeft,
-        children: [
-          Container(
-            height: 20,
-            /*
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Color(0xFFFF3300), // 2000K
-                  Color(0xFFFFB266), // 2700K
-                  Color(0xFFFFFFE0), // 3000K
-                  Color(0xFFFAFAFA), // 4000K
-                  Color(0xFFD4EFFF), // 5500K
-                  Color(0xFFB8DAFF), // 6500K
-                  Color(0xFF4D8EFF), // 8000K
-                ],
-                stops: [0.0, 0.15, 0.25, 0.5, 0.7, 0.85, 1.0],
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-              ),
-            ),*/
-          ),
-          ColorTemperatureSlider(
-            onValueChanged: (value){
+  Widget _buildLightWidget(Light light) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text('Stato del dispositivo: ${light.isActive ? "On" : "Off"}'),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  _wrap(light);
+                });
+              },
+              child:
+                  Text(light.isActive ? 'Spegni la luce' : 'Accendi la luce'),
+            ),
+          ],
+        ),
+        SizedBox(height: 8),
+        //Text('Temperatura della lampadina: '),
+        Stack(
+          alignment: Alignment.centerLeft,
+          children: [
+            Container(
+              height: 20,
+            ),
+            ColorTemperatureSlider(onValueChanged: (value) {
               setState(() {
                 light.lightTemperature = value.toInt();
-                ref.read(deviceNotifierProvider.notifier).updateDevice(light); 
+                ref.read(deviceNotifierProvider.notifier).updateDevice(light);
               });
             })
-        ],
-      ),
-    ],
-  );
-}
+          ],
+        ),
+      ],
+    );
+  }
 
-Widget _buildAlarmWidget(Alarm alarm) {
-  return Row( 
-    mainAxisAlignment: MainAxisAlignment.spaceBetween, 
-    children: [
+  Widget _buildAlarmWidget(Alarm alarm) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
         Text('Stato dell\'allarme: ${alarm.isActive ? "Attivo" : "Disattivo"}'),
-      ElevatedButton(
-        onPressed: () {
-          setState(() {
-            alarm.isActive = !alarm.isActive;
-          ref.read(deviceNotifierProvider.notifier).updateDevice(alarm); 
-          });       
+        ElevatedButton(
+          onPressed: () {
+            setState(() {
+              _wrap(alarm);
+            });
           },
-        child: Text(alarm.isActive ? 'Disattiva' : 'Attiva'),
-      ),
-    ],
-  );
-}
+          child: Text(alarm.isActive ? 'Disattiva' : 'Attiva'),
+        ),
+      ],
+    );
+  }
 
   Widget _buildLockWidget(Lock lock) {
     return Row(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween, 
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
             'Stato della serratura: ${lock.isActive ? "Bloccata" : "Sbloccata"}'),
         ElevatedButton(
           onPressed: () {
             setState(() {
-              lock.isActive = !lock.isActive;
-              ref.read(deviceNotifierProvider.notifier).updateDevice(lock);
+              _wrap(lock);
             });
           },
           child: Text(lock.isActive ? 'Sblocca' : 'Blocca'),
@@ -405,11 +478,14 @@ Widget _buildAlarmWidget(Alarm alarm) {
           onChanged: (double value) {
             setState(() {
               thermostat.desiredTemp = value;
-              ref.read(deviceNotifierProvider.notifier).updateDevice(thermostat);
+              ref
+                  .read(deviceNotifierProvider.notifier)
+                  .updateDevice(thermostat);
             });
           },
         ),
-        Text('Temperatura desiderata: ${thermostat.desiredTemp.toStringAsFixed(1)}°C'),
+        Text(
+            'Temperatura desiderata: ${thermostat.desiredTemp.toStringAsFixed(1)}°C'),
       ],
     );
   }
