@@ -514,6 +514,7 @@ class DatabaseHelper {
         'weather': automation.weather,
       },
     );
+    //TODO inserimento anche nella tabella ACTIONS
   }
 
   Future<void> insertNotification(DeviceNotification notification) async {
@@ -659,6 +660,7 @@ class DatabaseHelper {
       where: 'name = ?',
       whereArgs: [automation.name],
     );
+    //TODO da adattare
   }
 
   Future<void> updateNotification(int id) async {
