@@ -22,8 +22,9 @@ class _NotificationPageState extends ConsumerState<NotificationPage> {
   }
 
   void _deleteNotification(DeviceNotification notification) {
-    ref.read(notificationsNotifierProvider.notifier).deleteNotification(notification);
-    // Notify Flutter that the state has changed
+    ref
+        .read(notificationsNotifierProvider.notifier)
+        .deleteNotification(notification);
     setState(() {});
   }
 
@@ -59,7 +60,9 @@ class _NotificationPageState extends ConsumerState<NotificationPage> {
               onTap: () {
                 if (!notification.isRead) {
                   _markAsRead(notification);
-                  ref.read(notificationsNotifierProvider.notifier).markNotificationAsRead(notification);
+                  ref
+                      .read(notificationsNotifierProvider.notifier)
+                      .markNotificationAsRead(notification);
                 }
                 _navigateToDeviceDetail(notification.device);
               },
@@ -75,8 +78,6 @@ class _NotificationPageState extends ConsumerState<NotificationPage> {
   }
 }
 
-
-// stato: notificaLetta (bool), Set<String> categories
 class NotificationCard extends StatefulWidget {
   final DeviceNotification notification;
   final VoidCallback onDelete;
@@ -93,15 +94,13 @@ class NotificationCard extends StatefulWidget {
 
 class _NotificationCardState extends State<NotificationCard> {
   void _chooseCategories() async {
-    // Open the categories chooser modal and wait for the selected categories
     final selectedCategories = await showDialog<List<String>>(
       context: context,
       builder: (context) => CategoriesChooserModal(
-        selectedCategories: widget.notification.categories,
+        notification: widget.notification, // Passa l'intera notifica
       ),
     );
 
-    // If the user confirmed their selection, update the notification categories
     if (selectedCategories != null) {
       setState(() {
         widget.notification.categories = selectedCategories.toSet();
@@ -143,7 +142,8 @@ class _NotificationCardState extends State<NotificationCard> {
                   widget.notification.description,
                   style: TextStyle(
                     fontSize: 14.0,
-                    color: widget.notification.isRead ? Colors.grey : Colors.black,
+                    color:
+                        widget.notification.isRead ? Colors.grey : Colors.black,
                   ),
                 ),
                 const SizedBox(height: 4.0),
@@ -152,7 +152,8 @@ class _NotificationCardState extends State<NotificationCard> {
                       .formatTimeOfDay(widget.notification.deliveryTime),
                   style: TextStyle(
                     fontSize: 14.0,
-                    color: widget.notification.isRead ? Colors.grey : Colors.black,
+                    color:
+                        widget.notification.isRead ? Colors.grey : Colors.black,
                   ),
                 ),
                 const SizedBox(height: 4.0),
@@ -160,7 +161,8 @@ class _NotificationCardState extends State<NotificationCard> {
                   "Category: ${widget.notification.categories.join(', ')}",
                   style: TextStyle(
                     fontSize: 14.0,
-                    color: widget.notification.isRead ? Colors.grey : Colors.black,
+                    color:
+                        widget.notification.isRead ? Colors.grey : Colors.black,
                   ),
                 ),
               ],
@@ -172,7 +174,8 @@ class _NotificationCardState extends State<NotificationCard> {
           ),
           IconButton(
             icon: const Icon(Icons.category),
-            onPressed: _chooseCategories, // Open the categories chooser modal
+            onPressed:
+                _chooseCategories, // Apri il modal per scegliere le categorie
           ),
           if (!widget.notification.isRead)
             const Icon(
@@ -186,14 +189,12 @@ class _NotificationCardState extends State<NotificationCard> {
   }
 }
 
-
-
 class CategoriesChooserModal extends ConsumerStatefulWidget {
-  final Set<String> selectedCategories;
+  final DeviceNotification notification; // Riceve la notifica
 
   const CategoriesChooserModal({
     super.key,
-    required this.selectedCategories,
+    required this.notification,
   });
 
   @override
@@ -208,12 +209,11 @@ class _CategoriesChooserModalState
   @override
   void initState() {
     super.initState();
-    _selectedCategories = Set.from(widget.selectedCategories);
+    _selectedCategories = Set.from(widget.notification.categories);
   }
 
   @override
   Widget build(BuildContext context) {
-    // Fetch the categories from the provider
     final categories = ref.watch(notificationCategoriesNotifierProvider);
 
     return AlertDialog(
@@ -245,16 +245,22 @@ class _CategoriesChooserModalState
       ),
       actions: [
         TextButton(
-          onPressed: () => Navigator.pop(context, null), // Cancel the selection
+          onPressed: () => Navigator.pop(context, null), // Annulla la selezione
           child: const Text('Cancel'),
         ),
         ElevatedButton(
-          onPressed: () =>
-              Navigator.pop(context, _selectedCategories.toList()), // Confirm selection
+          onPressed: () {
+            Navigator.pop(context, _selectedCategories.toList()); // Conferma selezione
+            ref
+                .read(notificationsNotifierProvider.notifier)
+                .updateNotificationCategories(
+                  widget.notification, // Usa la notifica passata
+                  _selectedCategories.toList(),
+                );
+          },
           child: const Text('OK'),
         ),
       ],
     );
   }
 }
-

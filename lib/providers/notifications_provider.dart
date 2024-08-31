@@ -47,6 +47,12 @@ class NotificationsNotifier extends _$NotificationsNotifier {
     _initStatus();
   }
 
+  void updateNotificationCategories(
+      DeviceNotification notification, List<String> categories) {
+    _updateNotificationCategoriesFromDb(notification, categories);
+    _initStatus();
+  }
+
   Future<void> _addNotificationToDb(DeviceNotification notification) async {
     await db.insertNotification(notification);
   }
@@ -54,6 +60,11 @@ class NotificationsNotifier extends _$NotificationsNotifier {
   Future<void> _updateNotificationFromDb(
       DeviceNotification notification) async {
     await db.updateNotification(notification.id);
+  }
+
+  Future<void> _updateNotificationCategoriesFromDb(
+      DeviceNotification notification, List<String> categories) async {
+    await db.updateCategoryNotification(notification.id, categories);
   }
 
   Future<void> _removeNotificationFromDb(
