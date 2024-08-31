@@ -2,6 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path/path.dart';
 import 'package:progetto_mobile_programming/models/functionalities/device_notification.dart';
 import 'package:progetto_mobile_programming/providers/notifications_provider.dart';
 import 'package:progetto_mobile_programming/services/localnotification_service.dart';
@@ -139,7 +140,11 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
                 deviceName: device.deviceName,
                 room: device.room,
                 id: device.id),
-            deliveryTime: TimeOfDay.now());
+            deliveryTime: TimeOfDay.now(),
+            isRead: false,
+            description: '',
+            categories: null,);
+            
 
         // Aggiungiamo la notifica al database
         ref
@@ -217,10 +222,10 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.device.deviceName),
+        title: null,
         actions: [
           IconButton(
-            icon: const Icon(Icons.save),
+            icon: const Icon(Icons.more_vert),
             onPressed: null,
           ),
         ],
@@ -236,13 +241,17 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
                 style: Theme.of(context).textTheme.headlineMedium,
               ),
               Divider(),
-              Text(
-                'Stanza: ${widget.device.room}',
-                style: Theme.of(context).textTheme.bodyMedium,
+              Container(
+                color: Colors.grey[100],
+                padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                child: Text(
+                  'Stanza: ${widget.device.room}',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                )
               ),
               const SizedBox(height: 20),
               _buildDeviceSpecificWidget(widget.device),
-              const SizedBox(height: 20),
+              const SizedBox(height: 10),
               EnergySavingSuggestions(device: widget.device),
             ],
           ),
@@ -392,50 +401,72 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
     );
   }
 
-  Widget _buildLightWidget(Light light) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text('Stato del dispositivo: ${light.isActive ? "On" : "Off"}'),
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  _wrap(light);
-                });
-              },
-              child:
-                  Text(light.isActive ? 'Spegni la luce' : 'Accendi la luce'),
+Widget _buildLightWidget(Light light) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Row(
+              children: [
+                Flexible(
+                  child: Text(
+                    'Stato del dispositivo: ',
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                Text(
+                  light.isActive ? "On" : "Off",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ],
             ),
-          ],
-        ),
-        SizedBox(height: 8),
-        //Text('Temperatura della lampadina: '),
-        Stack(
-          alignment: Alignment.centerLeft,
-          children: [
-            Container(
-              height: 20,
-            ),
-            ColorTemperatureSlider(onValueChanged: (value) {
+          ),
+          SizedBox(width: 8),
+          ElevatedButton(
+            onPressed: () {
               setState(() {
-                light.lightTemperature = value.toInt();
-                ref.read(deviceNotifierProvider.notifier).updateDevice(light);
+                _wrap(light);
               });
-            })
-          ],
-        ),
-      ],
-    );
-  }
-
+            },
+            child: Text(light.isActive ? 'Spegni la luce' : 'Accendi la luce'),
+          ),
+        ],
+      ),
+      SizedBox(height: 16),
+      Text('Temperatura della lampadina:'),
+      SizedBox(height: 8),
+      ColorTemperatureSlider(
+        onValueChanged: (value) {
+          setState(() {
+            light.lightTemperature = value.toInt();
+            ref.read(deviceNotifierProvider.notifier).updateDevice(light);
+          });
+        },
+      ),
+    ],
+  );
+}
   Widget _buildAlarmWidget(Alarm alarm) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text('Stato dell\'allarme: ${alarm.isActive ? "Attivo" : "Disattivo"}'),
+        Expanded(child: Row(
+          children: [
+            Flexible(child:
+            Text("Stato dell\'allarme:",
+              overflow: TextOverflow.ellipsis,
+            ), 
+            ),
+            Text(alarm.isActive ? "Attivo" : "Disattivo",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+        ),
+        SizedBox(width: 8),
         ElevatedButton(
           onPressed: () {
             setState(() {
@@ -448,112 +479,148 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
     );
   }
 
-  Widget _buildLockWidget(Lock lock) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-            'Stato della serratura: ${lock.isActive ? "Bloccata" : "Sbloccata"}'),
-        ElevatedButton(
-          onPressed: () {
-            setState(() {
-              _wrap(lock);
-            });
-          },
-          child: Text(lock.isActive ? 'Sblocca' : 'Blocca'),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildThermostatWidget(Thermostat thermostat) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text('Temperatura corrente: ${thermostat.detectedTemp}°C'),
-        Slider(
-          value: thermostat.desiredTemp.toDouble(),
-          min: 16,
-          max: 30,
-          onChanged: (double value) {
-            setState(() {
-              thermostat.desiredTemp = value;
-              ref
-                  .read(deviceNotifierProvider.notifier)
-                  .updateDevice(thermostat);
-            });
-          },
-        ),
-        Text(
-            'Temperatura desiderata: ${thermostat.desiredTemp.toStringAsFixed(1)}°C'),
-      ],
-    );
-  }
-
-  Widget _buildCameraWidget(Camera camera) {
-    String? _capturedImage;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Video corrente:',
-          style: Theme.of(context)
-              .textTheme
-              .headlineSmall
-              ?.copyWith(fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 20),
-        Container(
-          width: double.infinity,
-          height: 200,
-          color: Colors.black,
-          child: Center(
-            child: Text(
-              'Video stream: ${camera.video}',
-              style: const TextStyle(color: Colors.white),
-              textAlign: TextAlign.center,
-            ),
-          ),
-        ),
-        const SizedBox(height: 20),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+Widget _buildLockWidget(Lock lock) {
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    children: [
+      Expanded(
+        child: Row(
           children: [
-            ElevatedButton(
-              onPressed: () {
-                // possibile aggiornamento del video/funzionalità aggiuntive ?
-              },
-              child: const Text('Aggiorna video stream'),
+            Flexible(
+              child: Text(
+                'Stato della serratura: ',
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  _capturedImage = 'assets/image/carmine.jpg';
-                });
-              },
-              child: const Text('Scatta foto'),
+            Text(
+              lock.isActive ? "Bloccata" : "Sbloccata",
+              style: TextStyle(fontWeight: FontWeight.bold),
             ),
           ],
         ),
-        const SizedBox(height: 20),
-        if (_capturedImage != null)
-          Column(
+      ),
+      SizedBox(width: 8),
+      ElevatedButton(
+        onPressed: () {
+          setState(() {
+            _wrap(lock);
+          });
+        },
+        child: Text(lock.isActive ? 'Sblocca' : 'Blocca'),
+      ),
+    ],
+  );
+}
+
+Widget _buildThermostatWidget(Thermostat thermostat) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text('Temperatura corrente: ${thermostat.detectedTemp}°C'),
+      SizedBox(height: 8),
+      Slider(
+        value: thermostat.desiredTemp.toDouble(),
+        min: 16,
+        max: 30,
+        onChanged: (double value) {
+          setState(() {
+            thermostat.desiredTemp = value;
+            ref
+                .read(deviceNotifierProvider.notifier)
+                .updateDevice(thermostat);
+          });
+        },
+      ),
+      SizedBox(height: 8),
+      Row(
+        children: [
+          Flexible(
+            child: Text(
+              'Temperatura desiderata: ',
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          Text(
+            '${thermostat.desiredTemp.toStringAsFixed(1)}°C',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+        ],
+      ),
+    ],
+  );
+}
+
+Widget _buildCameraWidget(Camera camera) {
+  return Builder(
+    builder: (BuildContext context) {
+      String? _capturedImage;
+      return StatefulBuilder(
+        builder: (BuildContext context, StateSetter setState) {
+          return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Foto catturata:',
-                style: Theme.of(context).textTheme.headlineSmall,
+                'Video corrente:',
+                style: Theme.of(context)
+                    .textTheme
+                    .headlineSmall
+                    ?.copyWith(fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 10),
-              Image.asset(
-                _capturedImage!,
-                width: 150,
-                height: 150,
+              const SizedBox(height: 20),
+              Container(
+                width: double.infinity,
+                height: 200,
+                color: Colors.black,
+                child: Center(
+                  child: Text(
+                    'Video stream: ${camera.video}',
+                    style: const TextStyle(color: Colors.white),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
               ),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      // possibile aggiornamento del video/funzionalità aggiuntive ?
+                    },
+                    child: const Text('Aggiorna video stream'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        _capturedImage = 'assets/images/carmine.jpg';
+                      });
+                    },
+                    child: const Text('Scatta foto'),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              if (_capturedImage != null)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Foto catturata:',
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
+                    const SizedBox(height: 10),
+                    Image.asset(
+                      _capturedImage!,
+                      width: 150,
+                      height: 150,
+                    ),
+                  ],
+                ),
             ],
-          ),
-      ],
-    );
-  }
+          );
+        }
+      );
+    },
+  );
+}
 }
