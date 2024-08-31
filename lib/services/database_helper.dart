@@ -534,7 +534,7 @@ class DatabaseHelper {
         for (String category in notification.categories) {
           await txn.insert(
             'categoryNotification',
-            {'category': category, 'deviceNotifications': notification},
+            {'category': category, 'deviceNotifications': notification.id},
           );
         }
       });
@@ -561,7 +561,7 @@ class DatabaseHelper {
       for (String category in categories) {
         await txn.insert(
           'categoryNotification',
-          {'category': category, 'deviceNotifications': devNot},
+          {'category': category, 'deviceNotifications': devNot.id},
         );
       }
     });
