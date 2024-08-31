@@ -522,7 +522,7 @@ class DatabaseHelper {
       {
         'id': DeviceNotification.generateUniqueId(),
         'title': notification.title,
-        'device': notification.device,
+        'device': notification.device.id,
         'deliveryTime': notification.deliveryTime,
         'isRead': notification.isRead,
         'description': notification.description,

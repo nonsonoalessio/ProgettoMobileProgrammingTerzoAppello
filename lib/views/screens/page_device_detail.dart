@@ -152,8 +152,7 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
         final newNotification = DeviceNotification(
           id: notificationId,
           title: 'Stato del dispositivo modificato correttamente.',
-          device: Light(
-              deviceName: device.deviceName, room: device.room, id: device.id),
+          device: device,
           deliveryTime: TimeOfDay.now(),
           isRead: false,
           description: '',
@@ -180,10 +179,7 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
         final newNotification = DeviceNotification(
             id: notificationId,
             title: 'Stato del dispositivo modificato correttamente.',
-            device: Alarm(
-                deviceName: device.deviceName,
-                room: device.room,
-                id: device.id),
+            device: device,
             deliveryTime: TimeOfDay.now());
 
         // Aggiungiamo la notifica al database
@@ -206,10 +202,7 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
         final newNotification = DeviceNotification(
             id: notificationId,
             title: 'Stato del dispositivo modificato correttamente.',
-            device: Light(
-                deviceName: device.deviceName,
-                room: device.room,
-                id: device.id),
+            device: device,
             deliveryTime: TimeOfDay.now());
 
         // Aggiungiamo la notifica al database
