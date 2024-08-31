@@ -195,6 +195,19 @@ class _HomepageState extends ConsumerState<Homepage> {
                           });
                         },
                       ),
+                      FilterButton(
+                        label: 'Camera',
+                        isSelected: _selectedType == 'Camera',
+                        onTap: () {
+                          setState(() {
+                            if (_selectedType == 'Camera') {
+                              _selectedType = 'All';
+                            } else {
+                              _selectedType = 'Camera';
+                            }
+                          });
+                        },
+                      ),
                     ],
                   )
                 ],
