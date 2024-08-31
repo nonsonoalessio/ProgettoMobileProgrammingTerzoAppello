@@ -114,7 +114,7 @@ class DatabaseHelper {
               category TEXT NOT NULL,
               deviceNotifications INTEGER NOT NULL,
               FOREIGN KEY (category) references categoryNotification(name),
-              FOREIGN KEY (deviceNotifications) references deviceNotifications(id),
+              FOREIGN KEY (deviceNotifications) references deviceNotification(id),
               PRIMARY KEY(category, deviceNotifications)
               )
               """);
