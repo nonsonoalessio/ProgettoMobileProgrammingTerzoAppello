@@ -637,7 +637,8 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
             ElevatedButton(
               onPressed: () {
                 setState(() {
-                  _wrap(light);
+                  light.isActive = !light.isActive;
+                  ref.read(deviceNotifierProvider.notifier).updateDevice(light);
                 });
               },
               child:
@@ -649,10 +650,13 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
         Text('Temperatura della lampadina:'),
         SizedBox(height: 8),
         ColorTemperatureSlider(
-          onValueChanged: (value) {
+          onValueChanged: (double value) {
             setState(() {
               light.lightTemperature = value.toInt();
+              print(light.lightTemperature);
               ref.read(deviceNotifierProvider.notifier).updateDevice(light);
+              print("Chiamata a updateDevice per il dispositivo con id: ${light.id}");
+
             });
           },
         ),
@@ -684,7 +688,8 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
         ElevatedButton(
           onPressed: () {
             setState(() {
-              _wrap(alarm);
+              alarm.isActive = !alarm.isActive;
+              ref.read(deviceNotifierProvider.notifier).updateDevice(alarm);
             });
           },
           child: Text(alarm.isActive ? 'Disattiva' : 'Attiva'),
@@ -717,7 +722,8 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
         ElevatedButton(
           onPressed: () {
             setState(() {
-              _wrap(lock);
+              lock.isActive = !lock.isActive;
+              ref.read(deviceNotifierProvider.notifier).updateDevice(lock);
             });
           },
           child: Text(lock.isActive ? 'Sblocca' : 'Blocca'),
