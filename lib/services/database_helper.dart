@@ -528,6 +528,17 @@ class DatabaseHelper {
         'description': notification.description,
       },
     );
+
+    if (notification.categories.isNotEmpty) {
+      await db.transaction((txn) async {
+        for (String category in notification.categories) {
+          await txn.insert(
+            'categoryNotification',
+            {'category': category, 'deviceNotifications': notification},
+          );
+        }
+      });
+    }
   }
 
   Future<void> insertCategory(String category) async {
