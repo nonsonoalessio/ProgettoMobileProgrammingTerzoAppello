@@ -19,6 +19,6 @@ class Lock extends Device {
 
   @override
   Map<String, Object?> toMap() {
-    return {'deviceName': deviceName, 'room': room, 'isActive': isActive};
+    return {'id': id, 'isActive': isActive};
   }
 }

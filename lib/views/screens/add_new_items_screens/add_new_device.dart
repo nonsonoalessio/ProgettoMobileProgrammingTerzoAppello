@@ -181,10 +181,7 @@ class _AddNewDevicePageState extends ConsumerState<AddNewDevicePage> {
                         desiredTemp: 0.0,
                         id: uniqueId);
                   }
-                  ref
-                      .read(deviceNotifierProvider.notifier)
-                      .db
-                      .insertDevice(device);
+                  ref.read(deviceNotifierProvider.notifier).addDevice(device);
                   Navigator.pop(context);
                 } else {
                   String message;

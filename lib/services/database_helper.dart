@@ -44,7 +44,6 @@ class DatabaseHelper {
               id INTEGER PRIMARY KEY ,
               room TEXT NOT NULL,
               deviceName TEXT NOT NULL,
-              type TEXT NOT NULL,
               FOREIGN KEY (room) REFERENCES rooms(room)
           )
           """);
@@ -148,18 +147,18 @@ class DatabaseHelper {
           """);
 
         await db.execute("""
-          INSERT INTO device (id, room, deviceName, type) 
+          INSERT INTO device (id, room, deviceName) 
           VALUES
-          (1, 'Salotto', 'Allarme ingresso', 'allarme'),
-          (3, 'Cameretta', 'Allarme barriera', 'allarme'),
-          (2, 'Salotto', 'Lock1', 'locks'),
-          (4, 'Cucina', 'Lock2', 'locks'),
-          (5, 'Cameretta', 'Luce di Simone', 'lights'),
-          (7, 'Cameretta', 'Luce di Mario', 'lights'),
-          (6, 'Salotto', 'Thermo1', 'thermostats'),
-          (8, 'Cucina', 'Thermo2', 'thermostats'),
-          (9, 'Salotto', 'Camera1', 'camera'),
-          (10, 'Cameretta', 'Camera2', 'camera')
+          (1, 'Salotto', 'Allarme ingresso'),
+          (3, 'Cameretta', 'Allarme barriera'),
+          (2, 'Salotto', 'Lock1'),
+          (4, 'Cucina', 'Lock2'),
+          (5, 'Cameretta', 'Luce di Simone'),
+          (7, 'Cameretta', 'Luce di Mario'),
+          (6, 'Salotto', 'Thermo1'),
+          (8, 'Cucina', 'Thermo2'),
+          (9, 'Salotto', 'Camera1'),
+          (10, 'Cameretta', 'Camera2')
           """);
         await db.execute("""
           INSERT INTO camera (id,video)
@@ -460,7 +459,7 @@ class DatabaseHelper {
       );
     });
 
-    final cameras = List.generate(mapsOfthermostats.length, (i) {
+    final cameras = List.generate(mapsOfCameras.length, (i) {
       return Camera(
         id: mapsOfCameras[i]['id'] as int,
         deviceName: mapsOfCameras[i]['deviceName'] as String,
@@ -493,10 +492,11 @@ class DatabaseHelper {
     final tableName = _getTableName(device);
 
     final db = await database;
-    await db.insert(
-      'device',
-      device.toMap(),
-    );
+    await db.insert('device', {
+      'deviceName': device.deviceName,
+      'room': device.room,
+      'id': device.id
+    });
 
     await db.insert(
       tableName,
