@@ -223,9 +223,9 @@ class DatabaseHelper {
         await db.execute("""
           INSERT INTO categoryNotification(category, deviceNotifications)
           VALUES
-          ('security', 1),
-          ('automationExecution', 2),
-          ('highEnergyConsumption', 3)
+          ('Sicurezza', 1),
+          ('Esecuzione automazione', 2),
+          ('Alti consumi', 3)
         """);
       },
       version: 1,
@@ -319,42 +319,43 @@ class DatabaseHelper {
   Future<void> fetchNotifications() async {
     final db = await database;
 
-    final List<Map<String, dynamic>> mapsOfNotifications =
-        await db.query('deviceNotification');
+    // Fetch all notifications
+    final List<Map<String, dynamic>> mapsOfNotifications = await db.rawQuery("""
+    SELECT * FROM deviceNotification
+  """);
 
-    notifications = List.generate(mapsOfNotifications.length, (i) {
-      Device d = devices
-          .where((d) => d.id == mapsOfNotifications[i]['device'])
-          .toList()
-          .first;
-      bool value;
-      mapsOfNotifications[i]['isRead'] == 0 ? value = false : value = true;
+    notifications =
+        await Future.wait(mapsOfNotifications.map((notificationMap) async {
+      // Get device associated with the notification
+      final deviceId = notificationMap['device'] as int;
+      final device = devices.firstWhere((d) => d.id == deviceId);
 
-      // final List<String> categories = [];
+      // Fetch categories for the notification
+      final List<Map<String, dynamic>> mapsOfCategories = await db.rawQuery("""
+      SELECT category FROM categoryNotification
+      WHERE deviceNotifications = ?
+    """, [notificationMap['id']]);
 
-      // final mapsOfCategories = rawQuery;
-      // l'id della notifica si ottiene con:
-      // $mapsOfNotification[i]['id']
-      // all'interno della rawquery
+      // Extract categories into a set
+      final Set<String> categories = mapsOfCategories
+          .map((categoryMap) => categoryMap['category'] as String)
+          .toSet();
 
-      /* 
-      for(Map<String, dynamic> map){
-        categories.add(map[<camponomecategoria>]);
-      }
-      */
+      // Create the DeviceNotification object
       return DeviceNotification(
-          id: mapsOfNotifications[i]['id'],
-          title: mapsOfNotifications[i]['title'],
-          device: d,
-          deliveryTime: TimeOfDay.fromDateTime(DateTime.parse(
-              '1970-01-01 ${mapsOfNotifications[i]['deliveryTime']}')),
-          isRead: value,
-          description: mapsOfNotifications[i]['description']);
-      // categories: categories;
-    });
-    notifications = [
-      ...notifications,
-    ];
+        id: notificationMap['id'] as int,
+        title: notificationMap['title'] as String,
+        device: device,
+        deliveryTime: TimeOfDay.fromDateTime(
+            DateTime.parse('1970-01-01 ${notificationMap['deliveryTime']}')),
+        isRead: notificationMap['isRead'] == 1,
+        description: notificationMap['description'] as String,
+        categories: categories,
+      );
+    }));
+
+    // Notify listeners or update UI
+    notifications = [...notifications];
   }
 
   Future<void> fetchNotificationCategories() async {
