@@ -8,6 +8,7 @@ import 'package:progetto_mobile_programming/models/objects/alarm.dart';
 import 'package:progetto_mobile_programming/models/objects/device.dart';
 import 'package:progetto_mobile_programming/models/objects/light.dart';
 import 'package:progetto_mobile_programming/models/objects/lock.dart';
+import 'package:progetto_mobile_programming/models/objects/camera.dart';
 import 'package:progetto_mobile_programming/models/objects/thermostat.dart';
 import 'package:progetto_mobile_programming/providers/devices_provider.dart';
 import 'package:progetto_mobile_programming/providers/notifications_provider.dart';
@@ -64,7 +65,8 @@ class _HomepageState extends ConsumerState<Homepage> {
           (device is Lock && _selectedType == 'Lock') ||
           (device is Alarm && _selectedType == 'Alarm') ||
           (device is Thermostat && _selectedType == 'Thermostat') ||
-          (device is Light && _selectedType == 'Light');
+          (device is Light && _selectedType == 'Light') ||
+          (device is Camera && _selectedType == 'Camera');
 
       return matchesSearch && matchesType;
     }).toList();
