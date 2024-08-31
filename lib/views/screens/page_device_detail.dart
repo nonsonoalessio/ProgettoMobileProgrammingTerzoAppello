@@ -22,6 +22,7 @@ class DeviceDetailPage extends ConsumerStatefulWidget {
   @override
   ConsumerState<DeviceDetailPage> createState() => _DeviceDetailPageState();
 }
+
 class EnergySavingSuggestions extends StatelessWidget {
   final Device device;
   const EnergySavingSuggestions({Key? key, required this.device})
@@ -80,13 +81,11 @@ class EnergySavingSuggestions extends StatelessWidget {
         children: [
           Text(
             'Suggerimenti per risparmiare energia:',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
 
-
-
-          //  style: Theme.of(context)
-          //     .textTheme.bodyLarge
-          //    ?.copyWith(fontWeight: FontWeight.bold),
+            //  style: Theme.of(context)
+            //     .textTheme.bodyLarge
+            //    ?.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 10),
           ...suggestions
@@ -134,7 +133,6 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
     });
   }
 
-// Remind: Le notifiche non vengono aggiunte al DB per problemi di casting
   void _wrap(Device device) {
     final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
         FlutterLocalNotificationsPlugin();
@@ -144,19 +142,28 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
 
     setState(() {
       int notificationId = DeviceNotification.generateUniqueId();
+      Device updatedDevice;
       if (device is Light) {
         // Accendiamo o spegnamo la lampadina
         device.isActive = !device.isActive;
 
+        updatedDevice = Light(
+          deviceName: device.deviceName,
+          room: device.room,
+          id: device.id,
+          isActive: device.isActive,
+        );
+
+        // Aggiorniamo lo stato del dispositivo
+        ref.read(deviceNotifierProvider.notifier).updateDevice(updatedDevice);
+
         // Creiamo la notifica
         final newNotification = DeviceNotification(
           id: notificationId,
-          title: 'Stato del dispositivo modificato correttamente.',
+          title: 'Hai modificato lo stato della luce!',
           device: device,
           deliveryTime: TimeOfDay.now(),
-          isRead: false,
-          description: '',
-          categories: null,
+          categories: <String>{},
         );
 
         // Aggiungiamo la notifica al database
@@ -174,6 +181,16 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
       } else if (device is Alarm) {
         // Accendiamo o spegnamo l'allarme
         device.isActive = !device.isActive;
+
+          updatedDevice = Alarm(
+          deviceName: device.deviceName,
+          room: device.room,
+          id: device.id,
+          isActive: device.isActive,
+        );
+
+        // Aggiorniamo lo stato del dispositivo
+        ref.read(deviceNotifierProvider.notifier).updateDevice(updatedDevice);
 
         // Creiamo la notifica
         final newNotification = DeviceNotification(
@@ -197,6 +214,17 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
       } else if (device is Lock) {
         // Accendiamo o spegnamo la serraturra
         device.isActive = !device.isActive;
+
+        updatedDevice = Lock(
+          deviceName: device.deviceName,
+          room: device.room,
+          id: device.id,
+          isActive: device.isActive,
+        );
+
+        // Aggiorniamo lo stato del dispositivo
+        ref.read(deviceNotifierProvider.notifier).updateDevice(updatedDevice);
+
 
         // Creiamo la notifica
         final newNotification = DeviceNotification(
@@ -229,11 +257,34 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: null,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
         actions: [
-          IconButton(
+          PopupMenuButton<String>(
             icon: const Icon(Icons.more_vert),
-            onPressed: null,
+            onSelected: (String value) {
+              if (value == 'Modifica il dispositivo') {
+                _showUpdateDialog(context);
+              } else if (value == 'Elimina il dispositivo') {
+                _showDeleteConfirmationDialog(context);
+              }
+            },
+            itemBuilder: (BuildContext context) {
+              return [
+                PopupMenuItem<String>(
+                  value: 'Modifica il dispositivo',
+                  child: Text('Modifica il dispositivo'),
+                ),
+                PopupMenuItem<String>(
+                  value: 'Elimina il dispositivo',
+                  child: Text('Elimina il dispositivo'),
+                ),
+              ];
+            },
           ),
         ],
       ),
@@ -264,6 +315,153 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
     );
   }
 
+  void _showUpdateDialog(BuildContext context) {
+    final TextEditingController _updateNameController =
+        TextEditingController(text: widget.device.deviceName);
+    final TextEditingController _updateRoomController =
+        TextEditingController(text: widget.device.room ?? '');
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Aggiorna dispositivo'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: _updateNameController,
+                decoration: const InputDecoration(
+                  hintText: 'Inserisci il nuovo nome del dispositivo',
+                ),
+              ),
+              // TODO: Gestire cambiamento camera
+              const SizedBox(height: 10),
+              TextField(
+                controller: _updateRoomController,
+                decoration: const InputDecoration(
+                  hintText: 'Inserisci la nuova stanza',
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('ANNULLA'),
+            ),
+            TextButton(
+              onPressed: () {
+                final newName = _updateNameController.text.trim();
+                final newRoom = _updateRoomController.text.trim();
+
+                // Verifichiamo i campi
+                if (newName.isNotEmpty && newRoom.isNotEmpty) {
+                  // Creiamo una nuova istanza di Device per il dispositivo aggiornaot
+                  Device updatedDevice;
+
+                  if (widget.device is Light) {
+                    updatedDevice = Light(
+                      deviceName: newName,
+                      room: newRoom,
+                      isActive: (widget.device as Light).isActive,
+                      id: widget.device.id,
+                    );
+                  } else if (widget.device is Thermostat) {
+                    updatedDevice = Thermostat(
+                      deviceName: newName,
+                      room: newRoom,
+                      detectedTemp: (widget.device as Thermostat).detectedTemp,
+                      desiredTemp: (widget.device as Thermostat).desiredTemp,
+                      id: widget.device.id,
+                    );
+                  } else if (widget.device is Camera) {
+                    updatedDevice = Camera(
+                      deviceName: newName,
+                      room: newRoom,
+                      video: (widget.device as Camera).video,
+                      id: widget.device.id,
+                    );
+                  } else if (widget.device is Lock) {
+                    updatedDevice = Lock(
+                      deviceName: newName,
+                      room: newRoom,
+                      isActive: (widget.device as Lock).isActive,
+                      id: widget.device.id,
+                    );
+                  } else {
+                    updatedDevice = Alarm(
+                      deviceName: newName,
+                      room: newRoom,
+                      isActive: (widget.device as Alarm).isActive,
+                      id: widget.device.id,
+                    );
+                    return;
+                  }
+
+                  // Aggiorniamo il dispositivo
+                  ref
+                      .read(deviceNotifierProvider.notifier)
+                      .updateDevice(updatedDevice);
+
+                  // Chiudiamo la dialog
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                } else {
+                  // Mostra un messaggio se uno dei due campi non è valido
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                        content:
+                            Text('Nome e stanza non possono essere vuoti!')),
+                  );
+                }
+              },
+              child: const Text('AGGIORNA'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showDeleteConfirmationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Conferma eliminazione'),
+          content:
+              const Text('Sei sicuro di voler eliminare questo dispositivo?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Chiude il dialog
+              },
+              child: const Text('ANNULLA'),
+            ),
+            TextButton(
+              onPressed: () {
+                // Eliminiamo il dispositivo selezionato
+                ref
+                    .read(deviceNotifierProvider.notifier)
+                    .deleteDevice(widget.device);
+
+                // Chiude il dialog
+                Navigator.pop(context);
+
+                // Torna alla schermata precedente
+                Navigator.pop(context);
+              },
+              child: const Text('ELIMINA'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Widget _buildDeviceSpecificWidget(Device device) {
     List<Widget> widgets = [];
 
@@ -286,7 +484,6 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
     widgets.add(const Divider());
 
     widgets.add(const SizedBox(height: 8));
-
 
     widgets.add(
       const Text(
@@ -405,7 +602,7 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
       ),
     );
 
-  widgets.add(EnergySavingSuggestions(device: device));
+    widgets.add(EnergySavingSuggestions(device: device));
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
