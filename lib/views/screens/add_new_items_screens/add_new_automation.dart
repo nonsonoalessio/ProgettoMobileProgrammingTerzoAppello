@@ -604,33 +604,31 @@ class _DeviceActionsDetailState extends State<DeviceActionsDetail> {
       ));
     }
 
-    return Container(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(bottom: 8.0),
-              child: Row(
-                children: [
-                  icon,
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Text(
-                      widget.device.deviceName,
-                      style: (TextStyle(
-                        fontWeight: FontWeight.bold,
-                      )),
-                    ),
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8.0),
+            child: Row(
+              children: [
+                icon,
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Text(
+                    widget.device.deviceName,
+                    style: (TextStyle(
+                      fontWeight: FontWeight.bold,
+                    )),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-            ...actionTexts,
-            Divider(),
-          ],
-        ),
+          ),
+          ...actionTexts,
+          Divider(),
+        ],
       ),
     );
   }
