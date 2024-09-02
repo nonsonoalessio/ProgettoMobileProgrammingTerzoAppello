@@ -94,14 +94,15 @@ class NotificationCategoriesNotifier extends _$NotificationCategoriesNotifier {
   void categoriesRestore(){
     _initStatus();
   }
-
-
-  /* // Chiamato all'aggiunta della categoria
-  void addCategories(Set<String> categories, Notification notification){
-    db.insertCategories(notification, categories);
+  
+  void addCategory(String category) {
+    _addCategoryFromDb(category);
     _initStatus();
   }
-   */
+
+  Future<void> _addCategoryFromDb(String category) async {
+    await db.insertCategory(category);
+  }
 
   @override
   Set<String> build() {

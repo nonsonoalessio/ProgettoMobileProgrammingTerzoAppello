@@ -202,14 +202,28 @@ class CategoriesChooserModal extends ConsumerStatefulWidget {
       _CategoriesChooserModalState();
 }
 
-class _CategoriesChooserModalState
-    extends ConsumerState<CategoriesChooserModal> {
+class _CategoriesChooserModalState extends ConsumerState<CategoriesChooserModal> {
   late Set<String> _selectedCategories;
+  String _newCategory = ''; // Nuova categoria inserita dall'utente
 
   @override
   void initState() {
     super.initState();
     _selectedCategories = Set.from(widget.notification.categories);
+  }
+
+  void _addNewCategory() {
+    if (_newCategory.isNotEmpty && !_selectedCategories.contains(_newCategory)) {
+      setState(() {
+        _selectedCategories.add(_newCategory);
+      });
+
+      // Aggiunge la nuova categoria al database o allo stato
+      ref
+          .read(notificationCategoriesNotifierProvider.notifier).addCategory(_newCategory);
+          
+      _newCategory = ''; // Resetta il campo di input
+    }
   }
 
   @override
@@ -220,41 +234,65 @@ class _CategoriesChooserModalState
       title: const Text('Select Categories'),
       content: SizedBox(
         width: double.maxFinite,
-        child: ListView.builder(
-          shrinkWrap: true,
-          itemCount: categories.length,
-          itemBuilder: (context, index) {
-            final category = categories.elementAt(index);
-            final isSelected = _selectedCategories.contains(category);
-
-            return CheckboxListTile(
-              title: Text(category),
-              value: isSelected,
-              onChanged: (bool? selected) {
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // TextField per inserire una nuova categoria
+            TextField(
+              decoration: const InputDecoration(
+                labelText: 'Add new category',
+              ),
+              onChanged: (value) {
                 setState(() {
-                  if (selected == true) {
-                    _selectedCategories.add(category);
-                  } else {
-                    _selectedCategories.remove(category);
-                  }
+                  _newCategory = value;
                 });
               },
-            );
-          },
+            ),
+            const SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: _addNewCategory,
+              child: const Text('Add Category'),
+            ),
+            const SizedBox(height: 10),
+            Expanded(
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: categories.length,
+                itemBuilder: (context, index) {
+                  final category = categories.elementAt(index);
+                  final isSelected = _selectedCategories.contains(category);
+
+                  return CheckboxListTile(
+                    title: Text(category),
+                    value: isSelected,
+                    onChanged: (bool? selected) {
+                      setState(() {
+                        if (selected == true) {
+                          _selectedCategories.add(category);
+                        } else {
+                          _selectedCategories.remove(category);
+                        }
+                      });
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
         ),
       ),
       actions: [
         TextButton(
-          onPressed: () => Navigator.pop(context, null), // Annulla la selezione
+          onPressed: () => Navigator.pop(context, null),
           child: const Text('Cancel'),
         ),
         ElevatedButton(
           onPressed: () {
-            Navigator.pop(context, _selectedCategories.toList()); // Conferma selezione
+            Navigator.pop(context, _selectedCategories.toList());
             ref
                 .read(notificationsNotifierProvider.notifier)
                 .updateNotificationCategories(
-                  widget.notification, // Usa la notifica passata
+                  widget.notification,
                   _selectedCategories.toList(),
                 );
           },
@@ -264,3 +302,4 @@ class _CategoriesChooserModalState
     );
   }
 }
+
