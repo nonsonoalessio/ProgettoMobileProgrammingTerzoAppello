@@ -518,6 +518,12 @@ class DatabaseHelper {
   }
 
   Future<void> insertNotification(DeviceNotification notification) async {
+    final isReadInt;
+    if (notification.isRead) {
+      isReadInt = 1;
+    } else
+      isReadInt = 0;
+
     final db = await database;
     final String deliveryTimeString =
         '${notification.deliveryTime.hour.toString().padLeft(2, '0')}:${notification.deliveryTime.minute.toString().padLeft(2, '0')}';
@@ -528,7 +534,7 @@ class DatabaseHelper {
         'title': notification.title,
         'device': notification.device.id,
         'deliveryTime': deliveryTimeString,
-        'isRead': notification.isRead,
+        'isRead': isReadInt,
         'description': notification.description,
       },
     );
@@ -601,7 +607,8 @@ class DatabaseHelper {
       final int isActiveInt;
       if (device.isActive) {
         isActiveInt = 1;
-      } else isActiveInt = 0;
+      } else
+        isActiveInt = 0;
       await db.update(
         'alarms',
         {
@@ -612,9 +619,10 @@ class DatabaseHelper {
       );
     } else if (device is Lock) {
       final int isActiveInt;
-        if (device.isActive) {
-          isActiveInt = 1;
-        } else isActiveInt = 0;
+      if (device.isActive) {
+        isActiveInt = 1;
+      } else
+        isActiveInt = 0;
       await db.update(
         'locks',
         {
@@ -624,10 +632,11 @@ class DatabaseHelper {
         whereArgs: [device.id],
       );
     } else if (device is Light) {
-        final int isActiveInt;
-          if (device.isActive) {
-            isActiveInt = 1;
-          } else isActiveInt = 0;
+      final int isActiveInt;
+      if (device.isActive) {
+        isActiveInt = 1;
+      } else
+        isActiveInt = 0;
       await db.update(
         'lights',
         {
