@@ -598,29 +598,41 @@ class DatabaseHelper {
 
     // Aggiorna la tabella specifica basandosi sul tipo
     if (device is Alarm) {
+      final isActiveInt;
+      if (device.isActive) {
+        isActiveInt = 1;
+      } else isActiveInt = 0;
       await db.update(
         'alarms',
         {
-          'isActive': device.isActive,
+          'isActive': isActiveInt,
         },
         where: 'id = ?',
         whereArgs: [device.id],
       );
     } else if (device is Lock) {
+      final isActiveInt;
+        if (device.isActive) {
+          isActiveInt = 1;
+        } else isActiveInt = 0;
       await db.update(
         'locks',
         {
-          'isActive': device.isActive,
+          'isActive': isActiveInt,
         },
         where: 'id = ?',
         whereArgs: [device.id],
       );
     } else if (device is Light) {
+        final isActiveInt;
+          if (device.isActive) {
+            isActiveInt = 1;
+          } else isActiveInt = 0;
       await db.update(
         'lights',
         {
           'lightTemperature': device.lightTemperature,
-          'isActive': device.isActive,
+          'isActive': isActiveInt,
         },
         where: 'id = ?',
         whereArgs: [device.id],
