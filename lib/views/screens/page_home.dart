@@ -32,13 +32,11 @@ class Homepage extends ConsumerStatefulWidget {
 
 class _HomepageState extends ConsumerState<Homepage> {
   final TextEditingController _searchController = TextEditingController();
-  String _selectedType = 'All'; //default
+  String _selectedType = 'All'; // default
 
   @override
   void initState() {
     super.initState();
-
-    // Aggiorna la UI quando il testo cambia
     _searchController.addListener(() {
       setState(() {});
     });
@@ -55,7 +53,6 @@ class _HomepageState extends ConsumerState<Homepage> {
     final List<Device> devices = ref.watch(deviceNotifierProvider);
     final Set<String> rooms = ref.watch(roomsProvider);
 
-    // Filtra i dispositivi in base alla ricerca e al tipo selezionato
     final filteredDevices = devices.where((device) {
       final matchesSearch = _searchController.text.isEmpty ||
           device.deviceName
@@ -71,17 +68,17 @@ class _HomepageState extends ConsumerState<Homepage> {
       return matchesSearch && matchesType;
     }).toList();
 
-    // Creiamo la lista delle stanze solo se contengono dispositivi filtrati
     final List<Widget> roomsLists = [];
     for (String room in rooms) {
-      // Filtra i dispositivi della stanza corrente
       final roomDevices = filteredDevices.where((d) => d.room == room).toList();
 
-      // Aggiungiamo la stanza alla lista solo se contiene dispositivi filtrati
       if (roomDevices.isNotEmpty) {
         roomsLists.add(ListGenerator(
           roomName: room,
           devices: roomDevices,
+          onRemoveRoom: () {
+            ref.read(deviceNotifierProvider.notifier).deleteRoom(room);
+          },
         ));
       }
     }
@@ -150,11 +147,7 @@ class _HomepageState extends ConsumerState<Homepage> {
                         isSelected: _selectedType == 'Lock',
                         onTap: () {
                           setState(() {
-                            if (_selectedType == 'Lock') {
-                              _selectedType = 'All';
-                            } else {
-                              _selectedType = 'Lock';
-                            }
+                            _selectedType = _selectedType == 'Lock' ? 'All' : 'Lock';
                           });
                         },
                       ),
@@ -163,11 +156,7 @@ class _HomepageState extends ConsumerState<Homepage> {
                         isSelected: _selectedType == 'Alarm',
                         onTap: () {
                           setState(() {
-                            if (_selectedType == 'Alarm') {
-                              _selectedType = 'All';
-                            } else {
-                              _selectedType = 'Alarm';
-                            }
+                            _selectedType = _selectedType == 'Alarm' ? 'All' : 'Alarm';
                           });
                         },
                       ),
@@ -176,11 +165,7 @@ class _HomepageState extends ConsumerState<Homepage> {
                         isSelected: _selectedType == 'Thermostat',
                         onTap: () {
                           setState(() {
-                            if (_selectedType == 'Thermostat') {
-                              _selectedType = 'All';
-                            } else {
-                              _selectedType = 'Thermostat';
-                            }
+                            _selectedType = _selectedType == 'Thermostat' ? 'All' : 'Thermostat';
                           });
                         },
                       ),
@@ -189,11 +174,7 @@ class _HomepageState extends ConsumerState<Homepage> {
                         isSelected: _selectedType == 'Light',
                         onTap: () {
                           setState(() {
-                            if (_selectedType == 'Light') {
-                              _selectedType = 'All';
-                            } else {
-                              _selectedType = 'Light';
-                            }
+                            _selectedType = _selectedType == 'Light' ? 'All' : 'Light';
                           });
                         },
                       ),
@@ -202,11 +183,7 @@ class _HomepageState extends ConsumerState<Homepage> {
                         isSelected: _selectedType == 'Camera',
                         onTap: () {
                           setState(() {
-                            if (_selectedType == 'Camera') {
-                              _selectedType = 'All';
-                            } else {
-                              _selectedType = 'Camera';
-                            }
+                            _selectedType = _selectedType == 'Camera' ? 'All' : 'Camera';
                           });
                         },
                       ),
@@ -227,9 +204,7 @@ class _HomepageState extends ConsumerState<Homepage> {
                   : ListView(
                       children: [
                         ...roomsLists,
-                        SizedBox(
-                            height:
-                                100), // Aggiungi spazio extra alla fine della lista
+                        SizedBox(height: 100), // Aggiungi spazio extra alla fine della lista
                       ],
                     ),
             ),
@@ -243,24 +218,36 @@ class _HomepageState extends ConsumerState<Homepage> {
 class ListGenerator extends StatelessWidget {
   final String roomName;
   final List<Device> devices;
+  final VoidCallback onRemoveRoom;
 
-  const ListGenerator(
-      {super.key, required this.roomName, required this.devices});
+  const ListGenerator({
+    super.key,
+    required this.roomName,
+    required this.devices,
+    required this.onRemoveRoom,
+  });
 
   @override
   Widget build(BuildContext context) {
     late Icon deviceIcon;
+    
     return Padding(
       padding: const EdgeInsets.only(top: 8.0, left: 8.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 2.0),
-            child: Text(
-              roomName,
-              style: Theme.of(context).textTheme.displayMedium,
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                roomName,
+                style: Theme.of(context).textTheme.displayMedium,
+              ),
+              IconButton(
+                icon: Icon(Icons.delete, color: Colors.red),
+                onPressed: onRemoveRoom,
+              ),
+            ],
           ),
           SizedBox(
             height: 165,
@@ -284,8 +271,7 @@ class ListGenerator extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>
-                              DeviceDetailPage(device: devices[index]),
+                          builder: (context) => DeviceDetailPage(device: devices[index]),
                         ),
                       );
                     },
@@ -334,7 +320,6 @@ class NotificationButton extends ConsumerWidget {
           body: body,
           fln: flutterLocalNotificationsPlugin,
         );
-        // Creazione della nuova notifica
         final newNotification = DeviceNotification(
           id: DeviceNotification.generateUniqueId(),
           title: title,
@@ -358,6 +343,7 @@ class AvatarForDebugMenu extends StatefulWidget {
 
 class _AvatarForDebugMenuState extends State<AvatarForDebugMenu> {
   int _clicks = 0;
+  
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -415,7 +401,8 @@ class SearchBar extends StatelessWidget {
   final Widget leading;
   final List<Widget> trailing;
   final String hintText;
-  final OutlineInputBorder border;
+  final InputBorder border;
+
   const SearchBar({
     super.key,
     required this.controller,
@@ -437,8 +424,6 @@ class SearchBar extends StatelessWidget {
         ),
         hintText: hintText,
         border: border,
-        filled: true,
-        fillColor: Colors.grey[200], // Background color of the search bar
       ),
     );
   }
@@ -450,24 +435,21 @@ class FilterButton extends StatelessWidget {
   final VoidCallback onTap;
 
   const FilterButton({
-    Key? key,
+    super.key,
     required this.label,
     required this.isSelected,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: onTap,
-      style: ElevatedButton.styleFrom(
-        foregroundColor: isSelected ? Colors.white : Colors.black,
-        backgroundColor: isSelected ? Colors.blue : Colors.grey[300],
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20.0),
-        ),
-      ),
-      child: Text(label),
+    return ChoiceChip(
+      label: Text(label),
+      selected: isSelected,
+      onSelected: (_) => onTap(),
+      selectedColor: Theme.of(context).primaryColor,
+      backgroundColor: Colors.grey.shade300,
+      labelStyle: TextStyle(color: isSelected ? Colors.white : Colors.black),
     );
   }
 }

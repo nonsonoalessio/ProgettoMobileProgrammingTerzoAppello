@@ -463,55 +463,95 @@ class ModalBottomSheetContent extends ConsumerStatefulWidget {
       _ModalBottomSheetContentState();
 }
 
-class _ModalBottomSheetContentState
-    extends ConsumerState<ModalBottomSheetContent> {
+class _ModalBottomSheetContentState extends ConsumerState<ModalBottomSheetContent> {
   String? _room;
+  final TextEditingController _newRoomController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     List<String> rooms = ref.watch(roomsProvider).toList();
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        ListView.builder(
-          itemCount: rooms.length,
-          shrinkWrap: true,
-          itemBuilder: (context, index) {
-            return ListTile(
-              title: Text(rooms[index]),
-              leading: Radio<String>(
-                value: rooms[index],
-                groupValue: _room,
-                onChanged: (String? value) {
-                  setState(() {
-                    _room = value;
-                  });
-                  widget.valueChanged(_room as String);
-                },
-              ),
-            );
-          },
-        ),
-        Padding(
-          padding: const EdgeInsets.only(left: 16.0, bottom: 16.0, top: 8.0),
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: Padding(
-              padding: const EdgeInsets.only(left: 8.0, right: 4.0),
-              child: ElevatedButton(
-                onPressed: () {},
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [Icon(Icons.add), Text("Aggiungi stanza")],
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Determina l'altezza massima che la lista può occupare
+        double maxListHeight = min(
+          constraints.maxHeight * 0.5, // Limitazione a metà dell'altezza disponibile
+          rooms.length * 60.0, // Altezza della lista basata sul numero di stanze (60px per ogni stanza)
+        );
+
+        return SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Contenitore con altezza dinamica
+                ConstrainedBox(
+                  constraints: BoxConstraints(maxHeight: maxListHeight),
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: rooms.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        title: Text(rooms[index]),
+                        leading: Radio<String>(
+                          value: rooms[index],
+                          groupValue: _room,
+                          onChanged: (String? value) {
+                            setState(() {
+                              _room = value;
+                            });
+                            widget.valueChanged(_room as String);
+                          },
+                        ),
+                      );
+                    },
+                  ),
                 ),
-              ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextField(
+                    controller: _newRoomController,
+                    decoration: InputDecoration(
+                      labelText: "Nome nuova stanza",
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 16.0, bottom: 16.0, top: 8.0),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        String newRoom = _newRoomController.text.trim();
+                        if (newRoom.isNotEmpty) {
+                          ref.read(deviceNotifierProvider.notifier).addRoom(newRoom);
+                          widget.valueChanged(newRoom);
+                          Navigator.pop(context);
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("Il nome della stanza non può essere vuoto.")),
+                          );
+                        }
+                      },
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [Icon(Icons.add), Text("Aggiungi stanza")],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-        ),
-      ],
+        );
+      },
     );
   }
 }
+
+
 
 class TemperaturePicker extends StatefulWidget {
   final ValueChanged<double> onValueChanged;

@@ -59,6 +59,24 @@ class DeviceNotifier extends _$DeviceNotifier {
   Future<void> _updateDeviceInDb(Device device) async {
     await db.updateDevice(device);
   }
+
+  void addRoom(String room) {
+    if (room.isNotEmpty && !_roomExists(room)) {
+      db.insertRoom(room); // Salva la stanza nel database
+      _initStatus(); // Aggiorna lo stato
+    }
+  }
+
+  void deleteRoom(String room) {
+    if (_roomExists(room)) {
+      db.removeRoom(room); // Rimuove la stanza dal database
+      _initStatus(); // Aggiorna lo stato
+    }
+  }
+
+  bool _roomExists(String room) {
+    return state.any((device) => device.room == room);
+  }
 }
 
 @riverpod
