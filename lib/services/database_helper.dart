@@ -492,16 +492,28 @@ class DatabaseHelper {
     final tableName = _getTableName(device);
 
     final db = await database;
-    await db.insert('device', {
-      'deviceName': device.deviceName,
-      'room': device.room,
-      'id': device.id
-    });
 
-    await db.insert(
-      tableName,
-      device.toMap(),
-    );
+    await db.transaction((txn) async {
+      // Inserimento nella tabella 'device'
+      await txn.insert(
+        'device',
+        {
+          'deviceName': device.deviceName,
+          'room': device.room,
+          'id': device.id,
+        },
+        conflictAlgorithm: ConflictAlgorithm
+            .replace, // Gestisce i conflitti se il dispositivo esiste già
+      );
+
+      // Inserimento nella tabella specifica per il tipo di dispositivo
+      await txn.insert(
+        tableName,
+        device.toMap(),
+        conflictAlgorithm: ConflictAlgorithm
+            .replace, // Gestisce i conflitti se il dispositivo esiste già
+      );
+    });
   }
 
   Future<void> insertAutomation(Automation automation) async {
