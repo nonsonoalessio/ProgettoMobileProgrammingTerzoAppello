@@ -141,7 +141,7 @@ class HomepageState extends ConsumerState<Homepage> {
                     runSpacing: 4.0,
                     children: [
                       FilterButton(
-                        label: 'Lock',
+                        label: 'Serratura',
                         isSelected: _selectedType == 'Lock',
                         onTap: () {
                           setState(() {
@@ -150,7 +150,7 @@ class HomepageState extends ConsumerState<Homepage> {
                         },
                       ),
                       FilterButton(
-                        label: 'Alarm',
+                        label: 'Allarme',
                         isSelected: _selectedType == 'Alarm',
                         onTap: () {
                           setState(() {
@@ -159,7 +159,7 @@ class HomepageState extends ConsumerState<Homepage> {
                         },
                       ),
                       FilterButton(
-                        label: 'Thermostat',
+                        label: 'Termostato',
                         isSelected: _selectedType == 'Thermostat',
                         onTap: () {
                           setState(() {
@@ -168,7 +168,7 @@ class HomepageState extends ConsumerState<Homepage> {
                         },
                       ),
                       FilterButton(
-                        label: 'Light',
+                        label: 'Luce',
                         isSelected: _selectedType == 'Light',
                         onTap: () {
                           setState(() {
