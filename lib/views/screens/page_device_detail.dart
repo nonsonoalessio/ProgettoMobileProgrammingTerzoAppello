@@ -24,7 +24,7 @@ class DeviceDetailPage extends ConsumerStatefulWidget {
   ConsumerState<DeviceDetailPage> createState() => _DeviceDetailPageState();
 }
 
-class ColorTemperatureSlider extends ConsumerStatefulWidget {
+class ColorTemperatureSlider extends StatefulWidget {
   final Light light;
   final ValueChanged<double> onValueChanged;
   const ColorTemperatureSlider({super.key, required this.light, required this.onValueChanged});
@@ -34,7 +34,7 @@ class ColorTemperatureSlider extends ConsumerStatefulWidget {
 }
 
 class ColorTemperatureSliderState
-    extends ConsumerState<ColorTemperatureSlider> {
+    extends State<ColorTemperatureSlider> {
   // Funzione per ottenere il colore corrispondente alla temperatura
   Color _getColorForTemperature(double temperature) {
     if (temperature <= 2000) {
