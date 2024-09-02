@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:progetto_mobile_programming/models/functionalities/device_notification.dart';
 import 'package:progetto_mobile_programming/models/objects/device.dart';
-import 'package:progetto_mobile_programming/providers/devices_provider.dart';
+
 import 'package:progetto_mobile_programming/providers/notifications_provider.dart';
 import 'package:progetto_mobile_programming/views/screens/page_device_detail.dart';
 
@@ -202,7 +202,8 @@ class CategoriesChooserModal extends ConsumerStatefulWidget {
       _CategoriesChooserModalState();
 }
 
-class _CategoriesChooserModalState extends ConsumerState<CategoriesChooserModal> {
+class _CategoriesChooserModalState
+    extends ConsumerState<CategoriesChooserModal> {
   late Set<String> _selectedCategories;
   String _newCategory = ''; // Nuova categoria inserita dall'utente
 
@@ -213,15 +214,17 @@ class _CategoriesChooserModalState extends ConsumerState<CategoriesChooserModal>
   }
 
   void _addNewCategory() {
-    if (_newCategory.isNotEmpty && !_selectedCategories.contains(_newCategory)) {
+    if (_newCategory.isNotEmpty &&
+        !_selectedCategories.contains(_newCategory)) {
       setState(() {
         _selectedCategories.add(_newCategory);
       });
 
       // Aggiunge la nuova categoria al database o allo stato
       ref
-          .read(notificationCategoriesNotifierProvider.notifier).addCategory(_newCategory);
-          
+          .read(notificationCategoriesNotifierProvider.notifier)
+          .addCategory(_newCategory);
+
       _newCategory = ''; // Resetta il campo di input
     }
   }
@@ -302,4 +305,3 @@ class _CategoriesChooserModalState extends ConsumerState<CategoriesChooserModal>
     );
   }
 }
-

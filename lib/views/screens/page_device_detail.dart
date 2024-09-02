@@ -158,7 +158,7 @@ class EnergySavingSuggestions extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             'Suggerimenti per risparmiare energia:',
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
 
@@ -331,11 +331,11 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
             },
             itemBuilder: (BuildContext context) {
               return [
-                PopupMenuItem<String>(
+                const PopupMenuItem<String>(
                   value: 'Modifica il dispositivo',
                   child: Text('Modifica il dispositivo'),
                 ),
-                PopupMenuItem<String>(
+                const PopupMenuItem<String>(
                   value: 'Elimina il dispositivo',
                   child: Text('Elimina il dispositivo'),
                 ),
@@ -614,9 +614,9 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
                     showTitles: true,
                     reservedSize: 10, // Riserva spazio a destra
                     getTitlesWidget: (value, meta) {
-                      return Text(
+                      return const Text(
                         '',
-                        style: const TextStyle(fontSize: 10),
+                        style: TextStyle(fontSize: 10),
                       );
                     },
                   ),
@@ -676,7 +676,7 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
             Expanded(
               child: Row(
                 children: [
-                  Flexible(
+                  const Flexible(
                     child: Text(
                       'Stato della lampadina: ',
                       overflow: TextOverflow.ellipsis,
@@ -684,12 +684,12 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
                   ),
                   Text(
                     light.isActive ? "On" : "Off",
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
             ),
-            SizedBox(width: 8),
+            const SizedBox(width: 8),
             ElevatedButton(
               onPressed: () {
                 setState(() {
@@ -701,9 +701,9 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
             ),
           ],
         ),
-        SizedBox(height: 16),
-        Text('Temperatura della lampadina:'),
-        SizedBox(height: 8),
+        const SizedBox(height: 16),
+        const Text('Temperatura della lampadina:'),
+        const SizedBox(height: 8),
         ColorTemperatureSlider(
           onValueChanged: (double value) {
             setState(() {
@@ -727,7 +727,7 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
         Expanded(
           child: Row(
             children: [
-              Flexible(
+              const Flexible(
                 child: Text(
                   "Stato dell\'allarme: ",
                   overflow: TextOverflow.ellipsis,
@@ -735,12 +735,12 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
               ),
               Text(
                 alarm.isActive ? "Attivo" : "Disattivo",
-                style: TextStyle(fontWeight: FontWeight.bold),
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
             ],
           ),
         ),
-        SizedBox(width: 8),
+        const SizedBox(width: 8),
         ElevatedButton(
           onPressed: () {
             setState(() {
@@ -760,7 +760,7 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
         Expanded(
           child: Row(
             children: [
-              Flexible(
+              const Flexible(
                 child: Text(
                   'Stato della serratura: ',
                   overflow: TextOverflow.ellipsis,
@@ -768,12 +768,12 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
               ),
               Text(
                 lock.isActive ? "Bloccata" : "Sbloccata",
-                style: TextStyle(fontWeight: FontWeight.bold),
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
             ],
           ),
         ),
-        SizedBox(width: 8),
+        const SizedBox(width: 8),
         ElevatedButton(
           onPressed: () {
             setState(() {
@@ -791,7 +791,7 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text('Temperatura corrente: ${thermostat.detectedTemp}°C'),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         Slider(
           value: thermostat.desiredTemp.toDouble(),
           min: 16,
@@ -805,10 +805,10 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
             });
           },
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         Row(
           children: [
-            Flexible(
+            const Flexible(
               child: Text(
                 'Temperatura desiderata: ',
                 overflow: TextOverflow.ellipsis,
@@ -816,7 +816,7 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
             ),
             Text(
               '${thermostat.desiredTemp.toStringAsFixed(1)}°C',
-              style: TextStyle(fontWeight: FontWeight.bold),
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
           ],
         ),

@@ -120,7 +120,7 @@ class _AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
+                  const Text(
                     'Nuova Azione',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
@@ -132,7 +132,7 @@ class _AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
                       return devices.isEmpty
                           ? const Text('Nessun dispositivo disponibile')
                           : DropdownButtonFormField<Device>(
-                              decoration: InputDecoration(
+                              decoration: const InputDecoration(
                                 labelText: 'Seleziona Dispositivo',
                                 border: OutlineInputBorder(),
                               ),
@@ -156,7 +156,7 @@ class _AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
                   if (selectedDevice != null) ...[
                     if (selectedDevice is Alarm) ...[
                       DropdownButtonFormField<AlarmsActions>(
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           labelText: 'Seleziona Azione',
                           border: OutlineInputBorder(),
                         ),
@@ -177,7 +177,7 @@ class _AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
                     ],
                     if (selectedDevice is Light) ...[
                       DropdownButtonFormField<LightsActions>(
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           labelText: 'Seleziona Azione',
                           border: OutlineInputBorder(),
                         ),
@@ -199,7 +199,7 @@ class _AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: TextField(
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                               labelText: 'Temperatura Colore (K)',
                               border: OutlineInputBorder(),
                             ),
@@ -221,7 +221,7 @@ class _AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
                     ],
                     if (selectedDevice is Lock) ...[
                       DropdownButtonFormField<LocksActions>(
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           labelText: 'Seleziona Azione',
                           border: OutlineInputBorder(),
                         ),
@@ -242,7 +242,7 @@ class _AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
                     ],
                     if (selectedDevice is Thermostat) ...[
                       DropdownButtonFormField<ThermostatsActions>(
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           labelText: 'Seleziona Azione',
                           border: OutlineInputBorder(),
                         ),
@@ -265,7 +265,7 @@ class _AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: TextField(
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                               labelText: 'Temperatura Desiderata (°C)',
                               border: OutlineInputBorder(),
                             ),
@@ -295,7 +295,7 @@ class _AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
                             newAction); // Pass the new action back to the previous screen
                       }
                     },
-                    child: Text('Aggiungi Azione'),
+                    child: const Text('Aggiungi Azione'),
                   ),
                 ],
               ),
@@ -329,10 +329,10 @@ class _AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Modifica Automazione'),
+        title: const Text('Modifica Automazione'),
         actions: [
           IconButton(
-            icon: Icon(Icons.save),
+            icon: const Icon(Icons.save),
             onPressed: () async {
               await _updateAutomation();
               Navigator.pop(context);
@@ -346,7 +346,7 @@ class _AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             TextField(
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Nome automazione',
                 border: OutlineInputBorder(),
               ),
@@ -355,15 +355,15 @@ class _AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
             ),
             const SizedBox(height: 8),
             ListTile(
-              title: Text('Orario di esecuzione'),
+              title: const Text('Orario di esecuzione'),
               subtitle: Text(MaterialLocalizations.of(context)
                   .formatTimeOfDay(_executionTime)),
-              trailing: Icon(Icons.edit),
+              trailing: const Icon(Icons.edit),
               onTap: () => _selectTime(context),
             ),
             const SizedBox(height: 8),
             DropdownButtonFormField<WeatherCondition>(
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Condizioni meteo',
                 border: OutlineInputBorder(),
               ),
@@ -397,7 +397,7 @@ class _AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
                   subtitle: Text('Dispositivo: ${action.device.deviceName}'),
                   leading: const Icon(Icons.device_unknown),
                   trailing: IconButton(
-                    icon: Icon(Icons.delete),
+                    icon: const Icon(Icons.delete),
                     onPressed: () => _removeAction(index),
                   ),
                 );
