@@ -221,20 +221,12 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
 
     setState(() {
       int notificationId = DeviceNotification.generateUniqueId();
-      Device updatedDevice;
       if (device is Light) {
         // Accendiamo o spegnamo la lampadina
         device.isActive = !device.isActive;
 
-        updatedDevice = Light(
-          deviceName: device.deviceName,
-          room: device.room,
-          id: device.id,
-          isActive: device.isActive,
-        );
-
         // Aggiorniamo lo stato del dispositivo
-        ref.read(deviceNotifierProvider.notifier).updateDevice(updatedDevice);
+        ref.read(deviceNotifierProvider.notifier).updateDevice(device);
 
         // Creiamo la notifica
         final newNotification = DeviceNotification(
@@ -261,15 +253,8 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
         // Accendiamo o spegnamo l'allarme
         device.isActive = !device.isActive;
 
-        updatedDevice = Alarm(
-          deviceName: device.deviceName,
-          room: device.room,
-          id: device.id,
-          isActive: device.isActive,
-        );
-
         // Aggiorniamo lo stato del dispositivo
-        ref.read(deviceNotifierProvider.notifier).updateDevice(updatedDevice);
+        ref.read(deviceNotifierProvider.notifier).updateDevice(device);
 
         // Creiamo la notifica
         final newNotification = DeviceNotification(
@@ -294,15 +279,8 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
         // Accendiamo o spegnamo la serraturra
         device.isActive = !device.isActive;
 
-        updatedDevice = Lock(
-          deviceName: device.deviceName,
-          room: device.room,
-          id: device.id,
-          isActive: device.isActive,
-        );
-
         // Aggiorniamo lo stato del dispositivo
-        ref.read(deviceNotifierProvider.notifier).updateDevice(updatedDevice);
+        ref.read(deviceNotifierProvider.notifier).updateDevice(device);
 
         // Creiamo la notifica
         final newNotification = DeviceNotification(
