@@ -183,7 +183,7 @@ class DatabaseHelper {
         await db.execute("""
           INSERT INTO lights (id, lightTemperature, isActive)
           VALUES
-          (5, 2000, 1),
+          (5, 3000, 1),
           (7, 4000, 0)
           """);
 
