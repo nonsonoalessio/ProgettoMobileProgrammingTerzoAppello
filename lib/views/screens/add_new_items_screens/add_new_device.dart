@@ -177,8 +177,8 @@ class _AddNewDevicePageState extends ConsumerState<AddNewDevicePage> {
                     device = Thermostat(
                         deviceName: _deviceNameController.text,
                         room: _selectedRoom as String,
-                        detectedTemp: 0.0,
-                        desiredTemp: 0.0,
+                        detectedTemp: 24.0,
+                        desiredTemp: _temperaturePicked ?? 18.0,
                         id: uniqueId);
                   }
                   ref.read(deviceNotifierProvider.notifier).addDevice(device);
