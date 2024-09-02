@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
-
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -104,9 +102,9 @@ class _AddNewDevicePageState extends ConsumerState<AddNewDevicePage> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Center(
+                        const Center(
                           child: Padding(
-                            padding: const EdgeInsets.all(8.0),
+                            padding: EdgeInsets.all(8.0),
                             child: Text(
                                 "Hai delle modifiche non salvate. Uscire?"),
                           ),
@@ -115,7 +113,7 @@ class _AddNewDevicePageState extends ConsumerState<AddNewDevicePage> {
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             TextButton(
-                              child: Text("ESCI"),
+                              child: const Text("ESCI"),
                               onPressed: () {
                                 Navigator.pop(context);
                                 Navigator.pop(context);
@@ -125,7 +123,7 @@ class _AddNewDevicePageState extends ConsumerState<AddNewDevicePage> {
                               onPressed: () {
                                 Navigator.pop(context);
                               },
-                              child: Text('ANNULLA'),
+                              child: const Text('ANNULLA'),
                             ),
                           ],
                         )
@@ -199,7 +197,7 @@ class _AddNewDevicePageState extends ConsumerState<AddNewDevicePage> {
                       .showSnackBar(SnackBar(content: Text(message)));
                 }
               },
-              icon: Icon(Icons.save),
+              icon: const Icon(Icons.save),
             ),
           ),
         ],
@@ -227,7 +225,7 @@ class _AddNewDevicePageState extends ConsumerState<AddNewDevicePage> {
             ),
             TextField(
               controller: _deviceNameController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 hintText: 'Inserisci nome del dispositivo',
                 border: OutlineInputBorder(),
               ),
@@ -247,7 +245,7 @@ class _AddNewDevicePageState extends ConsumerState<AddNewDevicePage> {
                                 );
                               });
                         },
-                        child: Text('Scegli Stanza'),
+                        child: const Text('Scegli Stanza'),
                       ),
                     ),
                   )
@@ -257,7 +255,7 @@ class _AddNewDevicePageState extends ConsumerState<AddNewDevicePage> {
                       alignment: Alignment.centerLeft,
                       child: Chip(
                         label: Text(_selectedRoom as String),
-                        deleteIcon: Icon(Icons.delete),
+                        deleteIcon: const Icon(Icons.delete),
                         onDeleted: () {
                           setState(() {
                             _selectedRoom = null;
@@ -267,11 +265,11 @@ class _AddNewDevicePageState extends ConsumerState<AddNewDevicePage> {
                     ),
                   ),
             if (_selectedDeviceType != DeviceType.camera) ...[
-              SizedBox(height: 10.0),
-              Divider(),
-              SizedBox(height: 10.0),
+              const SizedBox(height: 10.0),
+              const Divider(),
+              const SizedBox(height: 10.0),
               Padding(
-                padding: EdgeInsets.only(top: 12.0, bottom: 8.0),
+                padding: const EdgeInsets.only(top: 12.0, bottom: 8.0),
                 child: Text(
                   'Personalizza il dispositivo',
                   style: Theme.of(context).textTheme.displayMedium,
@@ -300,7 +298,7 @@ class _AddNewDevicePageState extends ConsumerState<AddNewDevicePage> {
       return Column(
         children: [
           FilledButton(
-            child: Text("Temperatura desiderata"),
+            child: const Text("Temperatura desiderata"),
             onPressed: () {
               showDialog(
                 context: context,
@@ -396,15 +394,15 @@ class _DeviceChooserState extends State<DeviceChooser> {
   Widget build(BuildContext context) {
     return SegmentedButton(
       segments: [
-        ButtonSegment<DeviceType>(
+        const ButtonSegment<DeviceType>(
             value: DeviceType.light, label: Icon(Icons.lightbulb)),
-        ButtonSegment<DeviceType>(
+        const ButtonSegment<DeviceType>(
             value: DeviceType.thermostat, label: Icon(Icons.thermostat)),
-        ButtonSegment<DeviceType>(
+        const ButtonSegment<DeviceType>(
             value: DeviceType.alarm, label: Icon(Icons.doorbell)),
-        ButtonSegment<DeviceType>(
+        const ButtonSegment<DeviceType>(
             value: DeviceType.lock, label: Icon(Icons.lock)),
-        ButtonSegment<DeviceType>(
+        const ButtonSegment<DeviceType>(
             value: DeviceType.camera, label: Icon(Icons.camera)),
       ],
       selected: <DeviceType>{deviceType},
@@ -573,8 +571,8 @@ class _TemperaturePickerState extends State<TemperaturePicker> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
+            const Padding(
+              padding: EdgeInsets.all(16.0),
               child: Text("Temperatura desiderata:"),
             ),
             Padding(
@@ -590,7 +588,7 @@ class _TemperaturePickerState extends State<TemperaturePicker> {
               ),
             ),
             Padding(
-              padding: EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8.0),
               child: TextButton(
                 onPressed: () {
                   setState(() {
@@ -600,7 +598,7 @@ class _TemperaturePickerState extends State<TemperaturePicker> {
                   widget.onValueChanged(temp);
                   Navigator.pop(context);
                 },
-                child: Text('Salva'),
+                child: const Text('Salva'),
               ),
             )
           ],
@@ -636,7 +634,7 @@ class _DeviceStatusSelectorState extends State<DeviceStatusSelector> {
           icon: Icon(
             deviceType == DeviceType.light ? Icons.lightbulb : Icons.lock,
           ),
-          label: Text('On'),
+          label: const Text('On'),
         ),
         ButtonSegment(
           value: DeviceStatus.off,
@@ -645,7 +643,7 @@ class _DeviceStatusSelectorState extends State<DeviceStatusSelector> {
                 ? Symbols.light_off_sharp
                 : Symbols.lock_open_right,
           ),
-          label: Text('Off'),
+          label: const Text('Off'),
         ),
       ],
       selected: <DeviceStatus>{status},

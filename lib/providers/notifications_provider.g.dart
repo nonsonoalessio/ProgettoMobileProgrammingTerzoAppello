@@ -7,7 +7,7 @@ part of 'notifications_provider.dart';
 // **************************************************************************
 
 String _$notificationsNotifierHash() =>
-    r'8dac4293682e60e6a455cb94dd41455266a1d439';
+    r'ee4544975ecd463c93942f1389dee6294ca69c89';
 
 /// See also [NotificationsNotifier].
 @ProviderFor(NotificationsNotifier)
@@ -24,7 +24,7 @@ final notificationsNotifierProvider = AutoDisposeNotifierProvider<
 
 typedef _$NotificationsNotifier = AutoDisposeNotifier<List<DeviceNotification>>;
 String _$notificationCategoriesNotifierHash() =>
-    r'5c42baccb34dcd0314276c2f9ab9e90c13efad8f';
+    r'70b86b39a591313223bb58c6868c94a5b8b11b15';
 
 /// See also [NotificationCategoriesNotifier].
 @ProviderFor(NotificationCategoriesNotifier)

@@ -1,9 +1,5 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
-
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:progetto_mobile_programming/models/functionalities/action.dart';
 import 'package:progetto_mobile_programming/models/functionalities/alarm_action.dart';
@@ -16,7 +12,7 @@ import 'package:progetto_mobile_programming/models/objects/device.dart';
 import 'package:progetto_mobile_programming/models/objects/light.dart';
 import 'package:progetto_mobile_programming/models/objects/lock.dart';
 import 'package:progetto_mobile_programming/models/objects/thermostat.dart';
-import 'package:progetto_mobile_programming/providers/automations_provider.dart';
+
 import 'package:progetto_mobile_programming/providers/devices_provider.dart';
 
 String lightsActionsToStr(LightsActions action) {
@@ -55,8 +51,9 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
   final TextEditingController _automationNameController =
       TextEditingController();
   WeatherCondition _selectedWeather = WeatherCondition.sunny;
-  TimeOfDay _executionTime = TimeOfDay(hour: 09, minute: 41);
+  TimeOfDay _executionTime = const TimeOfDay(hour: 09, minute: 41);
   final Map<Device, List<DeviceAction>> _selectedActions = {};
+  
 
   void _handleWeatherConditionChanged(WeatherCondition newCondition) {
     setState(() {
@@ -116,7 +113,7 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
+                  const Text(
                     'Nuova Azione',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
@@ -128,7 +125,7 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
                       return devices.isEmpty
                           ? const Text('Nessun dispositivo disponibile')
                           : DropdownButtonFormField<Device>(
-                              decoration: InputDecoration(
+                              decoration: const InputDecoration(
                                 labelText: 'Seleziona Dispositivo',
                                 border: OutlineInputBorder(),
                               ),
@@ -152,7 +149,7 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
                   if (selectedDevice != null) ...[
                     if (selectedDevice is Alarm) ...[
                       DropdownButtonFormField<AlarmsActions>(
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           labelText: 'Seleziona Azione',
                           border: OutlineInputBorder(),
                         ),
@@ -173,7 +170,7 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
                     ],
                     if (selectedDevice is Light) ...[
                       DropdownButtonFormField<LightsActions>(
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           labelText: 'Seleziona Azione',
                           border: OutlineInputBorder(),
                         ),
@@ -195,7 +192,7 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: TextField(
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                               labelText: 'Temperatura Colore (K)',
                               border: OutlineInputBorder(),
                             ),
@@ -217,7 +214,7 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
                     ],
                     if (selectedDevice is Lock) ...[
                       DropdownButtonFormField<LocksActions>(
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           labelText: 'Seleziona Azione',
                           border: OutlineInputBorder(),
                         ),
@@ -238,7 +235,7 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
                     ],
                     if (selectedDevice is Thermostat) ...[
                       DropdownButtonFormField<ThermostatsActions>(
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           labelText: 'Seleziona Azione',
                           border: OutlineInputBorder(),
                         ),
@@ -261,7 +258,7 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: TextField(
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                               labelText: 'Temperatura Desiderata (°C)',
                               border: OutlineInputBorder(),
                             ),
@@ -291,7 +288,7 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
                             newAction); // Pass the new action back to the previous screen
                       }
                     },
-                    child: Text('Aggiungi Azione'),
+                    child: const Text('Aggiungi Azione'),
                   ),
                 ],
               ),
@@ -322,21 +319,21 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
         onPressed: () {
           addAction();
         },
-        label: Text('Aggiungi azione'),
-        icon: Icon(Icons.add),
+        label: const Text('Aggiungi azione'),
+        icon: const Icon(Icons.add),
       ),
       appBar: AppBar(
         leading: IconButton(
           onPressed: () {
             Navigator.pop(context);
           },
-          icon: Icon(Icons.arrow_back_ios_new),
+          icon: const Icon(Icons.arrow_back_ios_new),
         ),
         actions: [
           // TODO: aggiunta salvataggio automazione
           IconButton(
             onPressed: () {},
-            icon: Icon(Icons.save),
+            icon: const Icon(Icons.save),
           ),
         ],
       ),
@@ -354,7 +351,7 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
                 child: TextField(
                   controller: _automationNameController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: 'Inserisci nome dell\'automazione',
                     border: OutlineInputBorder(),
                   ),
@@ -406,12 +403,12 @@ class TimeOfDaySelector extends StatefulWidget {
 }
 
 class _TimeOfDaySelectorState extends State<TimeOfDaySelector> {
-  TimeOfDay selectedTime = TimeOfDay(hour: 09, minute: 41);
+  TimeOfDay selectedTime = const TimeOfDay(hour: 09, minute: 41);
 
   Future<void> _selectTime(BuildContext context) async {
     final TimeOfDay? timeOfDay = await showTimePicker(
       context: context,
-      initialTime: TimeOfDay(hour: 09, minute: 41),
+      initialTime: const TimeOfDay(hour: 09, minute: 41),
       builder: (BuildContext context, Widget? child) {
         return MediaQuery(
           data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
@@ -437,8 +434,8 @@ class _TimeOfDaySelectorState extends State<TimeOfDaySelector> {
         padding: const EdgeInsets.symmetric(vertical: 8.0),
         child: Row(
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 8.0),
               child: Icon(Icons.access_time),
             ),
             Text(
@@ -533,7 +530,7 @@ class _ListOfActionsState extends State<ListOfActions> {
                       actions: (map[devices[index]] as List<DeviceAction>),
                     ),
                   )
-                : Center(
+                : const Center(
                     child: Text('Nessuna azione da compiere. Aggiungine una!'),
                   ),
           )
@@ -562,22 +559,22 @@ class _DeviceActionsDetailState extends State<DeviceActionsDetail> {
     Icon icon;
 
     if (widget.device is Light) {
-      icon = Icon(
+      icon = const Icon(
         Icons.lightbulb,
         size: 24.0,
       );
     } else if (widget.device is Lock) {
-      icon = Icon(
+      icon = const Icon(
         Icons.lock,
         size: 24.0,
       );
     } else if (widget.device is Alarm) {
-      icon = Icon(
+      icon = const Icon(
         Icons.doorbell,
         size: 24.0,
       );
     } else {
-      icon = Icon(
+      icon = const Icon(
         Icons.thermostat,
         size: 24.0,
       );
@@ -605,33 +602,31 @@ class _DeviceActionsDetailState extends State<DeviceActionsDetail> {
       ));
     }
 
-    return Container(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(bottom: 8.0),
-              child: Row(
-                children: [
-                  icon,
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Text(
-                      widget.device.deviceName,
-                      style: (TextStyle(
-                        fontWeight: FontWeight.bold,
-                      )),
-                    ),
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8.0),
+            child: Row(
+              children: [
+                icon,
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Text(
+                    widget.device.deviceName,
+                    style: (const TextStyle(
+                      fontWeight: FontWeight.bold,
+                    )),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-            ...actionTexts,
-            Divider(),
-          ],
-        ),
+          ),
+          ...actionTexts,
+          const Divider(),
+        ],
       ),
     );
   }

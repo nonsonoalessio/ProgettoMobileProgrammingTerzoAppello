@@ -13,6 +13,48 @@ import 'package:progetto_mobile_programming/models/objects/lock.dart';
 import 'package:progetto_mobile_programming/models/objects/thermostat.dart';
 import 'package:progetto_mobile_programming/providers/devices_provider.dart';
 
+String lightsActionsToStr(LightsActions action) {
+  if (action == LightsActions.setColorTemp) {
+    return "Imposta temperatura colore";
+  } else if (action == LightsActions.turnOff) {
+    return "Spegni";
+  } else {
+    return "Accendi";
+  }
+}
+
+String alarmsActionsToStr(AlarmsActions action) {
+  return action == AlarmsActions.turnOn
+      ? "Inserisci allarme"
+      : "Disinserisci allarme";
+}
+
+String locksActionsToStr(LocksActions action) {
+  return action == LocksActions.activate ? "Attiva" : "Disattiva";
+}
+
+String thermostatsActionsToStr(ThermostatsActions action) {
+  return "Imposta temperatura desiderata";
+}
+
+String enumToText(WeatherCondition condition) {
+  if (condition == WeatherCondition.cloudy) {
+    return "☁️ Nuvoloso";
+  } else if (condition == WeatherCondition.cold) {
+    return "❄️ Freddo";
+  } else if (condition == WeatherCondition.hot) {
+    return "🔥 Caldo";
+  } else if (condition == WeatherCondition.rainy) {
+    return "🌧️ Pioggia";
+  } else if (condition == WeatherCondition.snowy) {
+    return "🌨️ Neve";
+  } else if (condition == WeatherCondition.none) {
+    return "🚫 Nessuna condizione";
+  } else {
+    return "☀️ Sole";
+  }
+}
+
 class AutomationDetailPage extends ConsumerStatefulWidget {
   final Automation automation;
 
@@ -28,6 +70,7 @@ class _AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
   late TimeOfDay _executionTime;
   WeatherCondition? _weatherCondition;
   late List<DeviceAction> _actions;
+  final Map<Device, List<DeviceAction>> _selectedActions = {};
 
   @override
   void initState() {
@@ -54,7 +97,7 @@ class _AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
     }
   }
 
-  void _addAction() {
+  void addAction() {
     Device? selectedDevice;
     DeviceAction? newAction;
     AlarmsActions? selectedAlarmAction;
@@ -63,19 +106,21 @@ class _AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
     ThermostatsActions? selectedThermostatAction;
     int? colorTemperature;
     double? desiredTemp;
+    List<DeviceAction> actions = [];
 
     showModalBottomSheet(
       context: context,
-      isScrollControlled: true, // Ensure the BottomSheet can scroll
+      isScrollControlled: true,
       builder: (context) {
         return StatefulBuilder(
-          builder: (context, setState) {
+          builder: (context, setModalState) {
+            // Usa setModalState per aggiornare lo stato all'interno del modal
             return Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
+                  const Text(
                     'Nuova Azione',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
@@ -87,7 +132,7 @@ class _AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
                       return devices.isEmpty
                           ? const Text('Nessun dispositivo disponibile')
                           : DropdownButtonFormField<Device>(
-                              decoration: InputDecoration(
+                              decoration: const InputDecoration(
                                 labelText: 'Seleziona Dispositivo',
                                 border: OutlineInputBorder(),
                               ),
@@ -98,7 +143,8 @@ class _AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
                                 );
                               }).toList(),
                               onChanged: (device) {
-                                setState(() {
+                                setModalState(() {
+                                  // Aggiorna lo stato del modal
                                   selectedDevice = device;
                                   newAction = null; // Reset dell'azione
                                 });
@@ -110,40 +156,42 @@ class _AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
                   if (selectedDevice != null) ...[
                     if (selectedDevice is Alarm) ...[
                       DropdownButtonFormField<AlarmsActions>(
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           labelText: 'Seleziona Azione',
                           border: OutlineInputBorder(),
                         ),
                         items: AlarmsActions.values.map((action) {
                           return DropdownMenuItem<AlarmsActions>(
                             value: action,
-                            child: Text(action.toString().split('.').last),
+                            child: Text(alarmsActionsToStr(action)),
                           );
                         }).toList(),
                         onChanged: (value) {
-                          setState(() {
+                          setModalState(() {
                             selectedAlarmAction = value;
-                            newAction = AlarmAction(device: selectedDevice!, action: value!);
+                            newAction = AlarmAction(
+                                device: selectedDevice!, action: value!);
                           });
                         },
                       ),
                     ],
                     if (selectedDevice is Light) ...[
                       DropdownButtonFormField<LightsActions>(
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           labelText: 'Seleziona Azione',
                           border: OutlineInputBorder(),
                         ),
                         items: LightsActions.values.map((action) {
                           return DropdownMenuItem<LightsActions>(
                             value: action,
-                            child: Text(action.toString().split('.').last),
+                            child: Text(lightsActionsToStr(action)),
                           );
                         }).toList(),
                         onChanged: (value) {
-                          setState(() {
+                          setModalState(() {
                             selectedLightAction = value;
-                            newAction = LightAction(device: selectedDevice!, action: value!);
+                            newAction = LightAction(
+                                device: selectedDevice!, action: value!);
                           });
                         },
                       ),
@@ -151,13 +199,13 @@ class _AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: TextField(
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                               labelText: 'Temperatura Colore (K)',
                               border: OutlineInputBorder(),
                             ),
                             keyboardType: TextInputType.number,
                             onChanged: (value) {
-                              setState(() {
+                              setModalState(() {
                                 colorTemperature = int.tryParse(value);
                                 if (newAction != null) {
                                   newAction = LightAction(
@@ -173,59 +221,63 @@ class _AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
                     ],
                     if (selectedDevice is Lock) ...[
                       DropdownButtonFormField<LocksActions>(
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           labelText: 'Seleziona Azione',
                           border: OutlineInputBorder(),
                         ),
                         items: LocksActions.values.map((action) {
                           return DropdownMenuItem<LocksActions>(
                             value: action,
-                            child: Text(action.toString().split('.').last),
+                            child: Text(locksActionsToStr(action)),
                           );
                         }).toList(),
                         onChanged: (value) {
-                          setState(() {
+                          setModalState(() {
                             selectedLockAction = value;
-                            newAction = LockAction(device: selectedDevice!, action: value!);
+                            newAction = LockAction(
+                                device: selectedDevice!, action: value!);
                           });
                         },
                       ),
                     ],
                     if (selectedDevice is Thermostat) ...[
                       DropdownButtonFormField<ThermostatsActions>(
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           labelText: 'Seleziona Azione',
                           border: OutlineInputBorder(),
                         ),
                         items: ThermostatsActions.values.map((action) {
                           return DropdownMenuItem<ThermostatsActions>(
                             value: action,
-                            child: Text(action.toString().split('.').last),
+                            child: Text(thermostatsActionsToStr(action)),
                           );
                         }).toList(),
                         onChanged: (value) {
-                          setState(() {
+                          setModalState(() {
                             selectedThermostatAction = value;
-                            newAction = ThermostatAction(device: selectedDevice!, action: value!);
+                            newAction = ThermostatAction(
+                                device: selectedDevice!, action: value!);
                           });
                         },
                       ),
-                      if (selectedThermostatAction == ThermostatsActions.setDesiredTemperature)
+                      if (selectedThermostatAction ==
+                          ThermostatsActions.setDesiredTemperature)
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: TextField(
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                               labelText: 'Temperatura Desiderata (°C)',
                               border: OutlineInputBorder(),
                             ),
                             keyboardType: TextInputType.number,
                             onChanged: (value) {
-                              setState(() {
+                              setModalState(() {
                                 desiredTemp = double.tryParse(value);
                                 if (newAction != null) {
                                   newAction = ThermostatAction(
                                     device: selectedDevice!,
-                                    action: (newAction as ThermostatAction).action,
+                                    action:
+                                        (newAction as ThermostatAction).action,
                                     desiredTemp: desiredTemp,
                                   );
                                 }
@@ -239,10 +291,11 @@ class _AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
                   ElevatedButton(
                     onPressed: () {
                       if (newAction != null) {
-                        Navigator.pop(context, newAction); // Pass the new action back to the previous screen
+                        Navigator.pop(context,
+                            newAction); // Pass the new action back to the previous screen
                       }
                     },
-                    child: Text('Aggiungi Azione'),
+                    child: const Text('Aggiungi Azione'),
                   ),
                 ],
               ),
@@ -253,7 +306,14 @@ class _AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
     ).then((result) {
       if (result != null) {
         setState(() {
-          _actions.add(result as DeviceAction);
+          if (_selectedActions.containsKey(selectedDevice as Device)) {
+            _selectedActions[selectedDevice as Device]
+                ?.add(result as DeviceAction);
+          } else {
+            _selectedActions[selectedDevice as Device] = [
+              result as DeviceAction
+            ];
+          }
         });
       }
     });
@@ -269,10 +329,10 @@ class _AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Modifica Automazione'),
+        title: const Text('Modifica Automazione'),
         actions: [
           IconButton(
-            icon: Icon(Icons.save),
+            icon: const Icon(Icons.save),
             onPressed: () async {
               await _updateAutomation();
               Navigator.pop(context);
@@ -286,7 +346,7 @@ class _AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             TextField(
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Nome automazione',
                 border: OutlineInputBorder(),
               ),
@@ -295,15 +355,15 @@ class _AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
             ),
             const SizedBox(height: 8),
             ListTile(
-              title: Text('Orario di esecuzione'),
+              title: const Text('Orario di esecuzione'),
               subtitle: Text(MaterialLocalizations.of(context)
                   .formatTimeOfDay(_executionTime)),
-              trailing: Icon(Icons.edit),
+              trailing: const Icon(Icons.edit),
               onTap: () => _selectTime(context),
             ),
             const SizedBox(height: 8),
             DropdownButtonFormField<WeatherCondition>(
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Condizioni meteo',
                 border: OutlineInputBorder(),
               ),
@@ -337,17 +397,11 @@ class _AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
                   subtitle: Text('Dispositivo: ${action.device.deviceName}'),
                   leading: const Icon(Icons.device_unknown),
                   trailing: IconButton(
-                    icon: Icon(Icons.delete),
+                    icon: const Icon(Icons.delete),
                     onPressed: () => _removeAction(index),
                   ),
                 );
               },
-            ),
-            const SizedBox(height: 8),
-            ElevatedButton.icon(
-              onPressed: _addAction,
-              icon: Icon(Icons.add),
-              label: Text('Aggiungi Azione'),
             ),
           ],
         ),

@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
-
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,7 +9,7 @@ import 'package:progetto_mobile_programming/models/objects/lock.dart';
 import 'package:progetto_mobile_programming/models/objects/camera.dart';
 import 'package:progetto_mobile_programming/models/objects/thermostat.dart';
 import 'package:progetto_mobile_programming/providers/devices_provider.dart';
-import 'package:progetto_mobile_programming/providers/notifications_provider.dart';
+
 import 'package:progetto_mobile_programming/services/database_helper.dart';
 import 'package:progetto_mobile_programming/services/localnotification_service.dart';
 import 'package:progetto_mobile_programming/views/minis.dart';
@@ -27,10 +25,10 @@ class Homepage extends ConsumerStatefulWidget {
   const Homepage({super.key});
 
   @override
-  _HomepageState createState() => _HomepageState();
+  HomepageState createState() => HomepageState();
 }
 
-class _HomepageState extends ConsumerState<Homepage> {
+class HomepageState extends ConsumerState<Homepage> {
   final TextEditingController _searchController = TextEditingController();
   String _selectedType = 'All'; // default
 
@@ -90,10 +88,10 @@ class _HomepageState extends ConsumerState<Homepage> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => NotificationPage()),
+                MaterialPageRoute(builder: (context) => const NotificationPage()),
               );
             },
-            icon: Icon(Icons.notifications),
+            icon: const Icon(Icons.notifications),
           ),
         ],
         title: SizedBox(
@@ -107,11 +105,11 @@ class _HomepageState extends ConsumerState<Homepage> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => AddNewDevicePage()),
+            MaterialPageRoute(builder: (context) => const AddNewDevicePage()),
           );
         },
-        label: Text('Aggiungi dispositivo'),
-        icon: Icon(Icons.add),
+        label: const Text('Aggiungi dispositivo'),
+        icon: const Icon(Icons.add),
         enableFeedback: true,
       ),
       body: SafeArea(
@@ -123,13 +121,13 @@ class _HomepageState extends ConsumerState<Homepage> {
                 children: [
                   SearchBar(
                     controller: _searchController,
-                    leading: Padding(
-                      padding: const EdgeInsets.all(8.0),
+                    leading: const Padding(
+                      padding: EdgeInsets.all(8.0),
                       child: Icon(Icons.search),
                     ),
-                    trailing: [
+                    trailing: const [
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: EdgeInsets.all(8.0),
                         child: AvatarForDebugMenu(),
                       ),
                     ],
@@ -194,7 +192,7 @@ class _HomepageState extends ConsumerState<Homepage> {
             ),
             Expanded(
               child: filteredDevices.isEmpty
-                  ? Center(
+                  ? const Center(
                       child: Text(
                         'Nessun dispositivo corrispondente alla ricerca.',
                         style: TextStyle(fontSize: 18, color: Colors.grey),
@@ -204,7 +202,9 @@ class _HomepageState extends ConsumerState<Homepage> {
                   : ListView(
                       children: [
                         ...roomsLists,
-                        SizedBox(height: 100), // Aggiungi spazio extra alla fine della lista
+                        const SizedBox(
+                            height:
+                                100), // Aggiungi spazio extra alla fine della lista
                       ],
                     ),
             ),
@@ -256,15 +256,15 @@ class ListGenerator extends StatelessWidget {
               child: Row(
                 children: List.generate(devices.length, (index) {
                   if (devices[index] is Lock) {
-                    deviceIcon = Icon(Icons.lock, size: 40);
+                    deviceIcon = const Icon(Icons.lock, size: 40);
                   } else if (devices[index] is Alarm) {
-                    deviceIcon = Icon(Icons.doorbell, size: 40);
+                    deviceIcon = const Icon(Icons.doorbell, size: 40);
                   } else if (devices[index] is Thermostat) {
-                    deviceIcon = Icon(Icons.thermostat, size: 40);
+                    deviceIcon = const Icon(Icons.thermostat, size: 40);
                   } else if (devices[index] is Light) {
-                    deviceIcon = Icon(Icons.lightbulb, size: 40);
+                    deviceIcon = const Icon(Icons.lightbulb, size: 40);
                   } else {
-                    deviceIcon = Icon(Icons.camera, size: 40);
+                    deviceIcon = const Icon(Icons.camera, size: 40);
                   }
                   return GestureDetector(
                     onTap: () {
@@ -277,7 +277,7 @@ class ListGenerator extends StatelessWidget {
                     },
                     child: Container(
                       width: 150, // Adjust width as needed
-                      padding: EdgeInsets.all(8),
+                      padding: const EdgeInsets.all(8),
                       child: Card(
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
@@ -300,7 +300,7 @@ class ListGenerator extends StatelessWidget {
               ),
             ),
           ),
-          Divider(),
+          const Divider(),
         ],
       ),
     );
@@ -308,6 +308,8 @@ class ListGenerator extends StatelessWidget {
 }
 
 class NotificationButton extends ConsumerWidget {
+  const NotificationButton({super.key});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return TextButton(
@@ -329,7 +331,7 @@ class NotificationButton extends ConsumerWidget {
           description: body,
         );
       },
-      child: Text("Test notifiche push"),
+      child: const Text("Test notifiche push"),
     );
   }
 }
@@ -347,7 +349,7 @@ class _AvatarForDebugMenuState extends State<AvatarForDebugMenu> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      child: CircleAvatar(
+      child: const CircleAvatar(
         backgroundImage: AssetImage('assets/images/mario.jpg'),
       ),
       onLongPress: () {
@@ -363,7 +365,7 @@ class _AvatarForDebugMenuState extends State<AvatarForDebugMenu> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          const Text(
                             "Menù debug",
                             style: TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 24.0),
@@ -372,19 +374,19 @@ class _AvatarForDebugMenuState extends State<AvatarForDebugMenu> {
                             onPressed: () {
                               DatabaseHelper.instance.destroyDb();
                             },
-                            child: Text("Elimina db"),
+                            child: const Text("Elimina db"),
                           ),
-                          Divider(),
+                          const Divider(),
                           TextButton(
                               onPressed: () {
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => GraphPage()));
+                                        builder: (context) => const GraphPage()));
                               },
-                              child: Text("Componente dummy dei grafici")),
-                          Divider(),
-                          NotificationButton(),
+                              child: const Text("Componente dummy dei grafici")),
+                          const Divider(),
+                          const NotificationButton(),
                         ],
                       ),
                     ),

@@ -183,7 +183,7 @@ class DatabaseHelper {
         await db.execute("""
           INSERT INTO lights (id, lightTemperature, isActive)
           VALUES
-          (5, 2000, 1),
+          (5, 3000, 1),
           (7, 4000, 0)
           """);
 
@@ -598,29 +598,41 @@ class DatabaseHelper {
 
     // Aggiorna la tabella specifica basandosi sul tipo
     if (device is Alarm) {
+      final int isActiveInt;
+      if (device.isActive) {
+        isActiveInt = 1;
+      } else isActiveInt = 0;
       await db.update(
         'alarms',
         {
-          'isActive': device.isActive,
+          'isActive': isActiveInt,
         },
         where: 'id = ?',
         whereArgs: [device.id],
       );
     } else if (device is Lock) {
+      final int isActiveInt;
+        if (device.isActive) {
+          isActiveInt = 1;
+        } else isActiveInt = 0;
       await db.update(
         'locks',
         {
-          'isActive': device.isActive,
+          'isActive': isActiveInt,
         },
         where: 'id = ?',
         whereArgs: [device.id],
       );
     } else if (device is Light) {
+        final int isActiveInt;
+          if (device.isActive) {
+            isActiveInt = 1;
+          } else isActiveInt = 0;
       await db.update(
         'lights',
         {
           'lightTemperature': device.lightTemperature,
-          'isActive': device.isActive,
+          'isActive': isActiveInt,
         },
         where: 'id = ?',
         whereArgs: [device.id],
