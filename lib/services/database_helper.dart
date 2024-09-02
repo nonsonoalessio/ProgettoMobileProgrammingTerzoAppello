@@ -519,13 +519,16 @@ class DatabaseHelper {
 
   Future<void> insertNotification(DeviceNotification notification) async {
     final db = await database;
+    final String deliveryTimeString =
+        '${notification.deliveryTime.hour.toString().padLeft(2, '0')}:${notification.deliveryTime.minute.toString().padLeft(2, '0')}';
+    
     await db.insert(
       'deviceNotification',
       {
         'id': DeviceNotification.generateUniqueId(),
         'title': notification.title,
         'device': notification.device.id,
-        'deliveryTime': notification.deliveryTime,
+        'deliveryTime': deliveryTimeString,
         'isRead': notification.isRead,
         'description': notification.description,
       },
