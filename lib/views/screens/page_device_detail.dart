@@ -27,14 +27,14 @@ class DeviceDetailPage extends ConsumerStatefulWidget {
 class ColorTemperatureSlider extends StatefulWidget {
   final Light light;
   final ValueChanged<double> onValueChanged;
-  const ColorTemperatureSlider({super.key, required this.light, required this.onValueChanged});
+  const ColorTemperatureSlider(
+      {super.key, required this.light, required this.onValueChanged});
 
   @override
   ColorTemperatureSliderState createState() => ColorTemperatureSliderState();
 }
 
-class ColorTemperatureSliderState
-    extends State<ColorTemperatureSlider> {
+class ColorTemperatureSliderState extends State<ColorTemperatureSlider> {
   // Funzione per ottenere il colore corrispondente alla temperatura
   Color _getColorForTemperature(double temperature) {
     if (temperature <= 2000) {
@@ -52,7 +52,6 @@ class ColorTemperatureSliderState
 
   @override
   Widget build(BuildContext context) {
-
     final Light currentLight = widget.light;
 
     return Column(
@@ -95,7 +94,8 @@ class ColorTemperatureSliderState
             });
             widget.onValueChanged(value);
           },
-          activeColor: _getColorForTemperature(currentLight.lightTemperature.toDouble()),
+          activeColor:
+              _getColorForTemperature(currentLight.lightTemperature.toDouble()),
         ),
       ],
     );
@@ -715,8 +715,7 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
             ElevatedButton(
               onPressed: () {
                 setState(() {
-                  light.isActive = !light.isActive;
-                  ref.read(deviceNotifierProvider.notifier).updateDevice(light);
+                  _wrap(light);
                 });
               },
               child:
@@ -728,7 +727,6 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
         Text('Temperatura della lampadina:'),
         SizedBox(height: 8),
         ColorTemperatureSlider(
-          
           onValueChanged: (double value) {
             setState(() {
               light.lightTemperature = value.toInt();
@@ -737,7 +735,8 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
               print(
                   "Chiamata a updateDevice per il dispositivo con id: ${light.id}");
             });
-          }, light: light,
+          },
+          light: light,
         ),
       ],
     );
@@ -767,8 +766,7 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
         ElevatedButton(
           onPressed: () {
             setState(() {
-              alarm.isActive = !alarm.isActive;
-              ref.read(deviceNotifierProvider.notifier).updateDevice(alarm);
+              _wrap(alarm);
             });
           },
           child: Text(alarm.isActive ? 'Disattiva' : 'Attiva'),
@@ -801,8 +799,7 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
         ElevatedButton(
           onPressed: () {
             setState(() {
-              lock.isActive = !lock.isActive;
-              ref.read(deviceNotifierProvider.notifier).updateDevice(lock);
+              _wrap(lock);
             });
           },
           child: Text(lock.isActive ? 'Sblocca' : 'Blocca'),
