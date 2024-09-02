@@ -521,12 +521,6 @@ class DatabaseHelper {
     final db = await database;
     final String deliveryTimeString =
         '${notification.deliveryTime.hour.toString().padLeft(2, '0')}:${notification.deliveryTime.minute.toString().padLeft(2, '0')}';
-    final int isReadInt;
-    if (notification.isRead) {
-      isReadInt = 1;
-    } else {
-      isReadInt = 0;
-    }
     await db.insert(
       'deviceNotification',
       {
@@ -534,7 +528,7 @@ class DatabaseHelper {
         'title': notification.title,
         'device': notification.device.id,
         'deliveryTime': deliveryTimeString,
-        'isRead': isReadInt,
+        'isRead': notification.isRead,
         'description': notification.description,
       },
     );
