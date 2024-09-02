@@ -790,7 +790,16 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Temperatura corrente: ${thermostat.detectedTemp}°C'),
+        Row(
+          children: [
+            Flexible(
+              child: Text('Temperatura corrente: '),
+            ),
+            Text('${thermostat.detectedTemp}°C',
+            style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
         const SizedBox(height: 8),
         Slider(
           value: thermostat.desiredTemp.toDouble(),
