@@ -2,6 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:http/http.dart';
 import 'package:path/path.dart';
 import 'package:progetto_mobile_programming/models/functionalities/device_notification.dart';
 import 'package:progetto_mobile_programming/providers/notifications_provider.dart';
@@ -21,6 +22,84 @@ class DeviceDetailPage extends ConsumerStatefulWidget {
 
   @override
   ConsumerState<DeviceDetailPage> createState() => _DeviceDetailPageState();
+}
+
+class ColorTemperatureSlider extends ConsumerStatefulWidget {
+  final Light light;
+  final ValueChanged<double> onValueChanged;
+  const ColorTemperatureSlider({super.key, required this.light, required this.onValueChanged});
+
+  @override
+  ColorTemperatureSliderState createState() => ColorTemperatureSliderState();
+}
+
+class ColorTemperatureSliderState
+    extends ConsumerState<ColorTemperatureSlider> {
+  // Funzione per ottenere il colore corrispondente alla temperatura
+  Color _getColorForTemperature(double temperature) {
+    if (temperature <= 2000) {
+      return const Color(0xFFFF3800); // Rosso
+    } else if (temperature <= 3000) {
+      return const Color(0xFFFFD700); // Giallo
+    } else if (temperature <= 4000) {
+      return const Color(0xFFFFFFE0); // Bianco caldo
+    } else if (temperature <= 5000) {
+      return const Color(0xFFFFFFFF); // Bianco puro
+    } else {
+      return const Color(0xFFADD8E6); // Bianco freddo
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+
+    final Light currentLight = widget.light;
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                children: [
+                  Icon(
+                    Icons.lightbulb,
+                    color: Color(0xFFFF3800),
+                  ),
+                  Text("Più calda"),
+                ],
+              ),
+              Column(
+                children: [
+                  Icon(
+                    Icons.lightbulb,
+                    color: Color(0xFFADD8E6),
+                  ),
+                  Text("Più fredda"),
+                ],
+              ),
+            ],
+          ),
+        ),
+        Slider(
+          value: currentLight.lightTemperature.toDouble(),
+          min: 2000,
+          max: 6500,
+          divisions: 45,
+          onChanged: (double value) {
+            setState(() {
+              currentLight.lightTemperature = value.toInt();
+            });
+            widget.onValueChanged(value);
+          },
+          activeColor: _getColorForTemperature(currentLight.lightTemperature.toDouble()),
+        ),
+      ],
+    );
+  }
 }
 
 class EnergySavingSuggestions extends StatelessWidget {
@@ -182,7 +261,7 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
         // Accendiamo o spegnamo l'allarme
         device.isActive = !device.isActive;
 
-          updatedDevice = Alarm(
+        updatedDevice = Alarm(
           deviceName: device.deviceName,
           room: device.room,
           id: device.id,
@@ -224,7 +303,6 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
 
         // Aggiorniamo lo stato del dispositivo
         ref.read(deviceNotifierProvider.notifier).updateDevice(updatedDevice);
-
 
         // Creiamo la notifica
         final newNotification = DeviceNotification(
@@ -650,15 +728,16 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
         Text('Temperatura della lampadina:'),
         SizedBox(height: 8),
         ColorTemperatureSlider(
+          
           onValueChanged: (double value) {
             setState(() {
               light.lightTemperature = value.toInt();
               print(light.lightTemperature);
               ref.read(deviceNotifierProvider.notifier).updateDevice(light);
-              print("Chiamata a updateDevice per il dispositivo con id: ${light.id}");
-
+              print(
+                  "Chiamata a updateDevice per il dispositivo con id: ${light.id}");
             });
-          },
+          }, light: light,
         ),
       ],
     );
