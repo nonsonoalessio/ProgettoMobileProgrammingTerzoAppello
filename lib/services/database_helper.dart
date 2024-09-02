@@ -151,12 +151,12 @@ class DatabaseHelper {
           VALUES
           (1, 'Salotto', 'Allarme ingresso'),
           (3, 'Cameretta', 'Allarme barriera'),
-          (2, 'Salotto', 'Lock1'),
-          (4, 'Cucina', 'Lock2'),
+          (2, 'Salotto', 'Serratura1'),
+          (4, 'Cucina', 'Serratura2'),
           (5, 'Cameretta', 'Luce di Simone'),
           (7, 'Cameretta', 'Luce di Mario'),
-          (6, 'Salotto', 'Thermo1'),
-          (8, 'Cucina', 'Thermo2'),
+          (6, 'Salotto', 'Termostato1'),
+          (8, 'Cucina', 'Termostato2'),
           (9, 'Salotto', 'Camera1'),
           (10, 'Cameretta', 'Camera2')
           """);
@@ -215,9 +215,9 @@ class DatabaseHelper {
         await db.execute("""
           INSERT INTO deviceNotification (id, title, device, deliveryTime, isRead, description)
            VALUES
-            (1, 'Mario guarda gatto', 9, '19:00:00', 0, 'mario pazzo'),
-            (2, 'Mario pazzo sgravato', 10, '09:00:00', 1, 'mario pazzo in culo proprio'),
-            (3, 'Mario scemo', 10, '02:00:00', 1, 'mario')
+            (1, 'Mario guarda gatto', 9, '19:00:00', 0, 'mario'),
+            (2, 'Mario guarda gatti', 10, '09:00:00', 1, 'mario'),
+            (3, 'Mario guarda gatti', 10, '02:00:00', 1, 'mario')
         """);
         await db.execute("""
           INSERT INTO categoryNotification(category, deviceNotifications)
