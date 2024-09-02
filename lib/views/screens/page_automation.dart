@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -25,7 +25,7 @@ class AutomationPage extends ConsumerWidget {
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: automations.isEmpty
-                    ? Center(
+                    ? const Center(
                         child: Text('Non hai aggiunto nessuna automazione'),
                       ) // Caso in cui la lista è vuota
                     : ListView.builder(
@@ -49,7 +49,7 @@ class AutomationPage extends ConsumerWidget {
                                   );
                                 },
                               ),
-                              Divider(),
+                              const Divider(),
                             ],
                           );
                         },
@@ -62,10 +62,10 @@ class AutomationPage extends ConsumerWidget {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           Navigator.push(context,
-              MaterialPageRoute(builder: (context) => AddNewAutomationPage()));
+              MaterialPageRoute(builder: (context) => const AddNewAutomationPage()));
         },
-        label: Text('Aggiungi Automazione'),
-        icon: Icon(Icons.add),
+        label: const Text('Aggiungi Automazione'),
+        icon: const Icon(Icons.add),
       ),
     );
   }
