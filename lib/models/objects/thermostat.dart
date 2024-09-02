@@ -24,10 +24,9 @@ class Thermostat extends Device {
   @override
   Map<String, Object?> toMap() {
     return {
-      'deviceName': deviceName,
-      'room': room,
+      'id': id,
       'desiredTemp': desiredTemp,
-      'detectedTemp': detectedTemp,
+      'currentTemp': detectedTemp,
     };
   }
 }

@@ -20,6 +20,6 @@ class Camera extends Device {
 
   @override
   Map<String, Object?> toMap() {
-    return {'deviceName': deviceName, 'room': room, 'id': id, 'video': video};
+    return {'id': id, 'video': video};
   }
 }

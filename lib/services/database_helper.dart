@@ -44,7 +44,6 @@ class DatabaseHelper {
               id INTEGER PRIMARY KEY ,
               room TEXT NOT NULL,
               deviceName TEXT NOT NULL,
-              type TEXT NOT NULL,
               FOREIGN KEY (room) REFERENCES rooms(room)
           )
           """);
@@ -114,7 +113,7 @@ class DatabaseHelper {
               category TEXT NOT NULL,
               deviceNotifications INTEGER NOT NULL,
               FOREIGN KEY (category) references categoryNotification(name),
-              FOREIGN KEY (deviceNotifications) references deviceNotifications(id),
+              FOREIGN KEY (deviceNotifications) references deviceNotification(id),
               PRIMARY KEY(category, deviceNotifications)
               )
               """);
@@ -148,18 +147,18 @@ class DatabaseHelper {
           """);
 
         await db.execute("""
-          INSERT INTO device (id, room, deviceName, type) 
+          INSERT INTO device (id, room, deviceName) 
           VALUES
-          (1, 'Salotto', 'Allarme ingresso', 'allarme'),
-          (3, 'Cameretta', 'Allarme barriera', 'allarme'),
-          (2, 'Salotto', 'Lock1', 'locks'),
-          (4, 'Cucina', 'Lock2', 'locks'),
-          (5, 'Cameretta', 'Luce di Simone', 'lights'),
-          (7, 'Cameretta', 'Luce di Mario', 'lights'),
-          (6, 'Salotto', 'Thermo1', 'thermostats'),
-          (8, 'Cucina', 'Thermo2', 'thermostats'),
-          (9, 'Salotto', 'Camera1', 'camera'),
-          (10, 'Cameretta', 'Camera2', 'camera')
+          (1, 'Salotto', 'Allarme ingresso'),
+          (3, 'Cameretta', 'Allarme barriera'),
+          (2, 'Salotto', 'Lock1'),
+          (4, 'Cucina', 'Lock2'),
+          (5, 'Cameretta', 'Luce di Simone'),
+          (7, 'Cameretta', 'Luce di Mario'),
+          (6, 'Salotto', 'Thermo1'),
+          (8, 'Cucina', 'Thermo2'),
+          (9, 'Salotto', 'Camera1'),
+          (10, 'Cameretta', 'Camera2')
           """);
         await db.execute("""
           INSERT INTO camera (id,video)
@@ -184,8 +183,8 @@ class DatabaseHelper {
         await db.execute("""
           INSERT INTO lights (id, lightTemperature, isActive)
           VALUES
-          (5, 27, True),
-          (7, 30, False)
+          (5, 2000, 1),
+          (7, 4000, 0)
           """);
 
         await db.execute("""
@@ -223,9 +222,9 @@ class DatabaseHelper {
         await db.execute("""
           INSERT INTO categoryNotification(category, deviceNotifications)
           VALUES
-          ('security', 1),
-          ('automationExecution', 2),
-          ('highEnergyConsumption', 3)
+          ('Sicurezza', 1),
+          ('Esecuzione automazione', 2),
+          ('Alti consumi', 3)
         """);
       },
       version: 1,
@@ -319,42 +318,43 @@ class DatabaseHelper {
   Future<void> fetchNotifications() async {
     final db = await database;
 
-    final List<Map<String, dynamic>> mapsOfNotifications =
-        await db.query('deviceNotification');
+    // Fetch all notifications
+    final List<Map<String, dynamic>> mapsOfNotifications = await db.rawQuery("""
+    SELECT * FROM deviceNotification
+  """);
 
-    notifications = List.generate(mapsOfNotifications.length, (i) {
-      Device d = devices
-          .where((d) => d.id == mapsOfNotifications[i]['device'])
-          .toList()
-          .first;
-      bool value;
-      mapsOfNotifications[i]['isRead'] == 0 ? value = false : value = true;
+    notifications =
+        await Future.wait(mapsOfNotifications.map((notificationMap) async {
+      // Get device associated with the notification
+      final deviceId = notificationMap['device'] as int;
+      final device = devices.firstWhere((d) => d.id == deviceId);
 
-      // final List<String> categories = [];
+      // Fetch categories for the notification
+      final List<Map<String, dynamic>> mapsOfCategories = await db.rawQuery("""
+      SELECT category FROM categoryNotification
+      WHERE deviceNotifications = ?
+    """, [notificationMap['id']]);
 
-      // final mapsOfCategories = rawQuery;
-      // l'id della notifica si ottiene con:
-      // $mapsOfNotification[i]['id']
-      // all'interno della rawquery
+      // Extract categories into a set
+      final Set<String> categories = mapsOfCategories
+          .map((categoryMap) => categoryMap['category'] as String)
+          .toSet();
 
-      /* 
-      for(Map<String, dynamic> map){
-        categories.add(map[<camponomecategoria>]);
-      }
-      */
+      // Create the DeviceNotification object
       return DeviceNotification(
-          id: mapsOfNotifications[i]['id'],
-          title: mapsOfNotifications[i]['title'],
-          device: d,
-          deliveryTime: TimeOfDay.fromDateTime(DateTime.parse(
-              '1970-01-01 ${mapsOfNotifications[i]['deliveryTime']}')),
-          isRead: value,
-          description: mapsOfNotifications[i]['description']);
-      // categories: categories;
-    });
-    notifications = [
-      ...notifications,
-    ];
+        id: notificationMap['id'] as int,
+        title: notificationMap['title'] as String,
+        device: device,
+        deliveryTime: TimeOfDay.fromDateTime(
+            DateTime.parse('1970-01-01 ${notificationMap['deliveryTime']}')),
+        isRead: notificationMap['isRead'] == 1,
+        description: notificationMap['description'] as String,
+        categories: categories,
+      );
+    }));
+
+    // Notify listeners or update UI
+    notifications = [...notifications];
   }
 
   Future<void> fetchNotificationCategories() async {
@@ -459,7 +459,7 @@ class DatabaseHelper {
       );
     });
 
-    final cameras = List.generate(mapsOfthermostats.length, (i) {
+    final cameras = List.generate(mapsOfCameras.length, (i) {
       return Camera(
         id: mapsOfCameras[i]['id'] as int,
         deviceName: mapsOfCameras[i]['deviceName'] as String,
@@ -492,10 +492,11 @@ class DatabaseHelper {
     final tableName = _getTableName(device);
 
     final db = await database;
-    await db.insert(
-      'device',
-      device.toMap(),
-    );
+    await db.insert('device', {
+      'deviceName': device.deviceName,
+      'room': device.room,
+      'id': device.id
+    });
 
     await db.insert(
       tableName,
@@ -513,6 +514,7 @@ class DatabaseHelper {
         'weather': automation.weather,
       },
     );
+    //TODO inserimento anche nella tabella ACTIONS
   }
 
   Future<void> insertNotification(DeviceNotification notification) async {
@@ -658,6 +660,7 @@ class DatabaseHelper {
       where: 'name = ?',
       whereArgs: [automation.name],
     );
+    //TODO da adattare
   }
 
   Future<void> updateNotification(int id) async {

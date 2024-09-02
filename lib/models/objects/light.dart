@@ -25,8 +25,7 @@ class Light extends Device {
   @override
   Map<String, Object?> toMap() {
     return {
-      'deviceName': deviceName,
-      'room': room,
+      'id' : id,
       'isActive': isActive,
       'lightTemperature': lightTemperature,
     };

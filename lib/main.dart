@@ -9,8 +9,8 @@ import 'package:progetto_mobile_programming/views/screens/page_security.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Permission.notification.isDenied.then((value){
-    if(value){
+  await Permission.notification.isDenied.then((value) {
+    if (value) {
       Permission.notification.request();
     }
   });

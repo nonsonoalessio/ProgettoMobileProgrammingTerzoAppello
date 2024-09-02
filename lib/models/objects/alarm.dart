@@ -3,7 +3,10 @@ import 'package:progetto_mobile_programming/models/objects/device.dart';
 class Alarm extends Device {
   bool isActive;
   Alarm(
-      {required super.deviceName, required super.room, required super.id, this.isActive = false});
+      {required super.deviceName,
+      required super.room,
+      required super.id,
+      this.isActive = false});
 
   factory Alarm.fromMap(Map<String, dynamic> map) {
     return Alarm(
@@ -16,6 +19,6 @@ class Alarm extends Device {
 
   @override
   Map<String, Object?> toMap() {
-    return {'deviceName': deviceName, 'room': room, 'id': id, 'isActive': isActive};
+    return {'id': id, 'isActive': isActive};
   }
 }
