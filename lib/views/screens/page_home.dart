@@ -142,8 +142,8 @@ class _HomepageState extends ConsumerState<Homepage> {
                     ),
                   ),
                   Wrap(
-                    spacing: 8.0, 
-                    runSpacing: 4.0, 
+                    spacing: 8.0,
+                    runSpacing: 4.0,
                     children: [
                       FilterButton(
                         label: 'Lock',
@@ -225,7 +225,12 @@ class _HomepageState extends ConsumerState<Homepage> {
                       ),
                     )
                   : ListView(
-                      children: roomsLists,
+                      children: [
+                        ...roomsLists,
+                        SizedBox(
+                            height:
+                                100), // Aggiungi spazio extra alla fine della lista
+                      ],
                     ),
             ),
           ],
