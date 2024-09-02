@@ -598,7 +598,7 @@ class DatabaseHelper {
 
     // Aggiorna la tabella specifica basandosi sul tipo
     if (device is Alarm) {
-      final isActiveInt;
+      final int isActiveInt;
       if (device.isActive) {
         isActiveInt = 1;
       } else isActiveInt = 0;
@@ -611,7 +611,7 @@ class DatabaseHelper {
         whereArgs: [device.id],
       );
     } else if (device is Lock) {
-      final isActiveInt;
+      final int isActiveInt;
         if (device.isActive) {
           isActiveInt = 1;
         } else isActiveInt = 0;
@@ -624,7 +624,7 @@ class DatabaseHelper {
         whereArgs: [device.id],
       );
     } else if (device is Light) {
-        final isActiveInt;
+        final int isActiveInt;
           if (device.isActive) {
             isActiveInt = 1;
           } else isActiveInt = 0;
