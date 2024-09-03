@@ -332,6 +332,7 @@ class AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    Automation newAutomation;
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
@@ -351,7 +352,19 @@ class AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
         actions: [
           // TODO: show menu cancellazione/update automazione
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              newAutomation = Automation(
+                  name: _automationNameController.text,
+                  executionTime: _executionTime.toString(),
+                  weather: _selectedWeather,
+                  actions: actions);
+
+              ref
+                  .read(automationsNotifierProvider.notifier)
+                  .updateAutomation(newAutomation);
+
+              Navigator.pop(context);
+            },
             icon: const Icon(Icons.more_vert),
           ),
         ],

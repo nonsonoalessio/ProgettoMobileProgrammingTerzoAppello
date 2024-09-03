@@ -53,7 +53,7 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
       TextEditingController();
   WeatherCondition _selectedWeather = WeatherCondition.sunny;
 
-  String _executionTime = '2024-29-03';
+  String _executionTime = '09:21';
   //TimeOfDay? _executionTime = const TimeOfDay(hour: 09, minute: 41);
   final Set<DeviceAction> actions = {};
 
