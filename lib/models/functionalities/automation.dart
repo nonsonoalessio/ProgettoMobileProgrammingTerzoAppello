@@ -5,13 +5,13 @@ enum WeatherCondition { none, sunny, cloudy, rainy, hot, cold, snowy }
 
 class Automation {
   String name;
-  TimeOfDay executionTime;
+  TimeOfDay? executionTime;
   WeatherCondition? weather;
   List<DeviceAction> actions;
 
   Automation(
       {required this.name,
-      required this.executionTime,
+      this.executionTime,
       this.weather,
       required this.actions});
 

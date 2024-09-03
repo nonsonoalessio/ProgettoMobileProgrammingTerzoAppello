@@ -51,9 +51,9 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
   final TextEditingController _automationNameController =
       TextEditingController();
   WeatherCondition _selectedWeather = WeatherCondition.sunny;
-  TimeOfDay _executionTime = const TimeOfDay(hour: 09, minute: 41);
+
+  TimeOfDay? _executionTime = const TimeOfDay(hour: 09, minute: 41);
   final Map<Device, List<DeviceAction>> _selectedActions = {};
-  
 
   void _handleWeatherConditionChanged(WeatherCondition newCondition) {
     setState(() {
@@ -312,6 +312,14 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
     });
   }
 
+  bool isTimeDependent = false;
+
+  void _handleTimeDependency(bool value) {
+    setState(() {
+      isTimeDependent = value;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -358,6 +366,19 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
                 ),
               ),
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text("L'automazione non dipende da un orario."),
+                  Switch(
+                      value: isTimeDependent,
+                      onChanged: (bool value) {
+                        setState(() {
+                          isTimeDependent = value;
+                        });
+                      })
+                ],
+              ),
+              Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   ElevatedButton(
@@ -374,6 +395,8 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
                   ),
                   TimeOfDaySelector(
                     onValueChanged: _handleExecutionTimeChanged,
+                    timeDependencyChange: _handleTimeDependency,
+                    isTimeDependent: isTimeDependent,
                   ),
                 ],
               ),
@@ -392,10 +415,14 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
 
 class TimeOfDaySelector extends StatefulWidget {
   final ValueChanged<TimeOfDay> onValueChanged;
+  final ValueChanged<bool> timeDependencyChange;
+  final bool isTimeDependent;
 
   const TimeOfDaySelector({
     super.key,
     required this.onValueChanged,
+    required this.timeDependencyChange,
+    required this.isTimeDependent,
   });
 
   @override
@@ -408,7 +435,7 @@ class _TimeOfDaySelectorState extends State<TimeOfDaySelector> {
   Future<void> _selectTime(BuildContext context) async {
     final TimeOfDay? timeOfDay = await showTimePicker(
       context: context,
-      initialTime: const TimeOfDay(hour: 09, minute: 41),
+      initialTime: selectedTime,
       builder: (BuildContext context, Widget? child) {
         return MediaQuery(
           data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
@@ -416,10 +443,12 @@ class _TimeOfDaySelectorState extends State<TimeOfDaySelector> {
         );
       },
     );
-    if (timeOfDay != null && timeOfDay != selectedTime) {
+
+    if (timeOfDay != null) {
       setState(() {
         selectedTime = timeOfDay;
         widget.onValueChanged(selectedTime);
+        widget.timeDependencyChange(false);
       });
     }
   }
@@ -439,7 +468,9 @@ class _TimeOfDaySelectorState extends State<TimeOfDaySelector> {
               child: Icon(Icons.access_time),
             ),
             Text(
-              selectedTime.format(context),
+              !widget.isTimeDependent
+                  ? selectedTime.format(context)
+                  : 'Nessun orario selezionato',
             ),
           ],
         ),

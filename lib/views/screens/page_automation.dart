@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:progetto_mobile_programming/providers/automations_provider.dart';
@@ -37,7 +35,8 @@ class AutomationPage extends ConsumerWidget {
                               ListTile(
                                 title: Text(automations[index].name),
                                 subtitle: Text(
-                                    "L'automazione andrà in azione alle ore ${MaterialLocalizations.of(context).formatTimeOfDay(automations[index].executionTime)}"),
+                                  "L'automazione andrà in azione alle ore ",
+                                ), //${MaterialLocalizations.of(context).formatTimeOfDay(automations[index].executionTime)}"),
                                 onTap: () {
                                   Navigator.push(
                                     context,
@@ -61,8 +60,10 @@ class AutomationPage extends ConsumerWidget {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => const AddNewAutomationPage()));
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const AddNewAutomationPage()));
         },
         label: const Text('Aggiungi Automazione'),
         icon: const Icon(Icons.add),

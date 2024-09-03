@@ -76,7 +76,7 @@ class _AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
   void initState() {
     super.initState();
     _name = widget.automation.name;
-    _executionTime = widget.automation.executionTime;
+    // _executionTime = widget.automation.executionTime;
     _weatherCondition = widget.automation.weather;
     _actions = List.from(widget.automation.actions);
   }
