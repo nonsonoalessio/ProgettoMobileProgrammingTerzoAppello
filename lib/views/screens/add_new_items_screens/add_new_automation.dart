@@ -340,7 +340,7 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
                   .read(automationsNotifierProvider.notifier)
                   .addAutomation(updatedAutomation);
 
-              Navigator.pop(context);
+              Navigator.of(context).pop(updatedAutomation);
             },
             icon: const Icon(Icons.save),
           ),

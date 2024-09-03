@@ -371,7 +371,7 @@ class AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
                     .read(automationsNotifierProvider.notifier)
                     .deleteAutomation(widget.automation);
                 // la logica per cancellare l'automazione
-                Navigator.pop(context);
+                Navigator.of(context).pop('r');
               }
             },
             itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[

@@ -16,6 +16,7 @@ class AutomationsNotifier extends _$AutomationsNotifier {
   Future<void> _initStatus() async {
     // await db.fetchDevices();
     await db.fetchAutomations();
+
     // await db.fetchNotifications();
     // await db.fetchIndex();
 
@@ -31,6 +32,11 @@ class AutomationsNotifier extends _$AutomationsNotifier {
   List<Automation> build() {
     _initStatus();
     return automations;
+  }
+
+  Future<int> ciao() async {
+    await _initStatus();
+    return 1;
   }
 
   void addAutomation(Automation automation) {

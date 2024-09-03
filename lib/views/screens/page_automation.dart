@@ -9,7 +9,7 @@ class AutomationPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final automations = ref.watch(automationsNotifierProvider);
+    var automations = ref.watch(automationsNotifierProvider);
 
     return Scaffold(
       body: SafeArea(
@@ -25,42 +25,62 @@ class AutomationPage extends ConsumerWidget {
                 child: automations.isEmpty
                     ? const Center(
                         child: Text('Non hai aggiunto nessuna automazione'),
-                      ) // Caso in cui la lista è vuota
-                    : ListView.builder(
-                        itemCount: automations.length,
-                        itemBuilder: (context, index) {
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              ListTile(
-                                title: Text(automations[index].name),
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          AutomationDetailPage(
-                                              automation: automations[index]),
+                      )
+                    : FutureBuilder<int>(
+                        future: ref
+                            .read(automationsNotifierProvider.notifier)
+                            .ciao(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.done) {
+                            return ListView.builder(
+                              itemCount: automations.length,
+                              itemBuilder: (context, index) {
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    ListTile(
+                                      title: Text(automations[index].name),
+                                      onTap: () async {
+                                        String act = await Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                AutomationDetailPage(
+                                                    automation:
+                                                        automations[index]),
+                                          ),
+                                        );
+                                        if(act != null){
+                                          automations = [];
+automations = ref.refresh(automationsNotifierProvider);
+                                        }
+                                      },
                                     ),
-                                  );
-                                },
-                              ),
-                              const Divider(),
-                            ],
-                          );
-                        },
-                      ),
+                                    const Divider(),
+                                  ],
+                                );
+                              },
+                            );
+                          } else {
+                            return const CircularProgressIndicator();
+                          }
+                        }),
               ),
             ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          Navigator.push(
+        onPressed: () async {
+          final result = await Navigator.push(
               context,
               MaterialPageRoute(
                   builder: (context) => const AddNewAutomationPage()));
+          if (result != null) {
+            automations = [];
+            automations = ref.refresh(automationsNotifierProvider);
+          }
         },
         label: const Text('Aggiungi Automazione'),
         icon: const Icon(Icons.add),
@@ -68,3 +88,36 @@ class AutomationPage extends ConsumerWidget {
     );
   }
 }
+
+/*
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+class MyWidget extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Ottieni il valore dal FutureProvider
+    final AsyncValue<String> data = ref.watch(dataProvider);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('FutureProvider Example'),
+      ),
+      body: Center(
+        child: data.when(
+          // Stato di caricamento
+          loading: () => CircularProgressIndicator(),
+          // Stato di errore
+          error: (e, stack) => Text('Error: $e'),
+          // Stato di successo
+          data: (value) => Text('Data: $value'),
+        ),
+      ),
+    );
+  }
+}
+
+void main() {
+  runApp(ProviderScope(child: MaterialApp(home: MyWidget())));
+}
+ */

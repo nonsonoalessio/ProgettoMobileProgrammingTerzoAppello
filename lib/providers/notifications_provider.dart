@@ -85,16 +85,15 @@ class NotificationCategoriesNotifier extends _$NotificationCategoriesNotifier {
   }
 
   // Chiamato al ritorno del textfield
-  void tempUpdate(String temporaryCategory){
+  void tempUpdate(String temporaryCategory) {
     state = {...notificationCategories, temporaryCategory};
   }
-  
 
-   // Chiamato alla chiusura del modal
-  void categoriesRestore(){
+  // Chiamato alla chiusura del modal
+  void categoriesRestore() {
     _initStatus();
   }
-  
+
   void addCategory(String category) {
     _addCategoryFromDb(category);
     _initStatus();

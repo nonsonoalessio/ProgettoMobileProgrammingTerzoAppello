@@ -24,7 +24,7 @@ final notificationsNotifierProvider = AutoDisposeNotifierProvider<
 
 typedef _$NotificationsNotifier = AutoDisposeNotifier<List<DeviceNotification>>;
 String _$notificationCategoriesNotifierHash() =>
-    r'70b86b39a591313223bb58c6868c94a5b8b11b15';
+    r'85cfc8b3682448011f568ad215a2aec41a132209';
 
 /// See also [NotificationCategoriesNotifier].
 @ProviderFor(NotificationCategoriesNotifier)

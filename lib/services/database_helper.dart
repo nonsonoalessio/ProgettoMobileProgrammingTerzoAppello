@@ -285,6 +285,13 @@ class DatabaseHelper {
     }
   }
 
+  Future<List<Automation>> getAutomationsFuture() async {
+    final List<Automation> automationsInFuture = [];
+    await fetchAutomations();
+    automations = automationsInFuture;
+    return automationsInFuture;
+  }
+
   Set<DeviceAction> _getActions(String automationName) {
     List<DeviceAction> actions = [];
     _fetchActions(automationName, actions);
@@ -303,11 +310,12 @@ class DatabaseHelper {
       String name = map['name'];
       String executionTimeStr = map['executionTime'];
 
-    // Assicurati che il formato della stringa sia corretto
-    DateTime executionDateTime = DateTime.parse('1970-01-01 $executionTimeStr');
+      // Assicurati che il formato della stringa sia corretto
+      DateTime executionDateTime =
+          DateTime.parse('1970-01-01 $executionTimeStr');
 
-    // Converti DateTime in TimeOfDay
-    TimeOfDay executionTime = TimeOfDay.fromDateTime(executionDateTime);
+      // Converti DateTime in TimeOfDay
+      TimeOfDay executionTime = TimeOfDay.fromDateTime(executionDateTime);
       List<DeviceAction> actions = [];
 
       await _fetchActions(
@@ -558,6 +566,7 @@ class DatabaseHelper {
           'executionTime': automationTimeStr,
           'weather': automation.weather.toString(),
         },
+        conflictAlgorithm: ConflictAlgorithm.replace,
       );
 
       // Inserisci le azioni nella tabella actions
@@ -567,9 +576,13 @@ class DatabaseHelper {
         await txn.insert(
           'actions',
           map,
+          conflictAlgorithm: ConflictAlgorithm.replace,
         );
       }
     });
+
+    fetchAutomations();
+    // await fetchAutomations();
   }
 
   Future<void> insertNotification(DeviceNotification notification) async {
@@ -729,7 +742,6 @@ class DatabaseHelper {
 
     final String automationTimeStr =
         '${(automation.executionTime as TimeOfDay).hour.toString().padLeft(2, '0')}:${(automation.executionTime as TimeOfDay).minute.toString().padLeft(2, '0')}';
-
 
     await db.transaction((txn) async {
       // 1. Aggiorniamo i dati nella tabella automation
