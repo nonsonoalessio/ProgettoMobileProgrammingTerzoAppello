@@ -289,10 +289,10 @@ class DatabaseHelper {
     });
   }
 
-  List<DeviceAction> _getActions(String automationName) {
+  Set<DeviceAction> _getActions(String automationName) {
     List<DeviceAction> actions = [];
     _fetchActions(automationName, actions);
-    return actions;
+    return actions.toSet();
   }
 
   Future<void> fetchAutomations() async {

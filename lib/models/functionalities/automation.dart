@@ -7,7 +7,7 @@ class Automation {
   String name;
   TimeOfDay? executionTime;
   WeatherCondition? weather;
-  List<DeviceAction> actions;
+  Set<DeviceAction> actions;
 
   Automation(
       {required this.name,
