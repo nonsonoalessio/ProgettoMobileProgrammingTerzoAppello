@@ -12,7 +12,6 @@ import 'package:progetto_mobile_programming/models/objects/device.dart';
 import 'package:progetto_mobile_programming/models/objects/light.dart';
 import 'package:progetto_mobile_programming/models/objects/lock.dart';
 import 'package:progetto_mobile_programming/models/objects/thermostat.dart';
-import 'package:progetto_mobile_programming/providers/automations_provider.dart';
 
 import 'package:progetto_mobile_programming/providers/devices_provider.dart';
 
@@ -407,6 +406,11 @@ class AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
                           context: context,
                           builder: (context) => WeatherConditionsModal(
                                 onValueChanged: _handleWeatherConditionChanged,
+                                startingCondition:
+                                    widget.automation.weather != null
+                                        ? widget.automation.weather
+                                            as WeatherCondition
+                                        : WeatherCondition.none,
                               ));
                     },
                     child: Text(
@@ -417,6 +421,9 @@ class AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
                     onValueChanged: _handleExecutionTimeChanged,
                     timeDependencyChange: _handleTimeDependency,
                     isTimeDependent: isTimeDependent,
+                    isTimeDependent
+                        ? widget.automation.executionTime
+                        : TimeOfDay(hour: 00, minute: 00),
                   ),
                 ],
               ),
@@ -437,12 +444,14 @@ class TimeOfDaySelector extends StatefulWidget {
   final ValueChanged<TimeOfDay> onValueChanged;
   final ValueChanged<bool> timeDependencyChange;
   final bool isTimeDependent;
+  final TimeOfDay startingTime;
 
   const TimeOfDaySelector({
     super.key,
     required this.onValueChanged,
     required this.timeDependencyChange,
     required this.isTimeDependent,
+    required this.startingTime,
   });
 
   @override
@@ -455,7 +464,7 @@ class _TimeOfDaySelectorState extends State<TimeOfDaySelector> {
   Future<void> _selectTime(BuildContext context) async {
     final TimeOfDay? timeOfDay = await showTimePicker(
       context: context,
-      initialTime: selectedTime,
+      initialTime: widget.startingTime,
       builder: (BuildContext context, Widget? child) {
         return MediaQuery(
           data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
@@ -481,7 +490,10 @@ class _TimeOfDaySelectorState extends State<TimeOfDaySelector> {
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8.0),
-        child: Row(
+        child: Wrap(
+          spacing: 8.0, // Spazio orizzontale tra i widget
+          runSpacing: 4.0, // Spazio verticale tra le righe
+          alignment: WrapAlignment.center,
           children: [
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 8.0),
@@ -501,7 +513,12 @@ class _TimeOfDaySelectorState extends State<TimeOfDaySelector> {
 
 class WeatherConditionsModal extends StatefulWidget {
   final ValueChanged<WeatherCondition> onValueChanged;
-  const WeatherConditionsModal({super.key, required this.onValueChanged});
+  final WeatherCondition startingCondition;
+  const WeatherConditionsModal({
+    super.key,
+    required this.onValueChanged,
+    this.startingCondition = WeatherCondition.none,
+  });
 
   @override
   State<WeatherConditionsModal> createState() => _WeatherConditionsModalState();
