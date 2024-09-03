@@ -12,6 +12,7 @@ import 'package:progetto_mobile_programming/models/objects/device.dart';
 import 'package:progetto_mobile_programming/models/objects/light.dart';
 import 'package:progetto_mobile_programming/models/objects/lock.dart';
 import 'package:progetto_mobile_programming/models/objects/thermostat.dart';
+import 'package:progetto_mobile_programming/providers/automations_provider.dart';
 
 import 'package:progetto_mobile_programming/providers/devices_provider.dart';
 
@@ -52,7 +53,8 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
       TextEditingController();
   WeatherCondition _selectedWeather = WeatherCondition.sunny;
 
-  TimeOfDay? _executionTime = const TimeOfDay(hour: 09, minute: 41);
+  String _executionTime = '2024-29-03';
+  //TimeOfDay? _executionTime = const TimeOfDay(hour: 09, minute: 41);
   final Set<DeviceAction> actions = {};
 
   void _handleWeatherConditionChanged(WeatherCondition newCondition) {
@@ -61,7 +63,7 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
     });
   }
 
-  void _handleExecutionTimeChanged(TimeOfDay time) {
+  void _handleExecutionTimeChanged(String time) {
     setState(() {
       _executionTime = time;
     });
@@ -309,6 +311,7 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
 
   @override
   Widget build(BuildContext context) {
+    Automation updatedAutomation;
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
@@ -327,7 +330,18 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
         actions: [
           // TODO: aggiunta salvataggio automazione
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              updatedAutomation = Automation(
+                  name: _automationNameController.text,
+                  executionTime: _executionTime,
+                  weather: _selectedWeather,
+                  actions: actions);
+              ref
+                  .read(automationsNotifierProvider.notifier)
+                  .addAutomation(updatedAutomation);
+
+              Navigator.pop(context);
+            },
             icon: const Icon(Icons.save),
           ),
         ],
@@ -379,12 +393,12 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
                     child: Text(
                       enumToText(_selectedWeather),
                     ),
-                  ),
+                  ), /*
                   TimeOfDaySelector(
                     onValueChanged: _handleExecutionTimeChanged,
                     timeDependencyChange: _handleTimeDependency,
                     isTimeDependent: isTimeDependent,
-                  ),
+                  ),*/
                 ],
               ),
               Expanded(

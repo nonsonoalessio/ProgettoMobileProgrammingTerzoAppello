@@ -5,13 +5,13 @@ enum WeatherCondition { none, sunny, cloudy, rainy, hot, cold, snowy }
 
 class Automation {
   String name;
-  TimeOfDay? executionTime;
+  String executionTime;
   WeatherCondition? weather;
   Set<DeviceAction> actions;
 
   Automation(
       {required this.name,
-      this.executionTime,
+      required this.executionTime,
       this.weather,
       required this.actions});
 
@@ -46,7 +46,7 @@ class Automation {
   }
   */
 
-/*
+/*  
   @override
   Map<String, Object?> toMap() {
     return {'deviceName': deviceName, 'room': room, 'isActive': isActive};
