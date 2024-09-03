@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:progetto_mobile_programming/models/functionalities/action.dart';
 import 'package:progetto_mobile_programming/models/functionalities/alarm_action.dart';
@@ -6,11 +7,13 @@ import 'package:progetto_mobile_programming/models/functionalities/automation.da
 import 'package:progetto_mobile_programming/models/functionalities/light_action.dart';
 import 'package:progetto_mobile_programming/models/functionalities/lock_action.dart';
 import 'package:progetto_mobile_programming/models/functionalities/thermostat_action.dart';
-import 'package:progetto_mobile_programming/models/objects/device.dart';
 import 'package:progetto_mobile_programming/models/objects/alarm.dart';
+import 'package:progetto_mobile_programming/models/objects/device.dart';
 import 'package:progetto_mobile_programming/models/objects/light.dart';
 import 'package:progetto_mobile_programming/models/objects/lock.dart';
 import 'package:progetto_mobile_programming/models/objects/thermostat.dart';
+import 'package:progetto_mobile_programming/providers/automations_provider.dart';
+
 import 'package:progetto_mobile_programming/providers/devices_provider.dart';
 
 String lightsActionsToStr(LightsActions action) {
@@ -37,63 +40,50 @@ String thermostatsActionsToStr(ThermostatsActions action) {
   return "Imposta temperatura desiderata";
 }
 
-String enumToText(WeatherCondition condition) {
-  if (condition == WeatherCondition.cloudy) {
-    return "☁️ Nuvoloso";
-  } else if (condition == WeatherCondition.cold) {
-    return "❄️ Freddo";
-  } else if (condition == WeatherCondition.hot) {
-    return "🔥 Caldo";
-  } else if (condition == WeatherCondition.rainy) {
-    return "🌧️ Pioggia";
-  } else if (condition == WeatherCondition.snowy) {
-    return "🌨️ Neve";
-  } else if (condition == WeatherCondition.none) {
-    return "🚫 Nessuna condizione";
-  } else {
-    return "☀️ Sole";
-  }
-}
-
 class AutomationDetailPage extends ConsumerStatefulWidget {
   final Automation automation;
-
-  const AutomationDetailPage({Key? key, required this.automation})
-      : super(key: key);
+  const AutomationDetailPage({super.key, required this.automation});
 
   @override
-  _AutomationDetailPageState createState() => _AutomationDetailPageState();
+  ConsumerState<AutomationDetailPage> createState() =>
+      AutomationDetailPageState();
 }
 
-class _AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
-  late String _name;
-  late TimeOfDay _executionTime;
-  WeatherCondition? _weatherCondition;
-  late List<DeviceAction> _actions;
-  final Map<Device, List<DeviceAction>> _selectedActions = {};
+class AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
+  final TextEditingController _automationNameController =
+      TextEditingController();
+  WeatherCondition _selectedWeather = WeatherCondition.sunny;
 
-  @override
-  void initState() {
-    super.initState();
-    _name = widget.automation.name;
-    // _executionTime = widget.automation.executionTime;
-    _weatherCondition = widget.automation.weather;
-    _actions = List.from(widget.automation.actions);
+  TimeOfDay? _executionTime = const TimeOfDay(hour: 09, minute: 41);
+  final Set<DeviceAction> actions = {};
+
+  void _handleWeatherConditionChanged(WeatherCondition newCondition) {
+    setState(() {
+      _selectedWeather = newCondition;
+    });
   }
 
-  Future<void> _updateAutomation() async {
-    // Implementa il metodo per aggiornare l'automazione nel database
+  void _handleExecutionTimeChanged(TimeOfDay time) {
+    setState(() {
+      _executionTime = time;
+    });
   }
 
-  void _selectTime(BuildContext context) async {
-    final TimeOfDay? picked = await showTimePicker(
-      context: context,
-      initialTime: _executionTime,
-    );
-    if (picked != null && picked != _executionTime) {
-      setState(() {
-        _executionTime = picked;
-      });
+  String enumToText(WeatherCondition condition) {
+    if (condition == WeatherCondition.cloudy) {
+      return "☁️ Nuvoloso";
+    } else if (condition == WeatherCondition.cold) {
+      return "❄️ Freddo";
+    } else if (condition == WeatherCondition.hot) {
+      return "🔥 Caldo";
+    } else if (condition == WeatherCondition.rainy) {
+      return "🌧️ Pioggia";
+    } else if (condition == WeatherCondition.snowy) {
+      return "🌨️ Neve";
+    } else if (condition == WeatherCondition.none) {
+      return "🚫 Nessuna condizione";
+    } else {
+      return "☀️ Sole";
     }
   }
 
@@ -106,7 +96,6 @@ class _AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
     ThermostatsActions? selectedThermostatAction;
     int? colorTemperature;
     double? desiredTemp;
-    List<DeviceAction> actions = [];
 
     showModalBottomSheet(
       context: context,
@@ -306,105 +295,456 @@ class _AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
     ).then((result) {
       if (result != null) {
         setState(() {
-          if (_selectedActions.containsKey(selectedDevice as Device)) {
-            _selectedActions[selectedDevice as Device]
-                ?.add(result as DeviceAction);
-          } else {
-            _selectedActions[selectedDevice as Device] = [
-              result as DeviceAction
-            ];
-          }
+          actions.add(result);
         });
       }
     });
   }
 
-  void _removeAction(int index) {
+  bool isTimeDependent = false;
+
+  void _handleTimeDependency(bool value) {
     setState(() {
-      _actions.removeAt(index);
+      isTimeDependent = value;
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    widget.automation.executionTime == null
+        ? isTimeDependent = true
+        : isTimeDependent = false;
+    _selectedWeather = widget.automation.weather as WeatherCondition;
+    if (isTimeDependent) {
+      _executionTime = widget.automation.executionTime as TimeOfDay;
+    }
+    actions.addAll(widget.automation.actions);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          addAction();
+        },
+        label: const Text('Aggiungi azione'),
+        icon: const Icon(Icons.add),
+      ),
       appBar: AppBar(
-        title: const Text('Modifica Automazione'),
+        title: const Text('Modifica automazione'),
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: const Icon(Icons.arrow_back_ios_new),
+        ),
         actions: [
+          // TODO: show menu cancellazione/update automazione
           IconButton(
-            icon: const Icon(Icons.save),
-            onPressed: () async {
-              await _updateAutomation();
-              Navigator.pop(context);
-            },
+            onPressed: () {},
+            icon: const Icon(Icons.more_vert),
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TextField(
-              decoration: const InputDecoration(
-                labelText: 'Nome automazione',
-                border: OutlineInputBorder(),
-              ),
-              onChanged: (value) => _name = value,
-              controller: TextEditingController(text: _name),
-            ),
-            const SizedBox(height: 8),
-            ListTile(
-              title: const Text('Orario di esecuzione'),
-              subtitle: Text(MaterialLocalizations.of(context)
-                  .formatTimeOfDay(_executionTime)),
-              trailing: const Icon(Icons.edit),
-              onTap: () => _selectTime(context),
-            ),
-            const SizedBox(height: 8),
-            DropdownButtonFormField<WeatherCondition>(
-              decoration: const InputDecoration(
-                labelText: 'Condizioni meteo',
-                border: OutlineInputBorder(),
-              ),
-              value: _weatherCondition,
-              items: WeatherCondition.values.map((WeatherCondition condition) {
-                return DropdownMenuItem<WeatherCondition>(
-                  value: condition,
-                  child: Text(condition.toString().split('.').last),
-                );
-              }).toList(),
-              onChanged: (value) {
-                setState(() {
-                  _weatherCondition = value;
-                });
-              },
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              'Azioni:',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: _actions.length,
-              itemBuilder: (context, index) {
-                final action = _actions[index];
-                return ListTile(
-                  title: Text(action.runtimeType.toString().split('.').last),
-                  subtitle: Text('Dispositivo: ${action.device.deviceName}'),
-                  leading: const Icon(Icons.device_unknown),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.delete),
-                    onPressed: () => _removeAction(index),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: TextField(
+                  controller: _automationNameController,
+                  decoration: const InputDecoration(
+                    hintText: 'Inserisci nome dell\'automazione',
+                    border: OutlineInputBorder(),
                   ),
-                );
-              },
+                ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text("L'automazione non dipende da un orario."),
+                  Switch(
+                      value: isTimeDependent,
+                      onChanged: (bool value) {
+                        setState(() {
+                          isTimeDependent = value;
+                        });
+                      })
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      showModalBottomSheet(
+                          context: context,
+                          builder: (context) => WeatherConditionsModal(
+                                onValueChanged: _handleWeatherConditionChanged,
+                              ));
+                    },
+                    child: Text(
+                      enumToText(_selectedWeather),
+                    ),
+                  ),
+                  TimeOfDaySelector(
+                    onValueChanged: _handleExecutionTimeChanged,
+                    timeDependencyChange: _handleTimeDependency,
+                    isTimeDependent: isTimeDependent,
+                  ),
+                ],
+              ),
+              Expanded(
+                child: ListOfActions(
+                  setOfActions: actions,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class TimeOfDaySelector extends StatefulWidget {
+  final ValueChanged<TimeOfDay> onValueChanged;
+  final ValueChanged<bool> timeDependencyChange;
+  final bool isTimeDependent;
+
+  const TimeOfDaySelector({
+    super.key,
+    required this.onValueChanged,
+    required this.timeDependencyChange,
+    required this.isTimeDependent,
+  });
+
+  @override
+  State<TimeOfDaySelector> createState() => _TimeOfDaySelectorState();
+}
+
+class _TimeOfDaySelectorState extends State<TimeOfDaySelector> {
+  TimeOfDay selectedTime = const TimeOfDay(hour: 09, minute: 41);
+
+  Future<void> _selectTime(BuildContext context) async {
+    final TimeOfDay? timeOfDay = await showTimePicker(
+      context: context,
+      initialTime: selectedTime,
+      builder: (BuildContext context, Widget? child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+          child: child!,
+        );
+      },
+    );
+
+    if (timeOfDay != null) {
+      setState(() {
+        selectedTime = timeOfDay;
+        widget.onValueChanged(selectedTime);
+        widget.timeDependencyChange(false);
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () {
+        _selectTime(context);
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        child: Row(
+          children: [
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 8.0),
+              child: Icon(Icons.access_time),
+            ),
+            Text(
+              !widget.isTimeDependent
+                  ? selectedTime.format(context)
+                  : 'Nessun orario selezionato',
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class WeatherConditionsModal extends StatefulWidget {
+  final ValueChanged<WeatherCondition> onValueChanged;
+  const WeatherConditionsModal({super.key, required this.onValueChanged});
+
+  @override
+  State<WeatherConditionsModal> createState() => _WeatherConditionsModalState();
+}
+
+class _WeatherConditionsModalState extends State<WeatherConditionsModal> {
+  String enumToText(WeatherCondition condition) {
+    if (condition == WeatherCondition.cloudy) {
+      return "☁️ Nuvoloso";
+    } else if (condition == WeatherCondition.cold) {
+      return "❄️ Freddo";
+    } else if (condition == WeatherCondition.hot) {
+      return "🔥 Caldo";
+    } else if (condition == WeatherCondition.rainy) {
+      return "🌧️ Pioggia";
+    } else if (condition == WeatherCondition.snowy) {
+      return "🌨️ Neve";
+    } else if (condition == WeatherCondition.none) {
+      return "🚫 Nessuna condizione";
+    } else {
+      return "☀️ Sole";
+    }
+  }
+
+  WeatherCondition? _selectedCondition = WeatherCondition.sunny;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      children: WeatherCondition.values.map((WeatherCondition condition) {
+        return RadioListTile<WeatherCondition>(
+          title: Text(enumToText(condition)),
+          value: condition,
+          groupValue: _selectedCondition,
+          onChanged: (WeatherCondition? value) {
+            setState(() {
+              _selectedCondition = value;
+              widget.onValueChanged(value as WeatherCondition);
+            });
+          },
+        );
+      }).toList(),
+    );
+  }
+}
+
+class ListOfActions extends StatefulWidget {
+  final Set<DeviceAction> setOfActions;
+  const ListOfActions({super.key, required this.setOfActions});
+
+  @override
+  State<ListOfActions> createState() => _ListOfActionsState();
+}
+
+class _ListOfActionsState extends State<ListOfActions> {
+  @override
+  Widget build(BuildContext context) {
+    var actions =
+        widget.setOfActions.toList(); // per non riscrivere "widget." ogni volta
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 16.0),
+      child: Column(
+        children: [
+          Text(
+            "Passi dell'automazione",
+            style: Theme.of(context).textTheme.displaySmall,
+          ),
+          Expanded(
+            child: actions.isNotEmpty
+                ? ListView.builder(
+                    itemCount: actions.length,
+                    itemBuilder: (context, index) => DeviceActionsDetail(
+                      device: actions[index].device,
+                      actions: actions,
+                    ),
+                  )
+                : const Center(
+                    child: Text('Nessuna azione da compiere. Aggiungine una!'),
+                  ),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class DeviceActionsDetail extends StatefulWidget {
+  final Device device;
+  final List<DeviceAction> actions;
+  const DeviceActionsDetail({
+    super.key,
+    required this.device,
+    required this.actions,
+  });
+
+  @override
+  State<DeviceActionsDetail> createState() => _DeviceActionsDetailState();
+}
+
+class _DeviceActionsDetailState extends State<DeviceActionsDetail> {
+  @override
+  Widget build(BuildContext context) {
+    Icon icon;
+    List<DeviceAction> actions = widget.actions
+        .where((action) => action.device == widget.device)
+        .toList();
+
+    if (widget.device is Light) {
+      icon = const Icon(
+        Icons.lightbulb,
+        size: 24.0,
+      );
+    } else if (widget.device is Lock) {
+      icon = const Icon(
+        Icons.lock,
+        size: 24.0,
+      );
+    } else if (widget.device is Alarm) {
+      icon = const Icon(
+        Icons.doorbell,
+        size: 24.0,
+      );
+    } else {
+      icon = const Icon(
+        Icons.thermostat,
+        size: 24.0,
+      );
+    }
+
+    List<Text> actionTexts = [];
+    for (DeviceAction a in actions) {
+      String str = "";
+      if (a is LockAction) {
+        str = locksActionsToStr(a.action);
+      } else if (a is AlarmAction) {
+        str = alarmsActionsToStr(a.action);
+      } else if (a is LightAction) {
+        str =
+            '${lightsActionsToStr(a.action)} a ${a.colorTemperature.toString()} K';
+      } else {
+        str =
+            '${thermostatsActionsToStr((a as ThermostatAction).action)} a ${a.desiredTemp.toString()} °C';
+      }
+      actionTexts.add(Text(
+        "- $str",
+        style: TextStyle(
+          color: Colors.grey[1000000],
+        ),
+      ));
+    }
+
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8.0),
+            child: Row(
+              children: [
+                icon,
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Text(
+                    widget.device.deviceName,
+                    style: (const TextStyle(
+                      fontWeight: FontWeight.bold,
+                    )),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          ...actionTexts,
+          const Divider(),
+        ],
+      ),
+    );
+  }
+}
+
+class DeviceSelectionModal extends StatefulWidget {
+  const DeviceSelectionModal({super.key});
+
+  @override
+  State<DeviceSelectionModal> createState() => _DeviceSelectionModalState();
+}
+
+class _DeviceSelectionModalState extends State<DeviceSelectionModal> {
+  Device? _selectedDevice;
+
+  void _handleSelectedDevice(Device d) {
+    setState(() {
+      _selectedDevice = d;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: SizedBox(
+          width: double.infinity,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => DevicesListInModal(
+                      onDeviceSelected: _handleSelectedDevice,
+                    ),
+                  );
+                },
+                child: Text(_selectedDevice == null
+                    ? "Scegli dispositivo"
+                    : (_selectedDevice as Device).deviceName),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class DevicesListInModal extends ConsumerStatefulWidget {
+  final ValueChanged<Device> onDeviceSelected;
+
+  const DevicesListInModal({
+    super.key,
+    required this.onDeviceSelected,
+  });
+
+  @override
+  ConsumerState<DevicesListInModal> createState() => _DevicesListInModalState();
+}
+
+class _DevicesListInModalState extends ConsumerState<DevicesListInModal> {
+  Device? selectedOption;
+
+  @override
+  Widget build(BuildContext context) {
+    List<Device> options = ref.watch(deviceNotifierProvider);
+    return Dialog(
+      child: ListView(
+        children: options.map((option) {
+          return RadioListTile<Device>(
+            title: Text(option.deviceName),
+            value: option,
+            groupValue: selectedOption,
+            onChanged: (Device? value) {
+              setState(() {
+                selectedOption = value;
+                widget.onDeviceSelected(value as Device);
+                Navigator.pop(context);
+              });
+            },
+          );
+        }).toList(),
       ),
     );
   }
