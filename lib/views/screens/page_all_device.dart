@@ -7,18 +7,16 @@ import 'package:progetto_mobile_programming/models/objects/light.dart';
 import 'package:progetto_mobile_programming/models/objects/lock.dart';
 import 'package:progetto_mobile_programming/models/objects/thermostat.dart';
 import 'package:progetto_mobile_programming/providers/devices_provider.dart';
-import 'package:progetto_mobile_programming/views/screens/page_device_detail.dart'; // Import your detail page
+import 'package:progetto_mobile_programming/views/screens/page_device_detail.dart'; 
 
 class AllDevicePage extends ConsumerWidget {
   const AllDevicePage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Retrieve app colors from the theme to maintain consistency
+    
     final primaryColor = Theme.of(context).primaryColor;
-    final accentColor = Theme.of(context).colorScheme.secondary;
 
-    // Watch the deviceNotifierProvider to get the list of devices
     final List<Device> devices = ref.watch(deviceNotifierProvider);
 
     return Scaffold(
@@ -29,7 +27,7 @@ class AllDevicePage extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Title with enhanced styling
+              
               Text(
                 'Tutti i dispositivi',
                 style: Theme.of(context).textTheme.headlineMedium!.copyWith(
@@ -39,21 +37,21 @@ class AllDevicePage extends ConsumerWidget {
               ),
               const SizedBox(height: 20),
 
-              // Grid layout for displaying all devices
+              
               Expanded(
                 child: GridView.builder(
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
                     crossAxisSpacing: 12.0,
                     mainAxisSpacing: 12.0,
-                    childAspectRatio: 1.0, // Ensures items are square
+                    childAspectRatio: 1.0, 
                   ),
                   itemCount: devices.length,
                   itemBuilder: (context, index) {
                     final device = devices[index];
                     return GestureDetector(
                       onTap: () {
-                        // Navigate to the detail page of the device
+                        
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -74,20 +72,18 @@ class AllDevicePage extends ConsumerWidget {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(
-                                _getDeviceIcon(
-                                    device), // Dynamic icon based on device type
+                                _getDeviceIcon(device), 
                                 size: 40,
                                 color: primaryColor,
                               ),
                               const SizedBox(height: 10),
                               Text(
-                                device
-                                    .deviceName, // Assume each device has a 'name' property
+                                device.deviceName, 
                                 style: Theme.of(context)
                                     .textTheme
                                     .bodyMedium!
                                     .copyWith(
-                                      color: accentColor,
+                                      color: Colors.black,
                                       fontWeight: FontWeight.w600,
                                     ),
                                 textAlign: TextAlign.center,
@@ -115,10 +111,10 @@ class AllDevicePage extends ConsumerWidget {
     } else if (device is Alarm) {
       return Icons.alarm;
     } else if (device is Light) {
-      return Icons.lightbulb; // Icon for light
+      return Icons.lightbulb; 
     } else if (device is Thermostat) {
-      return Icons.thermostat; // Icon for thermostat
+      return Icons.thermostat; 
     }
-    return Icons.device_unknown; // Fallback icon
+    return Icons.device_unknown; 
   }
 }
