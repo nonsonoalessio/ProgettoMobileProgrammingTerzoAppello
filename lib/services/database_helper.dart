@@ -727,13 +727,17 @@ class DatabaseHelper {
   Future<void> updateAutomation(Automation automation) async {
     final db = await database;
 
+    final String automationTimeStr =
+        '${(automation.executionTime as TimeOfDay).hour.toString().padLeft(2, '0')}:${(automation.executionTime as TimeOfDay).minute.toString().padLeft(2, '0')}';
+
+
     await db.transaction((txn) async {
       // 1. Aggiorniamo i dati nella tabella automation
       await txn.update(
         'automation',
         {
           'name': automation.name,
-          'executionTime': automation.executionTime.toString(),
+          'executionTime': automationTimeStr,
           'weather': automation.weather.toString(),
         },
         where: 'name = ?',
