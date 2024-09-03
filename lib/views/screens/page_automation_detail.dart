@@ -348,6 +348,7 @@ class AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
         leading: IconButton(
           onPressed: () {
             Navigator.pop(context);
+            Navigator.pop(context);
           },
           icon: const Icon(Icons.arrow_back_ios_new),
         ),
