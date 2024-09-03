@@ -380,9 +380,10 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
                 ],
               ),
               Wrap(
+                runAlignment: WrapAlignment.center,
                 spacing: 8.0, // Spazio orizzontale tra i widget
                 runSpacing: 4.0, // Spazio verticale tra le righe
-                alignment: WrapAlignment.center,
+
                 children: [
                   ElevatedButton(
                     onPressed: () {
@@ -395,12 +396,14 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
                     child: Text(
                       enumToText(_selectedWeather),
                     ),
-                  ), /*
-                  TimeOfDaySelector(
-                    onValueChanged: _handleExecutionTimeChanged,
-                    timeDependencyChange: _handleTimeDependency,
-                    isTimeDependent: isTimeDependent,
-                  ),*/
+                  ),
+                  IntrinsicWidth(
+                    child: TimeOfDaySelector(
+                      onValueChanged: _handleExecutionTimeChanged,
+                      timeDependencyChange: _handleTimeDependency,
+                      isTimeDependent: isTimeDependent,
+                    ),
+                  ),
                 ],
               ),
               Expanded(

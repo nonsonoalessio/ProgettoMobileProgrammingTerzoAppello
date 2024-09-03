@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:progetto_mobile_programming/models/functionalities/action.dart';
@@ -60,7 +61,8 @@ class AutomationDetailPage extends ConsumerStatefulWidget {
 }
 
 class AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
-  final TextEditingController _automationNameController = TextEditingController();
+  final TextEditingController _automationNameController =
+      TextEditingController();
 
   WeatherCondition _selectedWeather = WeatherCondition.sunny;
   TimeOfDay? _executionTime;
@@ -325,22 +327,10 @@ class AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
   @override
   void initState() {
     super.initState();
-    
     _automationNameController.text = widget.automation.name ?? '';
-
-    // Set initial weather condition
     _selectedWeather = widget.automation.weather ?? WeatherCondition.none;
-
-    // Check if the automation is time-dependent
-    if (widget.automation.executionTime != null) {
-      isTimeDependent = true;
-      _executionTime = widget.automation.executionTime as TimeOfDay;
-    } else {
-      isTimeDependent = false;
-      _executionTime = const TimeOfDay(hour: 09, minute: 41);
-    }
-
-    // Initialize actions
+    _executionTime = widget.automation.executionTime ??
+        const TimeOfDay(hour: 09, minute: 41);
     actions.addAll(widget.automation.actions);
   }
 
@@ -367,11 +357,14 @@ class AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
               if (result == 'modifica') {
                 Automation updatedAutomation = Automation(
                   name: _automationNameController.text,
-                  executionTime: isTimeDependent ? _executionTime.toString() : "L'automazione non dipende dal tempo",
+                  executionTime: isTimeDependent
+                      ? _executionTime
+                      : const TimeOfDay(hour: 00, minute: 00),
                   actions: actions,
                 );
-                ref.read(automationsNotifierProvider.notifier)
-                   .updateAutomation(updatedAutomation);
+                ref
+                    .read(automationsNotifierProvider.notifier)
+                    .updateAutomation(updatedAutomation);
               } else if (result == 'cancella') {
                 // la logica per cancellare l'automazione
               }
@@ -416,8 +409,11 @@ class AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
                   ),
                 ],
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              Wrap(
+                spacing: 8.0, // Spazio orizzontale tra i widget
+                runSpacing: 4.0, // Spazio verticale tra le righe
+                runAlignment: WrapAlignment.center,
+
                 children: [
                   ElevatedButton(
                     onPressed: () {
@@ -432,13 +428,15 @@ class AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
                       enumToText(_selectedWeather),
                     ),
                   ),
-                  TimeOfDaySelector(
-                    onValueChanged: _handleExecutionTimeChanged,
-                    timeDependencyChange: _handleTimeDependency,
-                    isTimeDependent: isTimeDependent,
-                    isTimeDependent
-                        ? widget.automation.executionTime
-                        : TimeOfDay(hour: 00, minute: 00),
+                  IntrinsicWidth(
+                    child: TimeOfDaySelector(
+                      onValueChanged: _handleExecutionTimeChanged,
+                      timeDependencyChange: _handleTimeDependency,
+                      isTimeDependent: isTimeDependent,
+                      startingTime: isTimeDependent
+                          ? widget.automation.executionTime as TimeOfDay
+                          : const TimeOfDay(hour: 00, minute: 00),
+                    ),
                   ),
                 ],
               ),
@@ -454,7 +452,6 @@ class AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
     );
   }
 }
-
 
 class TimeOfDaySelector extends StatefulWidget {
   final ValueChanged<TimeOfDay> onValueChanged;
