@@ -55,7 +55,7 @@ class AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
   WeatherCondition _selectedWeather = WeatherCondition.sunny;
 
   TimeOfDay? _executionTime = const TimeOfDay(hour: 09, minute: 41);
-  final Set<DeviceAction> actions = {};
+  Set<DeviceAction> actions = {};
 
   void _handleWeatherConditionChanged(WeatherCondition newCondition) {
     setState(() {
@@ -96,6 +96,10 @@ class AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
     ThermostatsActions? selectedThermostatAction;
     int? colorTemperature;
     double? desiredTemp;
+
+    actions.addAll(widget.automation.actions);
+    print(actions);
+    print("cacca");
 
     showModalBottomSheet(
       context: context,

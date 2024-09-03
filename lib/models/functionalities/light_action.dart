@@ -57,7 +57,7 @@ class LightAction extends DeviceAction {
         }else{
 
           return {
-          'device': device.id,
+          'idDevice': device.id,
           'type': 'light',
           'azione': action.toString(),
           };

@@ -91,7 +91,7 @@ class DatabaseHelper {
         await db.execute("""
           CREATE TABLE IF NOT EXISTS automation (
               name TEXT PRIMARY KEY,
-              executionTime TIME,
+              executionTime TEXT,
               weather TEXT NOT NULL
           )
           """);
@@ -231,62 +231,58 @@ class DatabaseHelper {
     );
   }
 
-  Future<void> _fetchActions(String automationName, actions) async {
+  Future<void> _fetchActions(
+      String automationName, List<DeviceAction> actions) async {
     final db = await database;
 
-    final List<Map<String, dynamic>> mapsOfActions = await db.query('actions');
+    final List<Map<String, dynamic>> mapsOfActions = await db.query('actions',
+        where: 'automationName = ?', whereArgs: [automationName]);
 
-/*
-- idDevice (id dispositivo)
-- automationName (nome automazione)
-- azione
-- temperatura
-- onOff
- */
-    actions = List.generate(mapsOfActions.length, (i) {
-      Device d = devices
-          .where((d) => d.id == mapsOfActions[i]['idDevice'])
-          .toList()
-          .first;
-      if (mapsOfActions[i]['type'] == 'light') {
+    for (var map in mapsOfActions) {
+      Device d = devices.firstWhere((d) => d.id == map['idDevice']);
+
+      DeviceAction action;
+      if (map['type'] == 'light') {
         int colorTemp = 0;
-        LightsActions action;
+        LightsActions actionType;
 
-        if (mapsOfActions[i]['azione'] == 'setColorTemp') {
-          action = LightsActions.setColorTemp;
-          colorTemp = mapsOfActions[i]['temperatura'] as int;
-        } else if (mapsOfActions[i]['azione'] == 'turnOn') {
-          action = LightsActions.turnOn;
+        if (map['azione'] == 'setColorTemp') {
+          actionType = LightsActions.setColorTemp;
+          colorTemp = map['temperatura'] as int;
+        } else if (map['azione'] == 'turnOn') {
+          actionType = LightsActions.turnOn;
         } else {
-          action = LightsActions.turnOff;
+          actionType = LightsActions.turnOff;
         }
-        colorTemp == 0
-            ? LightAction(device: d, action: action)
+        action = colorTemp == 0
+            ? LightAction(device: d, action: actionType)
             : LightAction(
-                device: d, action: action, colorTemperature: colorTemp);
-      } else if (mapsOfActions[i]['type'] == 'alarm') {
-        AlarmsActions action;
-        if (mapsOfActions[i]['azione'] == 'turnOn') {
-          action = AlarmsActions.turnOn;
-        } else {
-          action = AlarmsActions.turnOff;
-        }
-        return AlarmAction(device: d, action: action);
-      } else if (mapsOfActions[i]['type'] == 'lock') {
-        LocksActions action;
-        if (mapsOfActions[i]['azione'] == 'activate') {
-          action = LocksActions.activate;
-        } else {
-          action = LocksActions.deactivate;
-        }
-        return LockAction(device: d, action: action);
+                device: d, action: actionType, colorTemperature: colorTemp);
+      } else if (map['type'] == 'alarm') {
+        AlarmsActions actionType;
+        actionType = map['azione'] == 'turnOn'
+            ? AlarmsActions.turnOn
+            : AlarmsActions.turnOff;
+
+        action = AlarmAction(device: d, action: actionType);
+      } else if (map['type'] == 'lock') {
+        LocksActions actionType;
+        actionType = map['azione'] == 'activate'
+            ? LocksActions.activate
+            : LocksActions.deactivate;
+
+        action = LockAction(device: d, action: actionType);
       } else {
-        return ThermostatAction(
-            device: d,
-            action: ThermostatsActions.setDesiredTemperature,
-            desiredTemp: mapsOfActions[i]['temperatura'] as double);
+        // Presumibilmente, 'thermostat'
+        action = ThermostatAction(
+          device: d,
+          action: ThermostatsActions.setDesiredTemperature,
+          desiredTemp: map['temperatura'] as double,
+        );
       }
-    });
+
+      actions.add(action);
+    }
   }
 
   Set<DeviceAction> _getActions(String automationName) {
@@ -301,18 +297,43 @@ class DatabaseHelper {
     final List<Map<String, dynamic>> mapsOfAutomations =
         await db.query('automation');
 
-    automations = List.generate(mapsOfAutomations.length, (i) {
-      return Automation(
-        name: mapsOfAutomations[i]['name'],
-        // ignore: prefer_interpolation_to_compose_strings
-        executionTime: TimeOfDay.fromDateTime(DateTime.parse(
-            // ignore: prefer_interpolation_to_compose_strings
-            '1970-01-01 ' + mapsOfAutomations[i]['executionTime'])),
-        weather: mapsOfAutomations[i]['weather'],
-        actions: _getActions(mapsOfAutomations[i]['name']),
-      );
-    });
-    automations = [...automations];
+    automations.clear(); // Assicurati di svuotare prima la lista
+
+    for (var map in mapsOfAutomations) {
+      String name = map['name'];
+      List<DeviceAction> actions = [];
+
+      await _fetchActions(
+          name, actions); // Assicurati di attendere il completamento
+
+      automations.add(Automation(
+        name: name,
+        executionTime: map['executionTime'],
+        weather: _getWeatherCondition(map['weather']),
+        actions: actions.toSet(),
+      ));
+    }
+  }
+
+  WeatherCondition _getWeatherCondition(String str) {
+    WeatherCondition condition = WeatherCondition.none;
+
+    if (str == 'sunny') {
+    } else if (str == 'cloudy') {
+      condition = WeatherCondition.cloudy;
+    } else if (str == 'cold') {
+      condition = WeatherCondition.cold;
+    } else if (str == 'hot') {
+      condition = WeatherCondition.hot;
+    } else if (str == 'rainy') {
+      condition = WeatherCondition.rainy;
+    } else if (str == 'snowy') {
+      condition = WeatherCondition.snowy;
+    } else {
+      condition = WeatherCondition.none;
+    }
+
+    return condition;
   }
 
   Future<void> fetchNotifications() async {
@@ -525,8 +546,8 @@ class DatabaseHelper {
         'automation',
         {
           'name': automation.name,
-          'executionTime': automation.executionTime,
-          'weather': automation.weather,
+          'executionTime': automation.executionTime.toString(),
+          'weather': automation.weather.toString(),
         },
       );
 

@@ -36,7 +36,7 @@ class ThermostatAction extends DeviceAction {
   Map<String, dynamic> toMap() {
     if (desiredTemp != null) {
       return {
-        'device': device.id,
+        'idDevice': device.id,
         'type': 'thermostats',
         'azione': action.toString(),
         'temperatura': desiredTemp

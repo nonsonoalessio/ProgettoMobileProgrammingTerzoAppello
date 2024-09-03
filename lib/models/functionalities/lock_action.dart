@@ -34,7 +34,7 @@ class LockAction extends DeviceAction {
   @override
   Map<String, dynamic> toMap() {
     return {
-      'device': device.id,
+      'idDevice': device.id,
       'type': 'lock',
       'azione': action.toString(),
     };
