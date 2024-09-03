@@ -12,7 +12,6 @@ import 'package:progetto_mobile_programming/models/objects/device.dart';
 import 'package:progetto_mobile_programming/models/objects/light.dart';
 import 'package:progetto_mobile_programming/models/objects/lock.dart';
 import 'package:progetto_mobile_programming/models/objects/thermostat.dart';
-import 'package:progetto_mobile_programming/providers/automations_provider.dart';
 
 import 'package:progetto_mobile_programming/providers/devices_provider.dart';
 
@@ -478,7 +477,10 @@ class _TimeOfDaySelectorState extends State<TimeOfDaySelector> {
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8.0),
-        child: Row(
+        child: Wrap(
+          spacing: 8.0, // Spazio orizzontale tra i widget
+          runSpacing: 4.0, // Spazio verticale tra le righe
+          alignment: WrapAlignment.center,
           children: [
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 8.0),

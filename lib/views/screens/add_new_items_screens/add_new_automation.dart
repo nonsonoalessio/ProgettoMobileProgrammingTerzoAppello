@@ -379,8 +379,10 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
                       })
                 ],
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              Wrap(
+                spacing: 8.0, // Spazio orizzontale tra i widget
+                runSpacing: 4.0, // Spazio verticale tra le righe
+                alignment: WrapAlignment.center,
                 children: [
                   ElevatedButton(
                     onPressed: () {
