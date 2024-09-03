@@ -88,7 +88,8 @@ class HomepageState extends ConsumerState<Homepage> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const NotificationPage()),
+                MaterialPageRoute(
+                    builder: (context) => const NotificationPage()),
               );
             },
             icon: const Icon(Icons.notifications),
@@ -145,7 +146,8 @@ class HomepageState extends ConsumerState<Homepage> {
                         isSelected: _selectedType == 'Lock',
                         onTap: () {
                           setState(() {
-                            _selectedType = _selectedType == 'Lock' ? 'All' : 'Lock';
+                            _selectedType =
+                                _selectedType == 'Lock' ? 'All' : 'Lock';
                           });
                         },
                       ),
@@ -154,7 +156,8 @@ class HomepageState extends ConsumerState<Homepage> {
                         isSelected: _selectedType == 'Alarm',
                         onTap: () {
                           setState(() {
-                            _selectedType = _selectedType == 'Alarm' ? 'All' : 'Alarm';
+                            _selectedType =
+                                _selectedType == 'Alarm' ? 'All' : 'Alarm';
                           });
                         },
                       ),
@@ -163,7 +166,9 @@ class HomepageState extends ConsumerState<Homepage> {
                         isSelected: _selectedType == 'Thermostat',
                         onTap: () {
                           setState(() {
-                            _selectedType = _selectedType == 'Thermostat' ? 'All' : 'Thermostat';
+                            _selectedType = _selectedType == 'Thermostat'
+                                ? 'All'
+                                : 'Thermostat';
                           });
                         },
                       ),
@@ -172,7 +177,8 @@ class HomepageState extends ConsumerState<Homepage> {
                         isSelected: _selectedType == 'Light',
                         onTap: () {
                           setState(() {
-                            _selectedType = _selectedType == 'Light' ? 'All' : 'Light';
+                            _selectedType =
+                                _selectedType == 'Light' ? 'All' : 'Light';
                           });
                         },
                       ),
@@ -181,7 +187,8 @@ class HomepageState extends ConsumerState<Homepage> {
                         isSelected: _selectedType == 'Camera',
                         onTap: () {
                           setState(() {
-                            _selectedType = _selectedType == 'Camera' ? 'All' : 'Camera';
+                            _selectedType =
+                                _selectedType == 'Camera' ? 'All' : 'Camera';
                           });
                         },
                       ),
@@ -230,7 +237,7 @@ class ListGenerator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     late Icon deviceIcon;
-    
+
     return Padding(
       padding: const EdgeInsets.only(top: 8.0, left: 8.0),
       child: Column(
@@ -245,7 +252,7 @@ class ListGenerator extends StatelessWidget {
               ),
               IconButton(
                 icon: Icon(Icons.delete, color: Colors.red),
-                onPressed: onRemoveRoom,
+                onPressed: () => _showDeleteConfirmationDialog(context),
               ),
             ],
           ),
@@ -271,7 +278,8 @@ class ListGenerator extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => DeviceDetailPage(device: devices[index]),
+                          builder: (context) =>
+                              DeviceDetailPage(device: devices[index]),
                         ),
                       );
                     },
@@ -303,6 +311,34 @@ class ListGenerator extends StatelessWidget {
           const Divider(),
         ],
       ),
+    );
+  }
+
+  void _showDeleteConfirmationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Conferma eliminazione'),
+          content: Text(
+              'Tutti i dispositivi registrati alla stanza verranno eliminati. Sei sicuro di voler eliminare questa stanza?'),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Annulla'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Chiude il dialogo
+              },
+            ),
+            TextButton(
+              child: Text('Elimina'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Chiude il dialogo
+                onRemoveRoom(); // Chiama la funzione di eliminazione della stanza
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }
@@ -345,7 +381,7 @@ class AvatarForDebugMenu extends StatefulWidget {
 
 class _AvatarForDebugMenuState extends State<AvatarForDebugMenu> {
   int _clicks = 0;
-  
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -382,9 +418,11 @@ class _AvatarForDebugMenuState extends State<AvatarForDebugMenu> {
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => const GraphPage()));
+                                        builder: (context) =>
+                                            const GraphPage()));
                               },
-                              child: const Text("Componente dummy dei grafici")),
+                              child:
+                                  const Text("Componente dummy dei grafici")),
                           const Divider(),
                           const NotificationButton(),
                         ],

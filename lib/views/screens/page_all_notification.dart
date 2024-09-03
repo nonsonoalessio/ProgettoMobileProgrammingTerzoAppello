@@ -52,27 +52,31 @@ class _NotificationPageState extends ConsumerState<NotificationPage> {
         ),
       ),
       body: SafeArea(
-        child: ListView.builder(
-          itemCount: notificationsList.length,
-          itemBuilder: (context, index) {
-            final notification = notificationsList[index];
-            return GestureDetector(
-              onTap: () {
-                if (!notification.isRead) {
-                  _markAsRead(notification);
-                  ref
-                      .read(notificationsNotifierProvider.notifier)
-                      .markNotificationAsRead(notification);
-                }
-                _navigateToDeviceDetail(notification.device);
-              },
-              child: NotificationCard(
-                notification: notification,
-                onDelete: () => _deleteNotification(notification),
+        child: ref.watch(notificationsNotifierProvider).isEmpty
+            ? const Center(
+                child: Text('Nessuna notifica.'),
+              )
+            : ListView.builder(
+                itemCount: notificationsList.length,
+                itemBuilder: (context, index) {
+                  final notification = notificationsList[index];
+                  return GestureDetector(
+                    onTap: () {
+                      if (!notification.isRead) {
+                        _markAsRead(notification);
+                        ref
+                            .read(notificationsNotifierProvider.notifier)
+                            .markNotificationAsRead(notification);
+                      }
+                      _navigateToDeviceDetail(notification.device);
+                    },
+                    child: NotificationCard(
+                      notification: notification,
+                      onDelete: () => _deleteNotification(notification),
+                    ),
+                  );
+                },
               ),
-            );
-          },
-        ),
       ),
     );
   }
@@ -158,13 +162,15 @@ class _NotificationCardState extends State<NotificationCard> {
                 ),
                 const SizedBox(height: 4.0),
                 Text(
-                  "Category: ${widget.notification.categories.join(', ')}",
+                  widget.notification.categories.isNotEmpty
+                      ? "Categoria: ${widget.notification.categories.join(', ')}."
+                      : "Nessuna categoria.",
                   style: TextStyle(
                     fontSize: 14.0,
                     color:
                         widget.notification.isRead ? Colors.grey : Colors.black,
                   ),
-                ),
+                )
               ],
             ),
           ),
