@@ -92,7 +92,7 @@ class DatabaseHelper {
           CREATE TABLE IF NOT EXISTS automation (
               name TEXT PRIMARY KEY,
               executionTime TIME,
-              weather TEXT
+              weather TEXT NOT NULL
           )
           """);
 
@@ -195,9 +195,9 @@ class DatabaseHelper {
           """);
 
         await db.execute("""
-          INSERT INTO automation (name, executionTime)
+          INSERT INTO automation (name, executionTime, weather)
            VALUES
-            ('Automazione serale', '18:00:00')
+            ('Automazione serale', '18:00:00', 'sunny')
           """);
 
         await db.execute("""
