@@ -518,15 +518,29 @@ class DatabaseHelper {
 
   Future<void> insertAutomation(Automation automation) async {
     final db = await database;
-    await db.insert(
-      'automation',
-      {
-        'name': automation.name,
-        'executionTime': automation.executionTime,
-        'weather': automation.weather,
-      },
-    );
-    //TODO inserimento anche nella tabella ACTIONS
+
+    await db.transaction((txn) async {
+      // Inserisci i dati nella tabella automation
+      await txn.insert(
+        'automation',
+        {
+          'name': automation.name,
+          'executionTime': automation.executionTime,
+          'weather': automation.weather,
+        },
+      );
+
+      // Inserisci le azioni nella tabella actions
+      for (final action in automation.actions) {
+        Map<String, dynamic> map = action.toMap();
+        map['automationName'] = automation.name;
+        await txn.insert(
+          'actions',
+          map,
+        );
+      }
+    });
+    //TODO controllare funzionamento
   }
 
   Future<void> insertNotification(DeviceNotification notification) async {

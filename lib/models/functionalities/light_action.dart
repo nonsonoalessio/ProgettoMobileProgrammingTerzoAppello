@@ -44,11 +44,25 @@ class LightAction extends DeviceAction {
 
   @override
   Map<String, dynamic> toMap() {
-    return {
-      'device': device.toMap(),
-      'action': action.toString(),
-      'colorTemperature': colorTemperature,
-    };
+
+    if (colorTemperature != null)
+        {
+          return{
+          'device': device.id,
+          'type': 'light',
+          'azione': action.toString(),
+          'temperatura': colorTemperature
+          };
+
+        }else{
+
+          return {
+          'device': device.id,
+          'type': 'light',
+          'azione': action.toString(),
+          };
+
+        }
   }
 
   @override

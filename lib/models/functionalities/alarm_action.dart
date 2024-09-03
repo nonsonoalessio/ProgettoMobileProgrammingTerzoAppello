@@ -32,7 +32,11 @@ class AlarmAction extends DeviceAction {
   }
 
   @override
-  noSuchMethod(Invocation invocation) {
-    return super.noSuchMethod(invocation);
+  Map<String, dynamic> toMap() {
+    return {
+      'device': device.id,
+      'type': 'alarm',
+      'azione': action.toString(),
+    };
   }
 }

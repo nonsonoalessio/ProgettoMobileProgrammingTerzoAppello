@@ -33,7 +33,20 @@ class ThermostatAction extends DeviceAction {
   }
 
   @override
-  noSuchMethod(Invocation invocation) {
-    return super.noSuchMethod(invocation);
+  Map<String, dynamic> toMap() {
+    if (desiredTemp != null) {
+      return {
+        'device': device.id,
+        'type': 'thermostats',
+        'azione': action.toString(),
+        'temperatura': desiredTemp
+      };
+    } else {
+      return {
+        'device': device.id,
+        'type': 'thermostats',
+        'azione': action.toString(),
+      };
+    }
   }
 }

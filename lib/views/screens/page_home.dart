@@ -251,7 +251,7 @@ class ListGenerator extends StatelessWidget {
                 style: Theme.of(context).textTheme.displayMedium,
               ),
               IconButton(
-                icon: Icon(Icons.delete, color: Colors.red),
+                icon: const Icon(Icons.delete, color: Colors.red),
                 onPressed: () => _showDeleteConfirmationDialog(context),
               ),
             ],
@@ -319,18 +319,18 @@ class ListGenerator extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Conferma eliminazione'),
-          content: Text(
+          title: const Text('Conferma eliminazione'),
+          content: const Text(
               'Tutti i dispositivi registrati alla stanza verranno eliminati. Sei sicuro di voler eliminare questa stanza?'),
           actions: <Widget>[
             TextButton(
-              child: Text('Annulla'),
+              child: const Text('Annulla'),
               onPressed: () {
                 Navigator.of(context).pop(); // Chiude il dialogo
               },
             ),
             TextButton(
-              child: Text('Elimina'),
+              child: const Text('Elimina'),
               onPressed: () {
                 Navigator.of(context).pop(); // Chiude il dialogo
                 onRemoveRoom(); // Chiama la funzione di eliminazione della stanza
