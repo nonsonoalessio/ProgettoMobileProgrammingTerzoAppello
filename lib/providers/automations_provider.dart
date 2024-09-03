@@ -42,11 +42,13 @@ class AutomationsNotifier extends _$AutomationsNotifier {
   void addAutomation(Automation automation) {
     _addAutomationToDb(automation);
     _initStatus();
+    //state = List.from(automations);
   }
 
   void deleteAutomation(Automation automation) {
     _removeAutomationFromDb(automation);
     _initStatus();
+    //state = List.from(automations);
   }
 
   void updateAutomation(Automation automation) {
