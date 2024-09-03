@@ -53,7 +53,7 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
   WeatherCondition _selectedWeather = WeatherCondition.sunny;
 
   TimeOfDay? _executionTime = const TimeOfDay(hour: 09, minute: 41);
-  final Map<Device, List<DeviceAction>> _selectedActions = {};
+  final Set<DeviceAction> actions = {};
 
   void _handleWeatherConditionChanged(WeatherCondition newCondition) {
     setState(() {
@@ -65,11 +65,6 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
     setState(() {
       _executionTime = time;
     });
-  }
-
-  bool _checkFields() {
-    return _automationNameController.text.isNotEmpty &&
-        _selectedActions.isNotEmpty;
   }
 
   String enumToText(WeatherCondition condition) {
@@ -99,7 +94,6 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
     ThermostatsActions? selectedThermostatAction;
     int? colorTemperature;
     double? desiredTemp;
-    List<DeviceAction> actions = [];
 
     showModalBottomSheet(
       context: context,
@@ -299,14 +293,7 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
     ).then((result) {
       if (result != null) {
         setState(() {
-          if (_selectedActions.containsKey(selectedDevice as Device)) {
-            _selectedActions[selectedDevice as Device]
-                ?.add(result as DeviceAction);
-          } else {
-            _selectedActions[selectedDevice as Device] = [
-              result as DeviceAction
-            ];
-          }
+          actions.add(result);
         });
       }
     });
@@ -402,7 +389,7 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
               ),
               Expanded(
                 child: ListOfActions(
-                  map: _selectedActions,
+                  setOfActions: actions,
                 ),
               ),
             ],
@@ -529,8 +516,8 @@ class _WeatherConditionsModalState extends State<WeatherConditionsModal> {
 }
 
 class ListOfActions extends StatefulWidget {
-  final Map<Device, List<DeviceAction>> map;
-  const ListOfActions({super.key, required this.map});
+  final Set<DeviceAction> setOfActions;
+  const ListOfActions({super.key, required this.setOfActions});
 
   @override
   State<ListOfActions> createState() => _ListOfActionsState();
@@ -539,10 +526,8 @@ class ListOfActions extends StatefulWidget {
 class _ListOfActionsState extends State<ListOfActions> {
   @override
   Widget build(BuildContext context) {
-    var map = widget.map; // per non riscrivere "widget." ogni volta
-
-    List<Device> devices = [];
-    devices.addAll(map.keys);
+    var actions =
+        widget.setOfActions.toList(); // per non riscrivere "widget." ogni volta
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -553,12 +538,12 @@ class _ListOfActionsState extends State<ListOfActions> {
             style: Theme.of(context).textTheme.displaySmall,
           ),
           Expanded(
-            child: devices.isNotEmpty
+            child: actions.isNotEmpty
                 ? ListView.builder(
-                    itemCount: devices.length,
+                    itemCount: actions.length,
                     itemBuilder: (context, index) => DeviceActionsDetail(
-                      device: devices[index],
-                      actions: (map[devices[index]] as List<DeviceAction>),
+                      device: actions[index].device,
+                      actions: actions,
                     ),
                   )
                 : const Center(
@@ -588,6 +573,9 @@ class _DeviceActionsDetailState extends State<DeviceActionsDetail> {
   @override
   Widget build(BuildContext context) {
     Icon icon;
+    List<DeviceAction> actions = widget.actions
+        .where((action) => action.device == widget.device)
+        .toList();
 
     if (widget.device is Light) {
       icon = const Icon(
@@ -612,7 +600,7 @@ class _DeviceActionsDetailState extends State<DeviceActionsDetail> {
     }
 
     List<Text> actionTexts = [];
-    for (DeviceAction a in widget.actions) {
+    for (DeviceAction a in actions) {
       String str = "";
       if (a is LockAction) {
         str = locksActionsToStr(a.action);
