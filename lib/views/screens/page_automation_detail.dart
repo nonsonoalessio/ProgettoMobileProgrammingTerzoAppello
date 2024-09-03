@@ -348,7 +348,6 @@ class AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
         leading: IconButton(
           onPressed: () {
             Navigator.pop(context);
-            Navigator.pop(context);
           },
           icon: const Icon(Icons.arrow_back_ios_new),
         ),
@@ -366,8 +365,13 @@ class AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
                 ref
                     .read(automationsNotifierProvider.notifier)
                     .updateAutomation(updatedAutomation);
+                Navigator.pop(context);
               } else if (result == 'cancella') {
+                ref
+                    .read(automationsNotifierProvider.notifier)
+                    .deleteAutomation(widget.automation);
                 // la logica per cancellare l'automazione
+                Navigator.pop(context);
               }
             },
             itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
