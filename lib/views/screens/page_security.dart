@@ -4,7 +4,6 @@ import 'package:progetto_mobile_programming/models/objects/alarm.dart';
 import 'package:progetto_mobile_programming/models/objects/camera.dart';
 import 'package:progetto_mobile_programming/models/objects/lock.dart';
 import 'package:progetto_mobile_programming/models/objects/device.dart';
-import 'package:progetto_mobile_programming/views/minis.dart';
 import 'package:progetto_mobile_programming/providers/devices_provider.dart';
 import 'package:progetto_mobile_programming/views/screens/page_device_detail.dart';
 
@@ -13,14 +12,12 @@ class SecurityPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Retrieve app colors from the theme to maintain consistency
+    
     final primaryColor = Theme.of(context).primaryColor;
-    final accentColor = Theme.of(context).colorScheme.secondary;
 
-    // Watch the deviceNotifierProvider to get the list of devices
     final List<Device> devices = ref.watch(deviceNotifierProvider);
 
-    // Filter devices using your predicate logic
+   
     final filteredDevices = devices.where((d) => d is Camera || d is Lock || d is Alarm).toList();
 
     return Scaffold(
@@ -31,7 +28,7 @@ class SecurityPage extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Title with enhanced styling
+              
               Text(
                 'Dispositivi di sicurezza',
                 style: Theme.of(context).textTheme.headlineMedium!.copyWith(
@@ -41,21 +38,21 @@ class SecurityPage extends ConsumerWidget {
               ),
               const SizedBox(height: 20),
 
-              // Grid layout for displaying devices
+              
               Expanded(
                 child: GridView.builder(
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
                     crossAxisSpacing: 12.0,
                     mainAxisSpacing: 12.0,
-                    childAspectRatio: 1.0, // Ensures items are square
+                    childAspectRatio: 1.0, 
                   ),
                   itemCount: filteredDevices.length,
                   itemBuilder: (context, index) {
                     final device = filteredDevices[index];
                     return GestureDetector(
                       onTap: () {
-                        // Navigate to the detail page of the device
+                       
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -75,18 +72,18 @@ class SecurityPage extends ConsumerWidget {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(
-                                _getDeviceIcon(device), // Dynamic icon based on device type
+                                _getDeviceIcon(device), 
                                 size: 40,
                                 color: primaryColor,
                               ),
                               const SizedBox(height: 10),
                               Text(
-                                device.deviceName, // Assume each device has a 'name' property
+                                device.deviceName, 
                                 style: Theme.of(context)
                                     .textTheme
                                     .bodyMedium!
                                     .copyWith(
-                                      color: accentColor,
+                                      color: Colors.black,
                                       fontWeight: FontWeight.w600,
                                     ),
                                 textAlign: TextAlign.center,
