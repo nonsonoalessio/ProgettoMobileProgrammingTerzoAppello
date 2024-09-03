@@ -41,7 +41,17 @@ String thermostatsActionsToStr(ThermostatsActions action) {
 
 class AutomationDetailPage extends ConsumerStatefulWidget {
   final Automation automation;
-  const AutomationDetailPage({super.key, required this.automation});
+  final TimeOfDay executionTime;
+  final List<Action> actions;
+
+  AutomationDetailPage({
+    super.key,
+    required this.automation,
+    TimeOfDay? initialExecutionTime,
+    List<Action>? initialActions,
+  })  : executionTime =
+            initialExecutionTime ?? const TimeOfDay(hour: 09, minute: 41),
+        actions = initialActions ?? <Action>[];
 
   @override
   ConsumerState<AutomationDetailPage> createState() =>
@@ -49,12 +59,12 @@ class AutomationDetailPage extends ConsumerStatefulWidget {
 }
 
 class AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
-  final TextEditingController _automationNameController =
-      TextEditingController();
-  WeatherCondition _selectedWeather = WeatherCondition.sunny;
+  final TextEditingController _automationNameController = TextEditingController();
 
-  TimeOfDay? _executionTime = const TimeOfDay(hour: 09, minute: 41);
+  WeatherCondition _selectedWeather = WeatherCondition.sunny;
+  TimeOfDay? _executionTime;
   Set<DeviceAction> actions = {};
+  bool isTimeDependent = false;
 
   void _handleWeatherConditionChanged(WeatherCondition newCondition) {
     setState(() {
@@ -69,20 +79,21 @@ class AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
   }
 
   String enumToText(WeatherCondition condition) {
-    if (condition == WeatherCondition.cloudy) {
-      return "☁️ Nuvoloso";
-    } else if (condition == WeatherCondition.cold) {
-      return "❄️ Freddo";
-    } else if (condition == WeatherCondition.hot) {
-      return "🔥 Caldo";
-    } else if (condition == WeatherCondition.rainy) {
-      return "🌧️ Pioggia";
-    } else if (condition == WeatherCondition.snowy) {
-      return "🌨️ Neve";
-    } else if (condition == WeatherCondition.none) {
-      return "🚫 Nessuna condizione";
-    } else {
-      return "☀️ Sole";
+    switch (condition) {
+      case WeatherCondition.cloudy:
+        return "☁️ Nuvoloso";
+      case WeatherCondition.cold:
+        return "❄️ Freddo";
+      case WeatherCondition.hot:
+        return "🔥 Caldo";
+      case WeatherCondition.rainy:
+        return "🌧️ Pioggia";
+      case WeatherCondition.snowy:
+        return "🌨️ Neve";
+      case WeatherCondition.none:
+        return "🚫 Nessuna condizione";
+      default:
+        return "☀️ Sole";
     }
   }
 
@@ -304,8 +315,6 @@ class AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
     });
   }
 
-  bool isTimeDependent = false;
-
   void _handleTimeDependency(bool value) {
     setState(() {
       isTimeDependent = value;
@@ -315,17 +324,22 @@ class AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
   @override
   void initState() {
     super.initState();
-    widget.automation.executionTime == null
-        ? isTimeDependent = true
-        : isTimeDependent = false;
+    
+    _automationNameController.text = widget.automation.name ?? '';
 
-    widget.automation.weather == null
-        ? _selectedWeather = WeatherCondition.none
-        : _selectedWeather = widget.automation.weather as WeatherCondition;
+    // Set initial weather condition
+    _selectedWeather = widget.automation.weather ?? WeatherCondition.none;
 
-    if (isTimeDependent) {
+    // Check if the automation is time-dependent
+    if (widget.automation.executionTime != null) {
+      isTimeDependent = true;
       _executionTime = widget.automation.executionTime as TimeOfDay;
+    } else {
+      isTimeDependent = false;
+      _executionTime = const TimeOfDay(hour: 09, minute: 41);
     }
+
+    // Initialize actions
     actions.addAll(widget.automation.actions);
   }
 
@@ -334,9 +348,7 @@ class AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
     Automation newAutomation;
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          addAction();
-        },
+        onPressed: addAction,
         label: const Text('Aggiungi azione'),
         icon: const Icon(Icons.add),
       ),
@@ -349,21 +361,30 @@ class AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
           icon: const Icon(Icons.arrow_back_ios_new),
         ),
         actions: [
-          // TODO: show menu cancellazione/update automazione
-          IconButton(
-            onPressed: () {
-              newAutomation = Automation(
+          PopupMenuButton<String>(
+            onSelected: (String result) {
+              if (result == 'modifica') {
+                Automation updatedAutomation = Automation(
                   name: _automationNameController.text,
-                  executionTime: _executionTime.toString(),
-                  weather: _selectedWeather,
-                  actions: actions);
-
-              ref
-                  .read(automationsNotifierProvider.notifier)
-                  .updateAutomation(newAutomation);
-
-              Navigator.pop(context);
+                  executionTime: isTimeDependent ? _executionTime.toString() : "L'automazione non dipende dal tempo",
+                  actions: actions,
+                );
+                ref.read(automationsNotifierProvider.notifier)
+                   .updateAutomation(updatedAutomation);
+              } else if (result == 'cancella') {
+                // la logica per cancellare l'automazione
+              }
             },
+            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+              const PopupMenuItem<String>(
+                value: 'modifica',
+                child: Text('Modifica automazione'),
+              ),
+              const PopupMenuItem<String>(
+                value: 'cancella',
+                child: Text('Cancella automazione'),
+              ),
+            ],
             icon: const Icon(Icons.more_vert),
           ),
         ],
@@ -379,7 +400,7 @@ class AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
                 child: TextField(
                   controller: _automationNameController,
                   decoration: InputDecoration(
-                    hintText: widget.automation.name,
+                    hintText: widget.automation.name ?? 'Nome automazione',
                     border: const OutlineInputBorder(),
                   ),
                 ),
@@ -389,12 +410,9 @@ class AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
                 children: [
                   const Text("L'automazione non dipende da un orario."),
                   Switch(
-                      value: isTimeDependent,
-                      onChanged: (bool value) {
-                        setState(() {
-                          isTimeDependent = value;
-                        });
-                      })
+                    value: isTimeDependent,
+                    onChanged: _handleTimeDependency,
+                  ),
                 ],
               ),
               Row(
@@ -403,15 +421,11 @@ class AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
                   ElevatedButton(
                     onPressed: () {
                       showModalBottomSheet(
-                          context: context,
-                          builder: (context) => WeatherConditionsModal(
-                                onValueChanged: _handleWeatherConditionChanged,
-                                startingCondition:
-                                    widget.automation.weather != null
-                                        ? widget.automation.weather
-                                            as WeatherCondition
-                                        : WeatherCondition.none,
-                              ));
+                        context: context,
+                        builder: (context) => WeatherConditionsModal(
+                          onValueChanged: _handleWeatherConditionChanged,
+                        ),
+                      );
                     },
                     child: Text(
                       enumToText(_selectedWeather),
@@ -439,6 +453,7 @@ class AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
     );
   }
 }
+
 
 class TimeOfDaySelector extends StatefulWidget {
   final ValueChanged<TimeOfDay> onValueChanged;
