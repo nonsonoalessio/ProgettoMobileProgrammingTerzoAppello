@@ -5,7 +5,7 @@ enum WeatherCondition { none, sunny, cloudy, rainy, hot, cold, snowy }
 
 class Automation {
   String name;
-  String executionTime;
+  TimeOfDay? executionTime;
   WeatherCondition? weather;
   Set<DeviceAction> actions;
 

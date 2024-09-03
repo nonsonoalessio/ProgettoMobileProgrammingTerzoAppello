@@ -91,7 +91,7 @@ class DatabaseHelper {
         await db.execute("""
           CREATE TABLE IF NOT EXISTS automation (
               name TEXT PRIMARY KEY,
-              executionTime TEXT,
+              executionTime TIME,
               weather TEXT NOT NULL
           )
           """);
@@ -301,6 +301,13 @@ class DatabaseHelper {
 
     for (var map in mapsOfAutomations) {
       String name = map['name'];
+      String executionTimeStr = map['executionTime'];
+
+    // Assicurati che il formato della stringa sia corretto
+    DateTime executionDateTime = DateTime.parse('1970-01-01 $executionTimeStr');
+
+    // Converti DateTime in TimeOfDay
+    TimeOfDay executionTime = TimeOfDay.fromDateTime(executionDateTime);
       List<DeviceAction> actions = [];
 
       await _fetchActions(
@@ -308,7 +315,7 @@ class DatabaseHelper {
 
       automations.add(Automation(
         name: name,
-        executionTime: map['executionTime'],
+        executionTime: executionTime,
         weather: _getWeatherCondition(map['weather']),
         actions: actions.toSet(),
       ));
@@ -539,6 +546,8 @@ class DatabaseHelper {
 
   Future<void> insertAutomation(Automation automation) async {
     final db = await database;
+    final String automationTimeStr =
+        '${(automation.executionTime as TimeOfDay).hour.toString().padLeft(2, '0')}:${(automation.executionTime as TimeOfDay).minute.toString().padLeft(2, '0')}';
 
     await db.transaction((txn) async {
       // Inserisci i dati nella tabella automation
@@ -546,7 +555,7 @@ class DatabaseHelper {
         'automation',
         {
           'name': automation.name,
-          'executionTime': automation.executionTime.toString(),
+          'executionTime': automationTimeStr,
           'weather': automation.weather.toString(),
         },
       );
