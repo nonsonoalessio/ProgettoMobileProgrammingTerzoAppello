@@ -345,7 +345,7 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
         ],
       ),
       body: Padding(
-        padding: const EdgeInsets.all(5.0),
+        padding: const EdgeInsets.all(8.0),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -357,7 +357,7 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
               Container(
                   color: Colors.grey[100],
                   padding:
-                      const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                      const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
                   child: Text(
                     'Stanza: ${widget.device.room}',
                     style: Theme.of(context).textTheme.bodyMedium,
@@ -536,9 +536,7 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
     }
 
     widgets.add(const SizedBox(height: 8));
-
     widgets.add(const Divider());
-
     widgets.add(const SizedBox(height: 8));
 
     widgets.add(
@@ -660,9 +658,14 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
 
     widgets.add(EnergySavingSuggestions(device: device));
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: widgets,
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: widgets,
+        ),
+      ),
     );
   }
 
@@ -795,8 +798,9 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
             Flexible(
               child: Text('Temperatura corrente: '),
             ),
-            Text('${thermostat.detectedTemp}°C',
-            style: const TextStyle(fontWeight: FontWeight.bold),
+            Text(
+              '${thermostat.detectedTemp}°C',
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
           ],
         ),

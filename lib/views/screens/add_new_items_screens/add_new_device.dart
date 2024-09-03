@@ -104,7 +104,7 @@ class _AddNewDevicePageState extends ConsumerState<AddNewDevicePage> {
                       children: [
                         const Center(
                           child: Padding(
-                            padding: EdgeInsets.all(8.0),
+                            padding: EdgeInsets.all(16.0),
                             child: Text(
                                 "Hai delle modifiche non salvate. Uscire?"),
                           ),
@@ -461,7 +461,8 @@ class ModalBottomSheetContent extends ConsumerStatefulWidget {
       _ModalBottomSheetContentState();
 }
 
-class _ModalBottomSheetContentState extends ConsumerState<ModalBottomSheetContent> {
+class _ModalBottomSheetContentState
+    extends ConsumerState<ModalBottomSheetContent> {
   String? _room;
   final TextEditingController _newRoomController = TextEditingController();
 
@@ -473,8 +474,10 @@ class _ModalBottomSheetContentState extends ConsumerState<ModalBottomSheetConten
       builder: (context, constraints) {
         // Determina l'altezza massima che la lista può occupare
         double maxListHeight = min(
-          constraints.maxHeight * 0.5, // Limitazione a metà dell'altezza disponibile
-          rooms.length * 60.0, // Altezza della lista basata sul numero di stanze (60px per ogni stanza)
+          constraints.maxHeight *
+              0.5, // Limitazione a metà dell'altezza disponibile
+          rooms.length *
+              60.0, // Altezza della lista basata sul numero di stanze (60px per ogni stanza)
         );
 
         return SingleChildScrollView(
@@ -517,19 +520,24 @@ class _ModalBottomSheetContentState extends ConsumerState<ModalBottomSheetConten
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(left: 16.0, bottom: 16.0, top: 8.0),
+                  padding:
+                      const EdgeInsets.only(left: 16.0, bottom: 16.0, top: 8.0),
                   child: Align(
                     alignment: Alignment.centerLeft,
                     child: ElevatedButton(
                       onPressed: () {
                         String newRoom = _newRoomController.text.trim();
                         if (newRoom.isNotEmpty) {
-                          ref.read(deviceNotifierProvider.notifier).addRoom(newRoom);
+                          ref
+                              .read(deviceNotifierProvider.notifier)
+                              .addRoom(newRoom);
                           widget.valueChanged(newRoom);
                           Navigator.pop(context);
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text("Il nome della stanza non può essere vuoto.")),
+                            SnackBar(
+                                content: Text(
+                                    "Il nome della stanza non può essere vuoto.")),
                           );
                         }
                       },
@@ -548,8 +556,6 @@ class _ModalBottomSheetContentState extends ConsumerState<ModalBottomSheetConten
     );
   }
 }
-
-
 
 class TemperaturePicker extends StatefulWidget {
   final ValueChanged<double> onValueChanged;
