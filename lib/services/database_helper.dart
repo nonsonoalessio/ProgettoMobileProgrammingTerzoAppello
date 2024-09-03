@@ -540,7 +540,6 @@ class DatabaseHelper {
         );
       }
     });
-    //TODO controllare funzionamento
   }
 
   Future<void> insertNotification(DeviceNotification notification) async {
@@ -698,18 +697,38 @@ class DatabaseHelper {
   Future<void> updateAutomation(Automation automation) async {
     final db = await database;
 
-    // Modifica la table delle automazioni
-    await db.update(
-      'automation',
-      {
-        'name': automation.name,
-        'executionTime': automation.executionTime,
-        'weather': automation.weather,
-      },
-      where: 'name = ?',
-      whereArgs: [automation.name],
-    );
-    //TODO da adattare
+    await db.transaction((txn) async {
+      // 1. Aggiorniamo i dati nella tabella automation
+      await txn.update(
+        'automation',
+        {
+          'name': automation.name,
+          'executionTime': automation.executionTime,
+          'weather': automation.weather,
+        },
+        where: 'name = ?',
+        whereArgs: [automation.name],
+      );
+
+      // 2. Rimuoviamo le azioni esistenti per questa automazione
+      await txn.delete(
+        'actions',
+        where: 'automationName = ?',
+        whereArgs: [automation.name],
+      );
+
+      // 3. Inseriamo o aggiorna le azioni nella tabella actions
+      for (final action in automation.actions) {
+        Map<String, dynamic> map = action.toMap();
+        map['automationName'] = automation.name;
+
+        await txn.insert(
+          'actions',
+          map,
+          conflictAlgorithm: ConflictAlgorithm.replace,
+        );
+      }
+    });
   }
 
   Future<void> updateNotification(int id) async {
@@ -805,14 +824,14 @@ class DatabaseHelper {
   Future<void> removeAutomation(String automationName) async {
     final db = await database;
 
-    // Rimuovi tutte le azioni associate all'automazione
+    // Rimuoviamo tutte le azioni associate all'automazione
     await db.delete(
       'actions',
       where: 'automationName = ?',
       whereArgs: [automationName],
     );
 
-    // Rimuovi l'automazione dalla tabella 'automation'
+    // Rimuoviamo l'automazione dalla tabella 'automation'
     await db.delete(
       'automation',
       where: 'name = ?',
