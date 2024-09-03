@@ -315,7 +315,11 @@ class AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
     widget.automation.executionTime == null
         ? isTimeDependent = true
         : isTimeDependent = false;
-    _selectedWeather = widget.automation.weather as WeatherCondition;
+
+    widget.automation.weather == null
+        ? _selectedWeather = WeatherCondition.none
+        : _selectedWeather = widget.automation.weather as WeatherCondition;
+
     if (isTimeDependent) {
       _executionTime = widget.automation.executionTime as TimeOfDay;
     }
@@ -358,9 +362,9 @@ class AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
                 child: TextField(
                   controller: _automationNameController,
-                  decoration: const InputDecoration(
-                    hintText: 'Inserisci nome dell\'automazione',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    hintText: widget.automation.name,
+                    border: const OutlineInputBorder(),
                   ),
                 ),
               ),

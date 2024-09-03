@@ -34,9 +34,6 @@ class AutomationPage extends ConsumerWidget {
                             children: [
                               ListTile(
                                 title: Text(automations[index].name),
-                                subtitle: Text(
-                                  "L'automazione andrà in azione alle ore ",
-                                ), //${MaterialLocalizations.of(context).formatTimeOfDay(automations[index].executionTime)}"),
                                 onTap: () {
                                   Navigator.push(
                                     context,
