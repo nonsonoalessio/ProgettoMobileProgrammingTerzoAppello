@@ -733,8 +733,8 @@ class DatabaseHelper {
         'automation',
         {
           'name': automation.name,
-          'executionTime': automation.executionTime,
-          'weather': automation.weather,
+          'executionTime': automation.executionTime.toString(),
+          'weather': automation.weather.toString(),
         },
         where: 'name = ?',
         whereArgs: [automation.name],
