@@ -57,7 +57,8 @@ class AllDevicePage extends ConsumerWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => DeviceDetailPage(device: device),
+                            builder: (context) =>
+                                DeviceDetailPage(device: device),
                           ),
                         );
                       },
@@ -73,13 +74,15 @@ class AllDevicePage extends ConsumerWidget {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(
-                                _getDeviceIcon(device), // Dynamic icon based on device type
+                                _getDeviceIcon(
+                                    device), // Dynamic icon based on device type
                                 size: 40,
                                 color: primaryColor,
                               ),
                               const SizedBox(height: 10),
                               Text(
-                                device.deviceName, // Assume each device has a 'name' property
+                                device
+                                    .deviceName, // Assume each device has a 'name' property
                                 style: Theme.of(context)
                                     .textTheme
                                     .bodyMedium!
