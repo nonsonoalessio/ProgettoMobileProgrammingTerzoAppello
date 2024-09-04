@@ -485,12 +485,14 @@ class TimeOfDaySelector extends StatefulWidget {
 
 class _TimeOfDaySelectorState extends State<TimeOfDaySelector> {
   late TimeOfDay selectedTime;
+  late bool isTimeDependent;
 
   @override
   void initState() {
     super.initState();
     selectedTime = widget.automation.executionTime ??
         const TimeOfDay(hour: 00, minute: 00);
+    isTimeDependent = widget.automation.executionTime == null ? true : false;
   }
 
   Future<void> _selectTime(BuildContext context) async {

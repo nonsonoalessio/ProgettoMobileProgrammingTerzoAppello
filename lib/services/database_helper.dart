@@ -294,6 +294,7 @@ class DatabaseHelper {
 
   Future<void> fetchAutomations() async {
     final db = await database;
+    late TimeOfDay? executionTime;
 
     final List<Map<String, dynamic>> mapsOfAutomations =
         await db.query('automation');
@@ -305,11 +306,16 @@ class DatabaseHelper {
       String executionTimeStr = map['executionTime'];
 
       // Assicurati che il formato della stringa sia corretto
-      DateTime executionDateTime =
-          DateTime.parse('1970-01-01 $executionTimeStr');
+      if (executionTimeStr != 'null') {
+        DateTime executionDateTime =
+            DateTime.parse('1970-01-01 $executionTimeStr');
 
-      // Converti DateTime in TimeOfDay
-      TimeOfDay executionTime = TimeOfDay.fromDateTime(executionDateTime);
+        // Converti DateTime in TimeOfDay
+        executionTime = TimeOfDay.fromDateTime(executionDateTime);
+      } else {
+        executionTime = null;
+      }
+
       List<DeviceAction> actions = [];
 
       await _fetchActions(
@@ -549,8 +555,10 @@ class DatabaseHelper {
 
   Future<void> insertAutomation(Automation automation) async {
     final db = await database;
-    final String automationTimeStr =
-        '${(automation.executionTime as TimeOfDay).hour.toString().padLeft(2, '0')}:${(automation.executionTime as TimeOfDay).minute.toString().padLeft(2, '0')}';
+
+    final String automationTimeStr = automation.executionTime == null
+        ? '${(automation.executionTime as TimeOfDay).hour.toString().padLeft(2, '0')}:${(automation.executionTime as TimeOfDay).minute.toString().padLeft(2, '0')}'
+        : 'null';
 
     await db.transaction((txn) async {
       // Inserisci i dati nella tabella automation
