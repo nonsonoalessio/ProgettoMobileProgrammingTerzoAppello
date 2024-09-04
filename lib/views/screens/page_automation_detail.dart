@@ -355,6 +355,16 @@ class AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
           PopupMenuButton<String>(
             onSelected: (String result) {
               if (result == 'modifica') {
+                if (_automationNameController.text.trim().isEmpty) {
+                  // Mostra un messaggio di errore se il nome è vuoto
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                          'Il nome dell\'automazione non può essere vuoto.'),
+                    ),
+                  );
+                  return; // Interrompe l'operazione di modifica
+                }
                 Automation updatedAutomation = Automation(
                   name: _automationNameController.text,
                   executionTime: isTimeDependent

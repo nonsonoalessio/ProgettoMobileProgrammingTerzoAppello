@@ -331,16 +331,18 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
           // TODO: aggiunta salvataggio automazione
           IconButton(
             onPressed: () {
-              updatedAutomation = Automation(
-                  name: _automationNameController.text,
-                  executionTime: _executionTime,
-                  weather: _selectedWeather,
-                  actions: actions);
-              ref
-                  .read(automationsNotifierProvider.notifier)
-                  .addAutomation(updatedAutomation);
+              if (_automationNameController.text.isNotEmpty) {
+                updatedAutomation = Automation(
+                    name: _automationNameController.text,
+                    executionTime: _executionTime,
+                    weather: _selectedWeather,
+                    actions: actions);
+                ref
+                    .read(automationsNotifierProvider.notifier)
+                    .addAutomation(updatedAutomation);
 
-              Navigator.of(context).pop(updatedAutomation);
+                Navigator.of(context).pop(updatedAutomation);
+              }
             },
             icon: const Icon(Icons.save),
           ),

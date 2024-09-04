@@ -42,7 +42,7 @@ class AutomationPage extends ConsumerWidget {
                                     ListTile(
                                       title: Text(automations[index].name),
                                       onTap: () async {
-                                        String act = await Navigator.push(
+                                        String ?act = await Navigator.push(
                                           context,
                                           MaterialPageRoute(
                                             builder: (context) =>
