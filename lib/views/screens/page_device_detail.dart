@@ -447,13 +447,14 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
                       isActive: (widget.device as Lock).isActive,
                       id: widget.device.id,
                     );
-                  } else {
+                  } else if (widget.device is Alarm) {
                     updatedDevice = Alarm(
                       deviceName: newName,
                       room: newRoom,
                       isActive: (widget.device as Alarm).isActive,
                       id: widget.device.id,
                     );
+                  } else {
                     return;
                   }
 
