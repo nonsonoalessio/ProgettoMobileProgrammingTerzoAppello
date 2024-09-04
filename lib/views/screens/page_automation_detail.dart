@@ -61,23 +61,23 @@ class AutomationDetailPage extends ConsumerStatefulWidget {
 }
 
 class AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
-  final TextEditingController _automationNameController =
+  final TextEditingController automationNameController =
       TextEditingController();
 
-  WeatherCondition _selectedWeather = WeatherCondition.sunny;
-  TimeOfDay? _executionTime;
+  late WeatherCondition selectedWeather;
+  late TimeOfDay? executionTime;
   Set<DeviceAction> actions = {};
-  bool isTimeDependent = false;
+  late bool isTimeDependent;
 
   void _handleWeatherConditionChanged(WeatherCondition newCondition) {
     setState(() {
-      _selectedWeather = newCondition;
+      selectedWeather = newCondition;
     });
   }
 
   void _handleExecutionTimeChanged(TimeOfDay time) {
     setState(() {
-      _executionTime = time;
+      executionTime = time;
     });
   }
 
@@ -111,8 +111,6 @@ class AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
     double? desiredTemp;
 
     actions.addAll(widget.automation.actions);
-    print(actions);
-    print("cacca");
 
     showModalBottomSheet(
       context: context,
@@ -327,16 +325,21 @@ class AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
   @override
   void initState() {
     super.initState();
-    _automationNameController.text = widget.automation.name ?? '';
-    _selectedWeather = widget.automation.weather ?? WeatherCondition.none;
-    _executionTime = widget.automation.executionTime ??
+    automationNameController.text = widget.automation.name;
+    selectedWeather = widget.automation.weather ?? WeatherCondition.none;
+    executionTime = widget.automation.executionTime ??
         const TimeOfDay(hour: 09, minute: 41);
+    isTimeDependent = widget.automation.executionTime == null ? true : false;
     actions.addAll(widget.automation.actions);
+    print(
+        'Got ${widget.automation.name} with ${widget.automation.weather} and ${widget.automation.executionTime}.');
+
+    print(
+        'State inited with: $executionTime because timedependency $isTimeDependent and weather $selectedWeather');
   }
 
   @override
   Widget build(BuildContext context) {
-    Automation newAutomation;
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
         onPressed: addAction,
@@ -355,7 +358,7 @@ class AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
           PopupMenuButton<String>(
             onSelected: (String result) {
               if (result == 'modifica') {
-                if (_automationNameController.text.trim().isEmpty) {
+                if (automationNameController.text.trim().isEmpty) {
                   // Mostra un messaggio di errore se il nome è vuoto
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
@@ -366,9 +369,9 @@ class AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
                   return; // Interrompe l'operazione di modifica
                 }
                 Automation updatedAutomation = Automation(
-                  name: _automationNameController.text,
+                  name: automationNameController.text,
                   executionTime: isTimeDependent
-                      ? _executionTime
+                      ? executionTime
                       : const TimeOfDay(hour: 00, minute: 00),
                   actions: actions,
                 );
@@ -407,9 +410,9 @@ class AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
                 child: TextField(
-                  controller: _automationNameController,
+                  controller: automationNameController,
                   decoration: InputDecoration(
-                    hintText: widget.automation.name ?? 'Nome automazione',
+                    hintText: widget.automation.name,
                     border: const OutlineInputBorder(),
                   ),
                 ),
@@ -440,7 +443,7 @@ class AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
                       );
                     },
                     child: Text(
-                      enumToText(_selectedWeather),
+                      enumToText(selectedWeather),
                     ),
                   ),
                   IntrinsicWidth(
@@ -448,9 +451,7 @@ class AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
                       onValueChanged: _handleExecutionTimeChanged,
                       timeDependencyChange: _handleTimeDependency,
                       isTimeDependent: isTimeDependent,
-                      startingTime: isTimeDependent
-                          ? widget.automation.executionTime as TimeOfDay
-                          : const TimeOfDay(hour: 00, minute: 00),
+                      automation: widget.automation,
                     ),
                   ),
                 ],
@@ -472,14 +473,14 @@ class TimeOfDaySelector extends StatefulWidget {
   final ValueChanged<TimeOfDay> onValueChanged;
   final ValueChanged<bool> timeDependencyChange;
   final bool isTimeDependent;
-  final TimeOfDay startingTime;
+  final Automation automation;
 
   const TimeOfDaySelector({
     super.key,
     required this.onValueChanged,
     required this.timeDependencyChange,
     required this.isTimeDependent,
-    required this.startingTime,
+    required this.automation,
   });
 
   @override
@@ -487,12 +488,20 @@ class TimeOfDaySelector extends StatefulWidget {
 }
 
 class _TimeOfDaySelectorState extends State<TimeOfDaySelector> {
-  TimeOfDay selectedTime = const TimeOfDay(hour: 09, minute: 41);
+  late TimeOfDay selectedTime;
+
+  @override
+  void initState() {
+    super.initState();
+    selectedTime = widget.automation.executionTime ??
+        const TimeOfDay(hour: 00, minute: 00);
+    print('SelectedTime for TIMEOFDAYSELECTOR initd with $selectedTime');
+  }
 
   Future<void> _selectTime(BuildContext context) async {
     final TimeOfDay? timeOfDay = await showTimePicker(
       context: context,
-      initialTime: widget.startingTime,
+      initialTime: selectedTime,
       builder: (BuildContext context, Widget? child) {
         return MediaQuery(
           data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
@@ -571,7 +580,14 @@ class _WeatherConditionsModalState extends State<WeatherConditionsModal> {
     }
   }
 
-  WeatherCondition? _selectedCondition = WeatherCondition.sunny;
+  late WeatherCondition _selectedCondition;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedCondition = widget.startingCondition;
+    print('State for WEATHERCONTIDIONMODAL initd with $_selectedCondition');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -583,8 +599,8 @@ class _WeatherConditionsModalState extends State<WeatherConditionsModal> {
           groupValue: _selectedCondition,
           onChanged: (WeatherCondition? value) {
             setState(() {
-              _selectedCondition = value;
-              widget.onValueChanged(value as WeatherCondition);
+              _selectedCondition = value as WeatherCondition;
+              widget.onValueChanged(value);
             });
           },
         );

@@ -382,9 +382,9 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
                 ],
               ),
               Wrap(
-                runAlignment: WrapAlignment.center,
                 spacing: 8.0, // Spazio orizzontale tra i widget
                 runSpacing: 4.0, // Spazio verticale tra le righe
+                runAlignment: WrapAlignment.center,
 
                 children: [
                   ElevatedButton(
