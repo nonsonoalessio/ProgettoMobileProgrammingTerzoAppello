@@ -328,7 +328,6 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
           icon: const Icon(Icons.arrow_back_ios_new),
         ),
         actions: [
-          // TODO: aggiunta salvataggio automazione
           IconButton(
             onPressed: () {
               if (_automationNameController.text.isNotEmpty) {
