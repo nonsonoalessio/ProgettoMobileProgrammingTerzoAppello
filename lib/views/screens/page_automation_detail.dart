@@ -434,6 +434,7 @@ class AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
                         context: context,
                         builder: (context) => WeatherConditionsModal(
                           onValueChanged: _handleWeatherConditionChanged,
+                          automation: widget.automation,
                         ),
                       );
                     },
@@ -580,7 +581,6 @@ class _WeatherConditionsModalState extends State<WeatherConditionsModal> {
   void initState() {
     super.initState();
     _selectedCondition = widget.automation.weather ?? WeatherCondition.none;
-
   }
 
   @override
