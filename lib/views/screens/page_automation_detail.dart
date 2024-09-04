@@ -522,10 +522,7 @@ class _TimeOfDaySelectorState extends State<TimeOfDaySelector> {
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8.0),
-        child: Wrap(
-          spacing: 8.0, // Spazio orizzontale tra i widget
-          runSpacing: 4.0, // Spazio verticale tra le righe
-          alignment: WrapAlignment.center,
+        child: Row(
           children: [
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 8.0),
