@@ -341,6 +341,8 @@ class _AddNewAutomationPageState extends ConsumerState<AddNewAutomationPage> {
                     .read(automationsNotifierProvider.notifier)
                     .addAutomation(updatedAutomation);
 
+                print(
+                    'Added ${updatedAutomation.name} with ${updatedAutomation.weather}');
                 Navigator.of(context).pop(updatedAutomation);
               }
             },

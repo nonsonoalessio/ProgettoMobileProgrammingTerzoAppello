@@ -292,7 +292,6 @@ class DatabaseHelper {
     return automationsInFuture;
   }
 
-
   Future<void> fetchAutomations() async {
     final db = await database;
 
@@ -328,16 +327,17 @@ class DatabaseHelper {
   WeatherCondition _getWeatherCondition(String str) {
     WeatherCondition condition = WeatherCondition.none;
 
-    if (str == 'sunny') {
-    } else if (str == 'cloudy') {
+    if (str == 'sunny' || str == 'WeatherCondition.sunny') {
+      condition = WeatherCondition.sunny;
+    } else if (str == 'cloudy' || str == 'WeatherCondition.cloudy') {
       condition = WeatherCondition.cloudy;
-    } else if (str == 'cold') {
+    } else if (str == 'cold' || str == 'WeatherCondition.cold') {
       condition = WeatherCondition.cold;
-    } else if (str == 'hot') {
+    } else if (str == 'hot' || str == 'WeatherCondition.hot') {
       condition = WeatherCondition.hot;
-    } else if (str == 'rainy') {
+    } else if (str == 'rainy' || str == 'WeatherCondition.rainy') {
       condition = WeatherCondition.rainy;
-    } else if (str == 'snowy') {
+    } else if (str == 'snowy' || str == 'WeatherCondition.snowy') {
       condition = WeatherCondition.snowy;
     } else {
       condition = WeatherCondition.none;
