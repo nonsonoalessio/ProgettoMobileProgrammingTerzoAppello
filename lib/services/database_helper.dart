@@ -292,11 +292,6 @@ class DatabaseHelper {
     return automationsInFuture;
   }
 
-  Set<DeviceAction> _getActions(String automationName) {
-    List<DeviceAction> actions = [];
-    _fetchActions(automationName, actions);
-    return actions.toSet();
-  }
 
   Future<void> fetchAutomations() async {
     final db = await database;
@@ -586,11 +581,12 @@ class DatabaseHelper {
   }
 
   Future<void> insertNotification(DeviceNotification notification) async {
-    final isReadInt;
+    final int isReadInt;
     if (notification.isRead) {
       isReadInt = 1;
-    } else
+    } else {
       isReadInt = 0;
+    }
 
     final db = await database;
     final String deliveryTimeString =
@@ -675,8 +671,9 @@ class DatabaseHelper {
       final int isActiveInt;
       if (device.isActive) {
         isActiveInt = 1;
-      } else
+      } else {
         isActiveInt = 0;
+      }
       await db.update(
         'alarms',
         {
@@ -689,8 +686,9 @@ class DatabaseHelper {
       final int isActiveInt;
       if (device.isActive) {
         isActiveInt = 1;
-      } else
+      } else {
         isActiveInt = 0;
+      }
       await db.update(
         'locks',
         {
@@ -703,8 +701,9 @@ class DatabaseHelper {
       final int isActiveInt;
       if (device.isActive) {
         isActiveInt = 1;
-      } else
+      } else {
         isActiveInt = 0;
+      }
       await db.update(
         'lights',
         {
