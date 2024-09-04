@@ -1,17 +1,45 @@
 import 'package:flutter/material.dart';
-import 'package:progetto_mobile_programming/views/homepage.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:progetto_mobile_programming/services/localnotification_service.dart';
+import 'package:progetto_mobile_programming/views/screens/page_all_device.dart';
+import 'package:progetto_mobile_programming/views/screens/page_automation.dart';
+import 'package:progetto_mobile_programming/views/screens/page_home.dart';
+import 'package:progetto_mobile_programming/views/screens/page_security.dart';
 
-void main() {
-  runApp(MainApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Permission.notification.isDenied.then((value) {
+    if (value) {
+      Permission.notification.request();
+    }
+  });
+  LocalNoti().init();
+  runApp(const ProviderScope(child: MainApp()));
 }
 
 class MainApp extends StatelessWidget {
-  MainApp({super.key});
+  const MainApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.orange),
+        textTheme: const TextTheme(
+          displayMedium: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 24.0,
+          ),
+          displaySmall: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 20.0,
+          ),
+        ),
+      ),
+      home: const Scaffold(
         body: Navigation(),
       ),
     );
@@ -33,9 +61,17 @@ class _NavigationState extends State<Navigation> {
       label: 'Home',
     ),
     const NavigationDestination(
-      icon: Icon(Icons.person),
-      label: 'Profile',
-    )
+      icon: Icon(Icons.lock),
+      label: 'Sicurezza',
+    ),
+    const NavigationDestination(
+      icon: Icon(Icons.alarm),
+      label: 'Automazioni',
+    ),
+    const NavigationDestination(
+      icon: Icon(Icons.list),
+      label: 'Dispositivi',
+    ),
   ];
 
   @override
@@ -43,11 +79,9 @@ class _NavigationState extends State<Navigation> {
     return Scaffold(
       body: <Widget>[
         const Homepage(),
-        const Scaffold(
-          body: Center(
-            child: Text('Hello World!'),
-          ),
-        ),
+        const SecurityPage(),
+        const AutomationPage(),
+        const AllDevicePage(),
       ][currentPageIndex],
       bottomNavigationBar: NavigationBar(
         onDestinationSelected: (int index) {
@@ -56,6 +90,7 @@ class _NavigationState extends State<Navigation> {
           });
         },
         destinations: _destinations,
+        selectedIndex: currentPageIndex,
       ),
     );
   }
