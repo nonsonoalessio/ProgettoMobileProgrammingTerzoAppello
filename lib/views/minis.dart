@@ -261,7 +261,6 @@ class DeviceCard extends StatefulWidget {
 class _DeviceCardState extends State<DeviceCard> {
   @override
   Widget build(BuildContext context) {
-    Device _device = widget.device;
     return Container();
   }
 }

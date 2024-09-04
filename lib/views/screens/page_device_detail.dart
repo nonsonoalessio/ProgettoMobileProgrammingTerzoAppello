@@ -2,12 +2,9 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:http/http.dart';
-import 'package:path/path.dart';
 import 'package:progetto_mobile_programming/models/functionalities/device_notification.dart';
 import 'package:progetto_mobile_programming/providers/notifications_provider.dart';
 import 'package:progetto_mobile_programming/services/localnotification_service.dart';
-import 'package:progetto_mobile_programming/views/minis.dart';
 import 'package:progetto_mobile_programming/providers/devices_provider.dart';
 import '../../models/objects/camera.dart';
 import '../../models/objects/device.dart';
@@ -161,10 +158,6 @@ class EnergySavingSuggestions extends StatelessWidget {
           const Text(
             'Suggerimenti per risparmiare energia:',
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-
-            //  style: Theme.of(context)
-            //     .textTheme.bodyLarge
-            //    ?.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 10),
           ...suggestions
@@ -204,12 +197,6 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
     _deviceNameController =
         TextEditingController(text: widget.device.deviceName);
     _selectedRoom = widget.device.room;
-  }
-
-  void _handleRoomSelection(String room) {
-    setState(() {
-      _selectedRoom = room;
-    });
   }
 
   void _wrap(Device device) {
@@ -305,10 +292,6 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
     });
   }
 
-  bool _checkFields() {
-    return _deviceNameController.text.isNotEmpty && _selectedRoom != null;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -391,7 +374,6 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
                   hintText: 'Inserisci il nuovo nome del dispositivo',
                 ),
               ),
-              // TODO: Gestire cambiamento camera
               const SizedBox(height: 10),
               TextField(
                 controller: _updateRoomController,
@@ -733,7 +715,7 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
             children: [
               const Flexible(
                 child: Text(
-                  "Stato dell\'allarme: ",
+                  "Stato dell'allarme: ",
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -796,7 +778,7 @@ class _DeviceDetailPageState extends ConsumerState<DeviceDetailPage> {
       children: [
         Row(
           children: [
-            Flexible(
+            const Flexible(
               child: Text('Temperatura corrente: '),
             ),
             Text(
