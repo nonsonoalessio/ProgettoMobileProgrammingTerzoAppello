@@ -694,8 +694,12 @@ class _DeviceActionsDetailState extends State<DeviceActionsDetail> {
       } else if (a is AlarmAction) {
         str = alarmsActionsToStr(a.action);
       } else if (a is LightAction) {
-        str =
-            '${lightsActionsToStr(a.action)} a ${a.colorTemperature.toString()} K';
+        if (a.colorTemperature == null) {
+          str = '${lightsActionsToStr(a.action)}.';
+        } else {
+          str =
+              '${lightsActionsToStr(a.action)} a ${a.colorTemperature.toString()} K';
+        }
       } else {
         str =
             '${thermostatsActionsToStr((a as ThermostatAction).action)} a ${a.desiredTemp.toString()} °C';
