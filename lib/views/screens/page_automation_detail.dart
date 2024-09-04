@@ -331,11 +331,6 @@ class AutomationDetailPageState extends ConsumerState<AutomationDetailPage> {
         const TimeOfDay(hour: 09, minute: 41);
     isTimeDependent = widget.automation.executionTime == null ? true : false;
     actions.addAll(widget.automation.actions);
-    print(
-        'Got ${widget.automation.name} with ${widget.automation.weather} and ${widget.automation.executionTime}.');
-
-    print(
-        'State inited with: $executionTime because timedependency $isTimeDependent and weather $selectedWeather');
   }
 
   @override
@@ -495,7 +490,6 @@ class _TimeOfDaySelectorState extends State<TimeOfDaySelector> {
     super.initState();
     selectedTime = widget.automation.executionTime ??
         const TimeOfDay(hour: 00, minute: 00);
-    print('SelectedTime for TIMEOFDAYSELECTOR initd with $selectedTime');
   }
 
   Future<void> _selectTime(BuildContext context) async {
@@ -550,11 +544,11 @@ class _TimeOfDaySelectorState extends State<TimeOfDaySelector> {
 
 class WeatherConditionsModal extends StatefulWidget {
   final ValueChanged<WeatherCondition> onValueChanged;
-  final WeatherCondition startingCondition;
+  final Automation automation;
   const WeatherConditionsModal({
     super.key,
     required this.onValueChanged,
-    this.startingCondition = WeatherCondition.none,
+    required this.automation,
   });
 
   @override
@@ -585,8 +579,8 @@ class _WeatherConditionsModalState extends State<WeatherConditionsModal> {
   @override
   void initState() {
     super.initState();
-    _selectedCondition = widget.startingCondition;
-    print('State for WEATHERCONTIDIONMODAL initd with $_selectedCondition');
+    _selectedCondition = widget.automation.weather ?? WeatherCondition.none;
+
   }
 
   @override
